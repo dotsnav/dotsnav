@@ -6,7 +6,7 @@ namespace DotsNav.Data
     /// <summary>
     /// When a Translation and DynamicBuffer&lt;PathSegmentElement&gt; are present the direction needed to follow the path is calculated
     /// </summary>
-    struct AgentDirectionComponent : IComponentData
+    public struct AgentDirectionComponent : IComponentData
     {
         public float2 Value;
 

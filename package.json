@@ -1,13 +1,13 @@
 {
   "name": "com.bassmit.dotsnav",
   "displayName": "DotsNav",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "unity": "2020.1",
   "dependencies": {
     "com.unity.burst": "1.3.9",
     "com.unity.entities": "0.16.0-preview.21"
   },
-  "description": "DotsNav",
+  "description": "DotsNav - a fully dynamic and robust planar navmesh.\n\nTo support further development consider becoming a sponsor and get access to the beta and development repositories and private discord channel, and get votes on the roadmap. The first improvement will be to implement local avoidance by porting rvo2-cs.",
   "author" : {
     "name" : "Bas Smit",
     "email" : "bas@bassmit.info",
