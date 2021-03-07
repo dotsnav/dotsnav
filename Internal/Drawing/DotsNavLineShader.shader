@@ -1,4 +1,4 @@
-Shader "LineShaderProc" {
+Shader "DotsNav/DotsNavLineShader" {
 	Properties
 	{
 	}
@@ -22,7 +22,7 @@ Shader "LineShaderProc" {
 
 			#include "UnityCG.cginc"
 
-			StructuredBuffer<float4> positionBuffer;
+			StructuredBuffer<float4> DotsNavPos;
 
 			struct v2f
 			{
@@ -37,7 +37,7 @@ Shader "LineShaderProc" {
 
 			v2f vert(uint vid : SV_VertexID)
 			{
-				float4 pos = positionBuffer[vid];
+				float4 pos = DotsNavPos[vid];
 
 				float col = pos.w;
 				float4 worldPos = float4(pos.xyz, 1);

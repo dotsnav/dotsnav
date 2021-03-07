@@ -10,7 +10,7 @@ namespace DotsNav.Drawing
         internal Unit LineBufferAllocations;
         internal LineBuffer LineBuffer;
         internal bool Initialized;
-        internal UnsafeArray<float4> ColorData;
+        // internal UnsafeArray<float4> ColorData;
 
         internal void Initialize(int maxLines)
         {
@@ -18,7 +18,7 @@ namespace DotsNav.Drawing
             {
                 LineBuffer = new LineBuffer(maxLines);
                 LineBufferAllocations = LineBuffer.AllocateAll();
-                ColorData = new UnsafeArray<float4>(maxLines);
+                // ColorData = new UnsafeArray<float4>(maxLines);
                 Initialized = true;
             }
         }
@@ -33,7 +33,7 @@ namespace DotsNav.Drawing
             if (Initialized)
             {
                 LineBuffer.Dispose();
-                ColorData.Dispose();
+                // ColorData.Dispose();
                 Initialized = false;
             }
         }

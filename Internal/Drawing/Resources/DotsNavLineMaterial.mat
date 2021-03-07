@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LineMaterial
+  m_Name: DotsNavLineMaterial
   m_Shader: {fileID: 4800000, guid: 96f3455fb5de4f0469ee5eebf929ee02, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4

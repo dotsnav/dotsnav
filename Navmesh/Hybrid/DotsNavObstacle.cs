@@ -59,7 +59,7 @@ namespace DotsNav.Hybrid
         /// <summary>
         /// Gets a vertex in world space
         /// </summary>
-        internal float2 GetVertex(int index, float2 scale, float rotation, float2 offset) => offset + scale * Rotate((float2)Vertices[index], -rotation);
+        internal float2 GetVertex(int index, float2 scale, float rotation, float2 offset) => Rotate(offset + scale * (float2)Vertices[index], -rotation);
 
         static float2 Rotate(double2 p, double degrees) => (float2) new double2(p.x * math.cos(degrees) - p.y * math.sin(degrees), p.x * math.sin(degrees) + p.y * math.cos(degrees));
 

@@ -93,9 +93,14 @@ namespace DotsNav.PathFinding
                         var e = GeometricPredicates.Orient2DFast(start, goal, p) > 0 ? new Gate {Left = p, Right = v.Opposite} : new Gate {Left = v.Opposite, Right = p};
 
                         if (path.Length > 0)
-                            path.Add(new Gate {Left = path[path.Length - 1].Left, Right = e.Right});
+                        {
+                            var gate = new Gate {Left = path[path.Length - 1].Left, Right = e.Right};
+                            path.Add(gate);
+                            DebugDraw(gate.Left, gate.Right, Color.magenta);
+                        }
 
                         path.Add(e);
+                        DebugDraw(e.Left, e.Right, Color.magenta);
                     }
 
                     triangleIds.Add(startId);

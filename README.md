@@ -25,11 +25,13 @@ To support further development consider becoming a sponsor and get access to the
 ## Getting Started
 ### Installing the package
 
-While the package manager supports adding packages through a GitHub url, it is not able to notify you of updates to these packages. The recommended way of installing DotsNav is therefore through the [OpenUPM](https://openupm.com/packages/com.bassmit.dotsnav/) unitypackage installer (top right). After downloading the installer add the unitypackage to your project and DotsNav will be installed, including setting up the scoped registry required.
+The minimum required version of Unity is 2020.1.6f1.
+
+The recommended way of installing DotsNav is through the [OpenUPM](https://openupm.com/packages/com.bassmit.dotsnav/) unitypackage installer (top right). After downloading the installer add the unitypackage to your project and DotsNav will be installed, including setting up the scoped registry required.
 
 The package manager ui then needs to be augmented to show and install updates by installing [UpmGitExtension](https://openupm.com/packages/com.coffee.upm-git-extension/).
 
-Alternatively, open the package manager and choose Add package from git URL.
+Alternatively, open the package manager and choose Add package from git URL. Note that you will not be notified of updates to DotsNav, or other custom packages installed in this way.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image16.png?raw=true)
 

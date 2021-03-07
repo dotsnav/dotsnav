@@ -52,14 +52,14 @@ namespace DotsNav.Drawing
             Instance[index * 2 + 1] = line.End;
         }
 
-        public  void Dispose()
+        public void Dispose()
         {
             Instance.Dispose();
         }
 
         internal Unit AllocateAll()
         {
-            return new Unit(Instance.Length);
+            return new Unit(Instance.Length / 2);
         }
 
         internal unsafe void CopyFrom(void* ptr, int amount, int offset)
