@@ -7,7 +7,6 @@ using UnityEngine;
 namespace DotsNav.Hybrid
 {
     [CustomEditor(typeof(DotsNavObstacle), editorForChildClasses: true)]
-    [CanEditMultipleObjects]
     class ObstacleEditor : Editor
     {
         const int Width = 50;
