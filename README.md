@@ -40,6 +40,10 @@ And enter the url:
 
 Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
 
+Samples can be imported through the package manager:
+
+![](https://github.com/bassmit/images/blob/master/DotsNav/image18.png?raw=true)
+
 ### Navmesh
 To create a navmesh attach a DotsNav Navmesh behaviour to a gameobject. The navmesh dimensions will be drawn in the scene view. A top down orthogonal perspective is usually the easiest way to view navmeshes and edit obstacles. Currently only one navmesh is allowed which will be centered around the origin. The value of Expected Verts determines the size of initial allocations.
 

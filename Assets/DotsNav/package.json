@@ -2,12 +2,11 @@
   "name": "com.bassmit.dotsnav",
   "displayName": "DotsNav",
   "version": "0.1.6",
-  "unity": "2020.1",
+  "unity": "2020.3",
   "dependencies": {
-    "com.unity.burst": "1.3.9",
     "com.unity.entities": "0.16.0-preview.21"
   },
-  "description": "Become a sponsor on Github and get access to the beta and development repositories, private discord channel and votes on the roadmap\ngithub.com/dotsnav",
+  "description": "A fully dynamic and robust planar navmesh. To support further development consider becoming a sponsor: https://github.com/sponsors/bassmit",
   "author" : {
     "name" : "Bas Smit",
     "email" : "bas@bassmit.info",
@@ -17,7 +16,7 @@
     {
       "displayName": "DotsNav Samples",
       "description": "DotsNav Samples",
-      "path": "Samples~/DotsNav Samples"
+      "path": "Samples/DotsNav Samples"
     }
   ]
 }
