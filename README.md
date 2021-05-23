@@ -18,31 +18,27 @@
 ## Introduction
 DotsNav is a fully dynamic and robust planar navmesh Unity package built on DOTS. It is fast enough to add and remove many obstacles each frame, supports agents of any size, and can be used through monobehaviours without prior knowledge of DOTS.
 
-DotsNav is in an early stage of development. It passes demanding robustness tests as can be seen in the video and demo, but has not been used beyond developing the demo. DotsNav is known to run as Windows standalone, UWP app and on Android. Apple devices have not been tested.
+DotsNav is in an early stage of development. It passes demanding robustness tests as can be seen in the video and demo, but has not been used beyond developing the demo.
 
-To support further development consider becoming a sponsor and get access to the beta and development repositories which are a few months ahead of this repository, access tot the private discord channel and votes on the [roadmap](https://github.com/dotsnav/dotsnav/blob/master/README.md#roadmap). The first improvement will be to implement local avoidance by porting [rvo2-cs](https://github.com/snape/RVO2-CS).
+To support further development consider becoming a [sponsor](https://github.com/sponsors/bassmit).
 
 ## Getting Started
-### Installing the package
+### Installation
+To have a quick look at DotsNav clone or download the master branch which contains a full Unity 2020.3 LTS project.
 
-The minimum required version of Unity is 2020.1.6f1.
+The recommended way of installing DotsNav is through the [OpenUPM](https://openupm.com/packages/com.bassmit.dotsnav/) package installer (top right). Download and add the unitypackage to a project to install DotsNav, including setting up the scoped registry required.
 
-The recommended way of installing DotsNav is through the [OpenUPM](https://openupm.com/packages/com.bassmit.dotsnav/) unitypackage installer (top right). After downloading the installer add the unitypackage to your project and DotsNav will be installed, including setting up the scoped registry required.
+The package manager UI then needs to be augmented to show and install updates by installing [UpmGitExtension](https://openupm.com/packages/com.coffee.upm-git-extension/).
 
-The package manager ui then needs to be augmented to show and install updates by installing [UpmGitExtension](https://openupm.com/packages/com.coffee.upm-git-extension/).
-
-Alternatively, open the package manager and choose Add package from git URL. Note that you will not be notified of updates to DotsNav, or other custom packages installed in this way.
+Alternatively, open the package manager and choose Add package from git URL:
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image16.png?raw=true)
 
-And enter the url.
+And enter the url:
 
-    https://github.com/dotsnav/dotsnav.git
+    https://github.com/dotsnav/dotsnav.git#upm
 
-
-Samples can be imported through the package manager.
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image18.png?raw=true)
+Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
 
 ### Navmesh
 To create a navmesh attach a DotsNav Navmesh behaviour to a gameobject. The navmesh dimensions will be drawn in the scene view. A top down orthogonal perspective is usually the easiest way to view navmeshes and edit obstacles. Currently only one navmesh is allowed which will be centered around the origin. The value of Expected Verts determines the size of initial allocations.
@@ -170,9 +166,8 @@ Due to the nature of the algorithms involved exact geometric predicates are requ
 DotsNav provides locally optimal search. First, a channel of connected triangles with enough clearance is found using A*. The optimal path given this channel is then found using the funnel algorithm. While channels found are often optimal they are not guaranteed to be. An algorithm to find the optimal channel exists, but can easily take 100 times longer to execute and is not currently implemented. As there are valid use cases for globally optimal search, if only to benchmark cost functions, it is included on the roadmap.
 
 ## Roadmap
-The roadmap will be updated based on feedback.
-
 - Collision avoidance, port rvo2c#
+- Point agent path finding
 - Preferred radius to use where clearance allows
 - Custom cost functions, so agents can prefer to avoid certain conditions
 - Deterministic path finding budget and agent priorities
