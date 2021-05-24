@@ -11,12 +11,5 @@
     "name" : "Bas Smit",
     "email" : "bas@bassmit.info",
     "url" : "http://github.com/dotsnav"
-  },
-  "samples": [
-    {
-      "displayName": "DotsNav Samples",
-      "description": "DotsNav Samples",
-      "path": "Samples/DotsNav Samples"
-    }
-  ]
+  }
 }
