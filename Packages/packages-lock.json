@@ -2,7 +2,7 @@
   "dependencies": {
     "com.unity.burst": {
       "version": "1.4.1",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1"
@@ -11,7 +11,7 @@
     },
     "com.unity.collections": {
       "version": "0.15.0-preview.21",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.test-framework.performance": "2.3.1-preview",
@@ -21,7 +21,7 @@
     },
     "com.unity.entities": {
       "version": "0.17.0-preview.41",
-      "depth": 0,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.burst": "1.4.1",
@@ -72,7 +72,7 @@
     },
     "com.unity.jobs": {
       "version": "0.8.0-preview.23",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.collections": "0.15.0-preview.21",
@@ -82,14 +82,14 @@
     },
     "com.unity.mathematics": {
       "version": "1.2.1",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.nuget.mono-cecil": {
       "version": "0.1.6-preview.2",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "nuget.mono-cecil": "0.1.6-preview"
@@ -98,7 +98,7 @@
     },
     "com.unity.nuget.newtonsoft-json": {
       "version": "2.0.0-preview",
-      "depth": 2,
+      "depth": 3,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -155,9 +155,18 @@
       },
       "url": "https://packages.unity.com"
     },
+    "com.unity.rendering.hybrid": {
+      "version": "0.11.0-preview.42",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.entities": "0.17.0-preview.41"
+      },
+      "url": "https://packages.unity.com"
+    },
     "com.unity.scriptablebuildpipeline": {
       "version": "1.9.0",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -188,7 +197,7 @@
     },
     "com.unity.test-framework.performance": {
       "version": "2.3.1-preview",
-      "depth": 1,
+      "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.test-framework": "1.1.0",
@@ -216,7 +225,7 @@
     },
     "nuget.mono-cecil": {
       "version": "0.1.6-preview",
-      "depth": 2,
+      "depth": 3,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"

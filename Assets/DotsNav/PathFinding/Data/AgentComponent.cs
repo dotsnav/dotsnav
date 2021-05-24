@@ -11,6 +11,8 @@ namespace DotsNav.PathFinding.Data
     {
         public float2 From;
         public float2 To;
+
+        // todo refactor to avoid duplication with rvo
         public float Radius;
 
         /// <summary>

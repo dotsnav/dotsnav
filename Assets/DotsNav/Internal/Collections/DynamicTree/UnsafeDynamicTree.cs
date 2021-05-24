@@ -23,12 +23,14 @@
 using System.Diagnostics;
 using DotsNav.Assertions;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Entities;
 using Unity.Mathematics;
-using Allocator = Unity.Collections.Allocator;
+using Unity.Collections;
+using Debug = UnityEngine.Debug;
 
 namespace DotsNav.Collections
 {
-    public unsafe struct DynamicTree
+    public unsafe struct UnsafeDynamicTree
     {
         const int NullNode = -1;
         const float AABBExtension = .1f;
@@ -36,6 +38,7 @@ namespace DotsNav.Collections
         
         int _root;
 
+        [NativeDisableUnsafePtrRestriction]
         Node* _nodes;
         int _nodeCount;
         int _nodeCapacity;
@@ -43,11 +46,11 @@ namespace DotsNav.Collections
         int _freeList;
 
         int _insertionCount;
-        readonly Allocator _allocator;
+        internal readonly Allocator Allocator;
 
-        public DynamicTree(Allocator allocator)
+        public UnsafeDynamicTree(Allocator allocator)
         {
-            _allocator = allocator;
+            Allocator = allocator;
             _root = NullNode;
 
             _nodeCapacity = 16;
@@ -72,13 +75,13 @@ namespace DotsNav.Collections
         public void Dispose()
         {
             // This frees the entire tree in one shot.
-            UnsafeUtility.Free(_nodes, _allocator);
+            UnsafeUtility.Free(_nodes, Allocator);
         }
         
         // Create a proxy in the tree as a leaf node. We return the index
         // of the node instead of a pointer so that we can grow
         // the node pool.
-        public int CreateProxy(AABB aabb, void* userData)
+        public int CreateProxy(AABB aabb, Entity userData)
         {
             var proxyId = AllocateNode();
 
@@ -160,7 +163,7 @@ namespace DotsNav.Collections
             return true;
         }
         
-        public void* GetUserData(int proxyId)
+        public Entity GetUserData(int proxyId)
         {
             Assert.IsTrue(0 <= proxyId && proxyId < _nodeCapacity);
             return _nodes[proxyId].UserData;
@@ -210,7 +213,7 @@ namespace DotsNav.Collections
                 {
                     if (node->IsLeaf)
                     {
-                        var proceed = callback.QueryCallback(nodeId);
+                        var proceed = callback.QueryCallback(node->UserData);
                         if (proceed == false)
                             return;
                     }
@@ -277,7 +280,7 @@ namespace DotsNav.Collections
                     subInput.P2 = input.P2;
                     subInput.MaxFraction = maxFraction;
 
-                    var value = callback.RayCastCallback(subInput, nodeId);
+                    var value = callback.RayCastCallback(subInput, node->UserData);
 
                     if (value == 0.0f)
                     {
@@ -329,9 +332,9 @@ namespace DotsNav.Collections
                 // The free list is empty. Rebuild a bigger pool.
                 var oldNodes = _nodes;
                 _nodeCapacity *= 2;
-                _nodes = (Node*) Util.Malloc<Node>(_nodeCapacity, _allocator);
+                _nodes = (Node*) Util.Malloc<Node>(_nodeCapacity, Allocator);
                 UnsafeUtility.MemCpy(_nodes, oldNodes, _nodeCount * sizeof(Node));
-                UnsafeUtility.Free(oldNodes, _allocator);
+                UnsafeUtility.Free(oldNodes, Allocator);
 
                 // Build a linked list for the free list. The parent
                 // pointer becomes the "next" pointer.
@@ -353,7 +356,7 @@ namespace DotsNav.Collections
             _nodes[nodeId].Child1 = NullNode;
             _nodes[nodeId].Child2 = NullNode;
             _nodes[nodeId].Height = 0;
-            _nodes[nodeId].UserData = null;
+            _nodes[nodeId].UserData = Entity.Null;
             _nodes[nodeId].Moved = false;
             ++_nodeCount;
             return nodeId;
@@ -449,7 +452,7 @@ namespace DotsNav.Collections
             var oldParent = _nodes[sibling].Parent;
             var newParent = AllocateNode();
             _nodes[newParent].Parent = oldParent;
-            _nodes[newParent].UserData = null;
+            _nodes[newParent].UserData = Entity.Null;
             _nodes[newParent].AABB.Combine(leafAABB, _nodes[sibling].AABB);
             _nodes[newParent].Height = _nodes[sibling].Height + 1;
 
@@ -919,7 +922,7 @@ namespace DotsNav.Collections
             // Enlarged AABB
             internal AABB AABB;
 
-            internal void* UserData;
+            internal Entity UserData;
 
             internal int Parent;
             internal int Next
@@ -936,78 +939,5 @@ namespace DotsNav.Collections
 
             internal bool Moved;
         }
-    }
-
-    public interface IRayCastResultCollector
-    {
-        float RayCastCallback(RayCastInput subInput, int node);
-    }
-
-    public interface IQueryResultCollector
-    {
-        bool QueryCallback(int node);
-    }
-
-    public struct AABB
-    {
-        // Verify that the bounds are sorted.
-        bool IsValid()
-        {
-            var d = UpperBound - LowerBound;
-            var valid = d.x >= 0.0f && d.y >= 0.0f;
-            valid = valid && math.all(math.isfinite(LowerBound)) && math.all(math.isfinite(UpperBound));
-            return valid;
-        }
-
-        // Get the center of the AABB.
-        internal float2 GetCenter() => 0.5f * (LowerBound + UpperBound);
-
-        // Get the extents of the AABB (half-widths).
-        internal float2 GetExtents() => 0.5f * (UpperBound - LowerBound);
-
-        // Get the perimeter length
-        internal float GetPerimeter()
-        {
-            var wx = UpperBound.x - LowerBound.x;
-            var wy = UpperBound.y - LowerBound.y;
-            return 2.0f * (wx + wy);
-        }
-
-        // Combine an AABB into this one.
-        void Combine(AABB aabb)
-        {
-            LowerBound = math.min(LowerBound, aabb.LowerBound);
-            UpperBound = math.max(UpperBound, aabb.UpperBound);
-        }
-
-        // Combine two AABBs into this one.
-        internal void Combine(AABB aabb1, AABB aabb2)
-        {
-            LowerBound = math.min(aabb1.LowerBound, aabb2.LowerBound);
-            UpperBound = math.max(aabb1.UpperBound, aabb2.UpperBound);
-        }
-
-        // Does this aabb contain the provided AABB.
-        internal bool Contains(AABB aabb)
-        {
-            var result = true;
-            result = result && LowerBound.x <= aabb.LowerBound.x;
-            result = result && LowerBound.y <= aabb.LowerBound.y;
-            result = result && aabb.UpperBound.x <= UpperBound.x;
-            result = result && aabb.UpperBound.y <= UpperBound.y;
-            return result;
-        }
-
-        internal float2 LowerBound;
-
-        //< the lower vertex
-        internal float2 UpperBound; //< the upper vertex
-    }
-    
-    public struct RayCastInput
-    {
-        public float2 P1;
-        public float2 P2;
-        public float MaxFraction;
     }
 }
