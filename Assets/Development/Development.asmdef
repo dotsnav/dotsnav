@@ -1,5 +1,6 @@
 {
     "name": "Development",
+    "rootNamespace": "",
     "references": [
         "GUID:734d92eba21c94caba915361bd5ac177",
         "GUID:d8b63aba1907145bea998dd612889d6b",
@@ -12,7 +13,7 @@
         "GUID:15a6caaf38a2127479939ddfa72951a2",
         "GUID:8819f35a0fc84499b990e90a4ca1911f",
         "GUID:51245d85d99ca744e82a8b5345804657",
-        "GUID:92199f7dea4c9974180f62d4d0ca18cf"
+        "GUID:e06d445d5fb2a26488d61c86ae76e8f9"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
