@@ -24,7 +24,7 @@ To support further development consider becoming a [sponsor](https://github.com/
 
 ## Getting Started
 ### Installation
-To have a quick look at DotsNav clone or download the master branch which contains a full Unity 2020.3 LTS project.
+To have a quick look at DotsNav clone or download the master branch which contains a full Unity 2020.3 LTS project. See the Demo folder for the examples seen in the demo and video.
 
 The recommended way of installing DotsNav is through the [OpenUPM](https://openupm.com/packages/com.bassmit.dotsnav/) package installer (top right). Download and add the unitypackage to a project to install DotsNav, including setting up the scoped registry required.
 
@@ -39,10 +39,6 @@ And enter the url:
     https://github.com/dotsnav/dotsnav.git#upm
 
 Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
-
-Samples can be imported through the package manager:
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image18.png?raw=true)
 
 ### Navmesh
 To create a navmesh attach a DotsNav Navmesh behaviour to a gameobject. The navmesh dimensions will be drawn in the scene view. A top down orthogonal perspective is usually the easiest way to view navmeshes and edit obstacles. Currently only one navmesh is allowed which will be centered around the origin. The value of Expected Verts determines the size of initial allocations.
