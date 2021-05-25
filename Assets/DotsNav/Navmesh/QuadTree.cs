@@ -3,6 +3,7 @@ using DotsNav.Assertions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace DotsNav
 {
@@ -23,7 +24,11 @@ namespace DotsNav
             _chunks = new Stack<IntPtr>(buckets, allocator);
             for (int i = 0; i < buckets; i++) 
                 _chunks.Push((IntPtr) Malloc());
-            _nodes = new BlockPool<QuadTreeNode>((int) (1.3334f * buckets), allocator);
+
+            const int blockSize = 128;
+            var capacity = 1.3334f * buckets;
+            var initialBlocks = (int) math.ceil(capacity / blockSize);
+            _nodes = new BlockPool<QuadTreeNode>(blockSize, initialBlocks, allocator);
             _root = _nodes.Set(new QuadTreeNode(0, size / 2, GetChunk(), null));
         }
 

@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
 namespace DotsNav.Collections
 {
@@ -11,14 +12,14 @@ namespace DotsNav.Collections
         List<IntPtr> _blocks;
         readonly PtrStack<T> _available;
 
-        // todo add initial capacity argument
-        public BlockPool(int blockSize, Allocator allocator)
+        public BlockPool(int blockSize, int initialBlocks, Allocator allocator)
         {
             _blockSize = blockSize;
             _allocator = allocator;
             _blocks = new List<IntPtr>(allocator);
             _available = new PtrStack<T>(blockSize, allocator);
-            AddBlock();
+            for (int i = 0; i < initialBlocks; i++)
+                AddBlock();
         }
 
         public T* Set(T value)

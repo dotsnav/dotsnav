@@ -61,9 +61,11 @@ namespace DotsNav
             _e = component.MergePointsDistance;
             _collinearMargin = component.CollinearMargin;
 
-            _vertices = new BlockPool<Vertex>(component.ExpectedVerts, Allocator.Persistent);
+            const int blockSize = 128;
+            var initialBlocks = (int) math.ceil((float) component.ExpectedVerts / blockSize);
+            _vertices = new BlockPool<Vertex>(blockSize, initialBlocks, Allocator.Persistent);
             _verticesSeq = new UnsafeList<IntPtr>(component.ExpectedVerts, Allocator.Persistent);
-            _quadEdges = new BlockPool<QuadEdge>(3 * component.ExpectedVerts, Allocator.Persistent);
+            _quadEdges = new BlockPool<QuadEdge>(3 * blockSize, initialBlocks, Allocator.Persistent);
             _constraints = new UnsafeHashMap<Entity, IntPtr>(component.ExpectedVerts, Allocator.Persistent);
             V = new HashSet<IntPtr>(16, Allocator.Persistent);
             C = new HashSet<IntPtr>(16, Allocator.Persistent);
