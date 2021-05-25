@@ -30,7 +30,7 @@ using Debug = UnityEngine.Debug;
 
 namespace DotsNav.Collections
 {
-    public unsafe struct UnsafeDynamicTree
+    public unsafe struct DynamicTree
     {
         const int NullNode = -1;
         const float AABBExtension = .1f;
@@ -48,7 +48,7 @@ namespace DotsNav.Collections
         int _insertionCount;
         internal readonly Allocator Allocator;
 
-        public UnsafeDynamicTree(Allocator allocator)
+        public DynamicTree(Allocator allocator)
         {
             Allocator = allocator;
             _root = NullNode;

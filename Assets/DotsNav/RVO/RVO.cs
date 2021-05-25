@@ -29,11 +29,14 @@
  * <http://gamma.cs.unc.edu/RVO2/>
  */
 
+using DotsNav;
 using Unity.Collections;
 using Unity.Mathematics;
 
 static class RVO
 {
+    const float Epsilon = 0.00001f;
+
     public static void CalculateNewVelocity
     (
         ref Agent agent, NativeList<VelocityObstacle> neighbours, NativeList<ObstacleDistance> obstacleNeighbours,
@@ -73,7 +76,7 @@ static class RVO
 
             for (var j = 0; j < lineCount; ++j)
             {
-                if (RVOMath.Determinant(invTimeHorizonObst * relativePosition1 - lines[j].Point, lines[j].Direction) - invTimeHorizonObst * radius >= -RVOMath.RvoEpsilon && RVOMath.Determinant(invTimeHorizonObst * relativePosition2 - lines[j].Point, lines[j].Direction) - invTimeHorizonObst * radius >= -RVOMath.RvoEpsilon)
+                if (RVOMath.Determinant(invTimeHorizonObst * relativePosition1 - lines[j].Point, lines[j].Direction) - invTimeHorizonObst * radius >= -Epsilon && RVOMath.Determinant(invTimeHorizonObst * relativePosition2 - lines[j].Point, lines[j].Direction) - invTimeHorizonObst * radius >= -Epsilon)
                 {
                     alreadyCovered = true;
 
@@ -90,7 +93,7 @@ static class RVO
             var distSq1 = math.lengthsq(relativePosition1);
             var distSq2 = math.lengthsq(relativePosition2);
 
-            var radiusSq = RVOMath.Square(radius);
+            var radiusSq = Math.Square(radius);
 
             var obstacleVector = obstacle2.Point - obstacle1.Point;
             var s = math.dot(-relativePosition1, obstacleVector) / math.lengthsq(obstacleVector);
@@ -318,7 +321,7 @@ static class RVO
             var relativeVelocity = velocity - neighbour.Velocity;
             var distSq = math.lengthsq(relativePosition);
             var combinedRadius = radius + neighbour.Radius;
-            var combinedRadiusSq = RVOMath.Square(combinedRadius);
+            var combinedRadiusSq = Math.Square(combinedRadius);
 
             Line line;
             float2 u;
@@ -332,7 +335,7 @@ static class RVO
                 var wLengthSq = math.lengthsq(w);
                 var dotProduct1 = math.dot(w, relativePosition);
 
-                if (dotProduct1 < 0.0f && RVOMath.Square(dotProduct1) > combinedRadiusSq * wLengthSq)
+                if (dotProduct1 < 0.0f && Math.Square(dotProduct1) > combinedRadiusSq * wLengthSq)
                 {
                     /* Project on cut-off circle. */
                     var wLength = math.sqrt(wLengthSq);
@@ -385,7 +388,7 @@ static class RVO
     static bool LinearProgram1(NativeSlice<Line> lines, int lineNo, float radius, float2 optVelocity, bool directionOpt, ref float2 result)
     {
         var dotProduct = math.dot(lines[lineNo].Point, lines[lineNo].Direction);
-        var discriminant = RVOMath.Square(dotProduct) + RVOMath.Square(radius) - math.lengthsq(lines[lineNo].Point);
+        var discriminant = Math.Square(dotProduct) + Math.Square(radius) - math.lengthsq(lines[lineNo].Point);
 
         if (discriminant < 0.0f)
         {
@@ -402,7 +405,7 @@ static class RVO
             var denominator = RVOMath.Determinant(lines[lineNo].Direction, lines[i].Direction);
             var numerator = RVOMath.Determinant(lines[i].Direction, lines[lineNo].Point - lines[i].Point);
 
-            if (math.abs(denominator) <= RVOMath.RvoEpsilon)
+            if (math.abs(denominator) <= Epsilon)
             {
                 /* Lines lineNo and i are (almost) parallel. */
                 if (numerator < 0.0f)
@@ -463,7 +466,7 @@ static class RVO
         {
             var lengthsq = math.lengthsq(optVelocity);
 
-            if (lengthsq > RVOMath.Square(radius))
+            if (lengthsq > Math.Square(radius))
             {
                 /* Optimize closest point and outside circle. */
                 result = math.rsqrt(lengthsq) * optVelocity * radius;
@@ -511,7 +514,7 @@ static class RVO
                     Line line;
                     var determinant = RVOMath.Determinant(lines[i].Direction, lines[j].Direction);
 
-                    if (math.abs(determinant) <= RVOMath.RvoEpsilon)
+                    if (math.abs(determinant) <= Epsilon)
                     {
                         /* Line i and line j are parallel. */
                         if (math.dot(lines[i].Direction, lines[j].Direction) > 0.0f)

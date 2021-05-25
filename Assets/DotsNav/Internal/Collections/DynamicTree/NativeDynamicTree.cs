@@ -23,7 +23,7 @@ namespace DotsNav.Collections
         DisposeSentinel m_DisposeSentinel;
 #endif
         [NativeDisableUnsafePtrRestriction]
-        UnsafeDynamicTree* _tree;
+        DynamicTree* _tree;
 
         public bool IsCreated => _tree != null;
 
@@ -37,8 +37,8 @@ namespace DotsNav.Collections
             }
             AtomicSafetyHandle.SetStaticSafetyId(ref m_Safety, s_staticSafetyId.Data);
 #endif
-            _tree = (UnsafeDynamicTree*) Util.Malloc<UnsafeDynamicTree>(allocator);
-            *_tree = new UnsafeDynamicTree(allocator);
+            _tree = (DynamicTree*) Util.Malloc<DynamicTree>(allocator);
+            *_tree = new DynamicTree(allocator);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.SetBumpSecondaryVersionOnScheduleWrite(m_Safety, true);
