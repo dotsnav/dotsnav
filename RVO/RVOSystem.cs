@@ -23,42 +23,41 @@ class RVOSystem : SystemBase
     {
        var invTimeStep = 1 / Time.DeltaTime;
 
-        Entities
+       Entities
             .WithBurst()
-            .ForEach((Translation translation, AgentDirectionComponent agentDirectionComponent, ref Agent agent) =>
+            .ForEach((Translation translation, AgentDirectionComponent agentDirectionComponent, ref Agent agent, ref VelocityObstacleComponent obstacle) =>
             {
+                // todo remove agent.Position
                 agent.Position = translation.Value.xz;
                 agent.PrefVelocity = agentDirectionComponent.Value * agent.PrefSpeed;
+                obstacle.Position = agent.Position;
+                obstacle.Velocity = agent.Velocity;
+                obstacle.Radius = agent.Radius;
             })
             .ScheduleParallel();
 
         Dependency = JobHandle.CombineDependencies(Dependency, _treeSystem.OutputDependecy);
         var tree = _treeSystem.Tree;
-        // var agentLookup = GetComponentDataFromEntity<Agent>(true);
-        var agentLookup = GetComponentDataFromEntity<Agent>();
+        var velocityObstacleLookup = GetComponentDataFromEntity<VelocityObstacleComponent>(true);
 
-        // todo fix parallel execution
         Entities
             .WithBurst()
             .WithAll<Agent>()
             .WithReadOnly(tree)
-            // .WithReadOnly(agentLookup)
-            .ForEach((Entity entity) =>
+            .WithReadOnly(velocityObstacleLookup)
+            .ForEach((ref Agent agent) =>
             {
                 // todo expose
                 const int maxNeighbours = 10;
                 var neighbours = new NativeList<VelocityObstacle>(maxNeighbours, Allocator.Temp);
-                var agent = agentLookup[entity];
                 var ext = agent.NeighbourDist / 2;
                 var aabb = new AABB {LowerBound = agent.Position - ext, UpperBound = agent.Position + ext};
-                tree.Query(new NearestCollector(agent.Position, agent.NeighbourDist, maxNeighbours, neighbours, agentLookup), aabb);
+                tree.Query(new NearestCollector(agent.Position, agent.NeighbourDist, maxNeighbours, neighbours, velocityObstacleLookup), aabb);
                 var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                 var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
                 agent.NewVelocity = RVO.CalculateNewVelocity(agent, neighbours, obstacleNeighbours, allObstacles, invTimeStep, maxNeighbours);
-                agentLookup[entity] = agent;
             })
-            // .ScheduleParallel();
-            .Schedule();
+            .ScheduleParallel();
 
         Entities
             .WithBurst()
@@ -74,22 +73,22 @@ class RVOSystem : SystemBase
         readonly float2 _position;
         readonly int _maxResults;
         NativeList<VelocityObstacle> _neighbours;
-        readonly ComponentDataFromEntity<Agent> _agentLookup;
+        readonly ComponentDataFromEntity<VelocityObstacleComponent> _velocityObstacleLookup;
         float _rangeSq;
 
-        public NearestCollector(float2 position, float range, int maxResults, NativeList<VelocityObstacle> neighbours, ComponentDataFromEntity<Agent> agentLookup)
+        public NearestCollector(float2 position, float range, int maxResults, NativeList<VelocityObstacle> neighbours, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
         {
             _position = position;
             _maxResults = maxResults;
             _neighbours = neighbours;
-            _agentLookup = agentLookup;
+            _velocityObstacleLookup = velocityObstacleLookup;
             _rangeSq = Math.Square(range);
         }
 
         public bool QueryCallback(Entity node)
         {
-            var agent = _agentLookup[node];
-            var neighbour = new VelocityObstacle(node, agent.Position, agent.Velocity, agent.Radius);
+            var velocityObstacle = _velocityObstacleLookup[node];
+            var neighbour = new VelocityObstacle(velocityObstacle);
             // todo should probably take in to account neighbour radius here, it could be very large
             var distSq = math.lengthsq(_position - neighbour.Position);
 
