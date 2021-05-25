@@ -76,7 +76,7 @@ static class RVO
 
             for (var j = 0; j < lineCount; ++j)
             {
-                if (RVOMath.Determinant(invTimeHorizonObst * relativePosition1 - lines[j].Point, lines[j].Direction) - invTimeHorizonObst * radius >= -Epsilon && RVOMath.Determinant(invTimeHorizonObst * relativePosition2 - lines[j].Point, lines[j].Direction) - invTimeHorizonObst * radius >= -Epsilon)
+                if (math.determinant(new float2x2(invTimeHorizonObst * relativePosition1 - lines[j].Point, lines[j].Direction)) - invTimeHorizonObst * radius >= -Epsilon && math.determinant(new float2x2(invTimeHorizonObst * relativePosition2 - lines[j].Point, lines[j].Direction)) - invTimeHorizonObst * radius >= -Epsilon)
                 {
                     alreadyCovered = true;
 
@@ -119,7 +119,7 @@ static class RVO
                  * Collision with right vertex. Ignore if non-convex or if
                  * it will be taken care of by neighboring obstacle.
                  */
-                if (obstacle2.Convex && RVOMath.Determinant(relativePosition2, obstacle2.Direction) >= 0.0f)
+                if (obstacle2.Convex && math.determinant(new float2x2(relativePosition2, obstacle2.Direction)) >= 0.0f)
                 {
                     line.Point = new float2(0.0f, 0.0f);
                     line.Direction = math.normalize(new float2(-relativePosition2.y, relativePosition2.x));
@@ -219,14 +219,14 @@ static class RVO
             var isLeftLegForeign = false;
             var isRightLegForeign = false;
 
-            if (obstacle1.Convex && RVOMath.Determinant(leftLegDirection, -leftNeighbor.Direction) >= 0.0f)
+            if (obstacle1.Convex && math.determinant(new float2x2(leftLegDirection, -leftNeighbor.Direction)) >= 0.0f)
             {
                 /* Left leg points into obstacle. */
                 leftLegDirection = -leftNeighbor.Direction;
                 isLeftLegForeign = true;
             }
 
-            if (obstacle2.Convex && RVOMath.Determinant(rightLegDirection, obstacle2.Direction) <= 0.0f)
+            if (obstacle2.Convex && math.determinant(new float2x2(rightLegDirection, obstacle2.Direction)) <= 0.0f)
             {
                 /* Right leg points into obstacle. */
                 rightLegDirection = obstacle2.Direction;
@@ -349,7 +349,7 @@ static class RVO
                     /* Project on legs. */
                     var leg = math.sqrt(distSq - combinedRadiusSq);
 
-                    if (RVOMath.Determinant(relativePosition, w) > 0.0f)
+                    if (math.determinant(new float2x2(relativePosition, w)) > 0.0f)
                     {
                         /* Project on left leg. */
                         line.Direction = new float2(relativePosition.x * leg - relativePosition.y * combinedRadius, relativePosition.x * combinedRadius + relativePosition.y * leg) / distSq;
@@ -402,8 +402,8 @@ static class RVO
 
         for (var i = 0; i < lineNo; ++i)
         {
-            var denominator = RVOMath.Determinant(lines[lineNo].Direction, lines[i].Direction);
-            var numerator = RVOMath.Determinant(lines[i].Direction, lines[lineNo].Point - lines[i].Point);
+            var denominator = math.determinant(new float2x2(lines[lineNo].Direction, lines[i].Direction));
+            var numerator = math.determinant(new float2x2(lines[i].Direction, lines[lineNo].Point - lines[i].Point));
 
             if (math.abs(denominator) <= Epsilon)
             {
@@ -480,7 +480,7 @@ static class RVO
 
         for (var i = 0; i < lineCount; ++i)
         {
-            if (RVOMath.Determinant(lines[i].Direction, lines[i].Point - result) > 0.0f)
+            if (math.determinant(new float2x2(lines[i].Direction, lines[i].Point - result)) > 0.0f)
             {
                 /* Result does not satisfy constraint i. Compute new optimal result. */
                 var tempResult = result;
@@ -502,7 +502,7 @@ static class RVO
 
         for (var i = beginLine; i < orcaLines; ++i)
         {
-            if (RVOMath.Determinant(lines[i].Direction, lines[i].Point - result) > distance)
+            if (math.determinant(new float2x2(lines[i].Direction, lines[i].Point - result)) > distance)
             {
                 var lineCount = 0;
                 /* Result does not satisfy constraint of line i. */
@@ -512,7 +512,7 @@ static class RVO
                 for (var j = numObstLines; j < i; ++j)
                 {
                     Line line;
-                    var determinant = RVOMath.Determinant(lines[i].Direction, lines[j].Direction);
+                    var determinant = math.determinant(new float2x2(lines[i].Direction, lines[j].Direction));
 
                     if (math.abs(determinant) <= Epsilon)
                     {
@@ -528,7 +528,7 @@ static class RVO
                     }
                     else
                     {
-                        line.Point = lines[i].Point + RVOMath.Determinant(lines[j].Direction, lines[i].Point - lines[j].Point) / determinant * lines[i].Direction;
+                        line.Point = lines[i].Point + math.determinant(new float2x2(lines[j].Direction, lines[i].Point - lines[j].Point)) / determinant * lines[i].Direction;
                     }
 
                     line.Direction = math.normalize(lines[j].Direction - lines[i].Direction);
@@ -547,7 +547,7 @@ static class RVO
                     result = tempResult;
                 }
 
-                distance = RVOMath.Determinant(lines[i].Direction, lines[i].Point - result);
+                distance = math.determinant(new float2x2(lines[i].Direction, lines[i].Point - result));
             }
         }
     }
