@@ -24,8 +24,8 @@ namespace DotsNav
         float _collinearMargin;
 
         UnsafeHashMap<Entity, IntPtr> _constraints;
-        PersistentStore<Vertex> _vertices;
-        PersistentStore<QuadEdge> _quadEdges;
+        BlockPool<Vertex> _vertices;
+        BlockPool<QuadEdge> _quadEdges;
         UnsafeList<IntPtr> _verticesSeq;
 
         HashSet<IntPtr> V;
@@ -61,9 +61,9 @@ namespace DotsNav
             _e = component.MergePointsDistance;
             _collinearMargin = component.CollinearMargin;
 
-            _vertices = new PersistentStore<Vertex>(component.ExpectedVerts, Allocator.Persistent);
+            _vertices = new BlockPool<Vertex>(component.ExpectedVerts, Allocator.Persistent);
             _verticesSeq = new UnsafeList<IntPtr>(component.ExpectedVerts, Allocator.Persistent);
-            _quadEdges = new PersistentStore<QuadEdge>(3 * component.ExpectedVerts, Allocator.Persistent);
+            _quadEdges = new BlockPool<QuadEdge>(3 * component.ExpectedVerts, Allocator.Persistent);
             _constraints = new UnsafeHashMap<Entity, IntPtr>(component.ExpectedVerts, Allocator.Persistent);
             V = new HashSet<IntPtr>(16, Allocator.Persistent);
             C = new HashSet<IntPtr>(16, Allocator.Persistent);

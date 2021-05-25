@@ -12,7 +12,7 @@ namespace DotsNav
         readonly Allocator _allocator;
         [NativeDisableUnsafePtrRestriction]
         readonly QuadTreeNode* _root;
-        readonly PersistentStore<QuadTreeNode> _nodes;
+        readonly BlockPool<QuadTreeNode> _nodes;
         readonly Stack<IntPtr> _chunks;
 
         public QuadTree(float size, int initialCapacity, int bucketSize, Allocator allocator) : this()
@@ -23,7 +23,7 @@ namespace DotsNav
             _chunks = new Stack<IntPtr>(buckets, allocator);
             for (int i = 0; i < buckets; i++) 
                 _chunks.Push((IntPtr) Malloc());
-            _nodes = new PersistentStore<QuadTreeNode>((int) (1.3334f * buckets), allocator);
+            _nodes = new BlockPool<QuadTreeNode>((int) (1.3334f * buckets), allocator);
             _root = _nodes.Set(new QuadTreeNode(0, size / 2, GetChunk(), null));
         }
 
