@@ -9,7 +9,6 @@ public struct Agent : IComponentData
     public float NeighbourDist;
     public float InvTimeHorizon;
     public float MaxSpeed;
-    public float2 NewVelocity;
     public float Radius;
     public float2 Velocity;
     public float InvTimeHorizonObst;
