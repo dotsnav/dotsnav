@@ -46,15 +46,13 @@ class RVOSystem : SystemBase
             .WithReadOnly(velocityObstacleLookup)
             .ForEach((ref Agent agent) =>
             {
-                // todo expose
-                const int maxNeighbours = 10;
-                var neighbours = new NativeList<VelocityObstacle>(maxNeighbours, Allocator.Temp);
+                var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
                 var ext = agent.NeighbourDist / 2;
                 var aabb = new AABB {LowerBound = agent.Position - ext, UpperBound = agent.Position + ext};
-                tree.Query(new NearestCollector(agent.Position, agent.NeighbourDist, maxNeighbours, neighbours, velocityObstacleLookup), aabb);
+                tree.Query(new NearestCollector(agent.Position, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
                 var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                 var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
-                agent.Velocity = RVO.CalculateNewVelocity(agent, neighbours, obstacleNeighbours, allObstacles, invTimeStep, maxNeighbours);
+                agent.Velocity = RVO.CalculateNewVelocity(agent, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
             })
             .ScheduleParallel();
     }
