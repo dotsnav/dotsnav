@@ -54,7 +54,7 @@ class RVOSystem : SystemBase
                 tree.Query(new NearestCollector(agent.Position, agent.NeighbourDist, maxNeighbours, neighbours, agentLookup), aabb);
                 var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                 var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
-                RVO.CalculateNewVelocity(ref agent, neighbours, obstacleNeighbours, allObstacles, invTimeStep, maxNeighbours);
+                agent.NewVelocity = RVO.CalculateNewVelocity(agent, neighbours, obstacleNeighbours, allObstacles, invTimeStep, maxNeighbours);
                 agentLookup[entity] = agent;
             })
             // .ScheduleParallel();
