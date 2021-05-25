@@ -27,7 +27,6 @@ class RVOSystem : SystemBase
             .WithBurst()
             .ForEach((Translation translation, AgentDirectionComponent agentDirectionComponent, ref Agent agent, ref VelocityObstacleComponent obstacle) =>
             {
-                // todo remove agent.Position
                 agent.Position = translation.Value.xz;
                 agent.PrefVelocity = agentDirectionComponent.Value * agent.PrefSpeed;
                 obstacle.Position = agent.Position;
