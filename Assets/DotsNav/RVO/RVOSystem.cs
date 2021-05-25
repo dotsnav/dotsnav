@@ -49,7 +49,7 @@ class RVOSystem : SystemBase
                 var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
                 var ext = agent.NeighbourDist / 2;
                 var aabb = new AABB {LowerBound = agent.Position - ext, UpperBound = agent.Position + ext};
-                tree.Query(new NearestCollector(agent.Position, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
+                tree.Query(new VelocityObstacleCollector(agent.Position, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
                 var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                 var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
                 agent.Velocity = RVO.CalculateNewVelocity(agent, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
@@ -57,7 +57,7 @@ class RVOSystem : SystemBase
             .ScheduleParallel();
     }
 
-    struct NearestCollector : IQueryResultCollector
+    struct VelocityObstacleCollector : IQueryResultCollector
     {
         readonly float2 _position;
         readonly int _maxResults;
@@ -65,7 +65,7 @@ class RVOSystem : SystemBase
         readonly ComponentDataFromEntity<VelocityObstacleComponent> _velocityObstacleLookup;
         float _rangeSq;
 
-        public NearestCollector(float2 position, float range, int maxResults, NativeList<VelocityObstacle> neighbours, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
+        public VelocityObstacleCollector(float2 position, float range, int maxResults, NativeList<VelocityObstacle> neighbours, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
         {
             _position = position;
             _maxResults = maxResults;
