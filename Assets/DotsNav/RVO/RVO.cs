@@ -37,14 +37,11 @@ static class RVO
 {
     const float Epsilon = 0.00001f;
 
-    public static float2 CalculateNewVelocity
-    (
-        Agent agent, NativeList<VelocityObstacle> neighbours, NativeList<ObstacleDistance> obstacleNeighbours,
-        NativeList<Obstacle> allObstacles, float invTimeStep, int maxNeighbours
-    )
+    public static float2 CalculateNewVelocity(Agent agent, NativeList<VelocityObstacle> neighbours, NativeList<ObstacleDistance> obstacleNeighbours,
+                                              NativeList<Obstacle> allObstacles, float invTimeStep)
     {
         var orcaLines = new NativeArray<Line>(neighbours.Length, Allocator.Temp);
-        var projLines = new NativeArray<Line>(maxNeighbours, Allocator.Temp);
+        var projLines = new NativeArray<Line>(agent.MaxNeighbours, Allocator.Temp);
         var lineCount = CreateOrcaLines(agent.Position, agent.Radius, agent.Velocity, neighbours, orcaLines, agent.InvTimeHorizon,
             out var numObstLines, agent.InvTimeHorizonObst, allObstacles, obstacleNeighbours, invTimeStep);
         var lineFail = LinearProgram2(orcaLines, agent.MaxSpeed, agent.PrefVelocity, false, out var newVelocity, lineCount);

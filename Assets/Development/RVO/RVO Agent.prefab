@@ -98,6 +98,7 @@ MonoBehaviour:
   Radius: 0.5
   PrefSpeed: 5
   MaxSpeed: 10
+  MaxNeighbours: 10
   NeighbourDist: 10
   TimeHorizon: 3
   TimeHorizonObst: 3

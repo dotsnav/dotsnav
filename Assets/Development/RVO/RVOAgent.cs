@@ -7,6 +7,7 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
     [SerializeField] float Radius;
     [SerializeField] float PrefSpeed;
     [SerializeField] float MaxSpeed;
+    [SerializeField] int MaxNeighbours;
     [SerializeField] float NeighbourDist;
     [SerializeField] float TimeHorizon;
     [SerializeField] float TimeHorizonObst;
@@ -20,7 +21,8 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
             InvTimeHorizon = 1 / TimeHorizon,
             MaxSpeed = MaxSpeed,
             Radius = Radius,
-            InvTimeHorizonObst = 1 / TimeHorizonObst
+            InvTimeHorizonObst = 1 / TimeHorizonObst,
+            MaxNeighbours = MaxNeighbours,
         });
 
         dstManager.AddComponent<AgentDirectionComponent>(entity);
