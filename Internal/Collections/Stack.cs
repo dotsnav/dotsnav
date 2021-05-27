@@ -33,7 +33,7 @@ namespace DotsNav.Collections
         public void Dispose() => _data.Dispose();
     }
 
-    sealed class StackDebugView<T> where T : unmanaged
+    sealed class StackDebugView<T> where T : struct
     {
         readonly Stack<T> _data;
 
