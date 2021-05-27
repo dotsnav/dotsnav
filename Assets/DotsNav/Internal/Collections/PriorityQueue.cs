@@ -10,7 +10,6 @@ namespace DotsNav.Collections
     [DebuggerTypeProxy(typeof(PriorityQueueDebugView<>))]
     struct PriorityQueue<T> where T : unmanaged, PriorityQueue<T>.IElement
     {
-        // todo can we nest debugview and make private?
         internal List<T> _data;
         UnsafeHashMap<int, int> _index;
 
@@ -49,6 +48,7 @@ namespace DotsNav.Collections
                 Trickle(0, _data.TakeLast());
             else
                 _data.Clear();
+            _index.Remove(top.Id);
             return top;
         }
 
