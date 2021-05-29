@@ -4,7 +4,7 @@
   "version": "0.1.6",
   "unity": "2020.3",
   "dependencies": {
-    "com.unity.entities": "0.16.0-preview.21"
+    "com.unity.entities": "0.17.0-preview.42"
   },
   "description": "A fully dynamic and robust planar navmesh. To support further development consider becoming a sponsor: https://github.com/sponsors/bassmit",
   "author" : {
