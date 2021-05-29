@@ -3,7 +3,7 @@ using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsNav
 {
-    static unsafe class Util
+    static unsafe class Mem
     {
         public static void* Malloc<T>(Allocator allocator) where T : struct
             => Malloc<T>(1, allocator);

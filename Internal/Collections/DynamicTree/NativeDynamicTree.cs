@@ -7,23 +7,25 @@ using Unity.Mathematics;
 namespace DotsNav.Collections
 {
     [NativeContainer]
-    public unsafe struct NativeDynamicTree
+    public unsafe struct NativeDynamicTree<T> where T : unmanaged
     {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
         internal AtomicSafetyHandle m_Safety;
-        static readonly SharedStatic<int> s_staticSafetyId = SharedStatic<int>.GetOrCreate<NativeDynamicTree>();
+        static readonly SharedStatic<int> s_staticSafetyId = SharedStatic<int>.GetOrCreate<NativeDynamicTree<T>>();
 
         [BurstDiscard]
         static void CreateStaticSafetyId()
         {
-            s_staticSafetyId.Data = AtomicSafetyHandle.NewStaticSafetyId<NativeDynamicTree>();
+            s_staticSafetyId.Data = AtomicSafetyHandle.NewStaticSafetyId<NativeDynamicTree<T>>();
         }
 
         [NativeSetClassTypeToNullOnSchedule]
         DisposeSentinel m_DisposeSentinel;
 #endif
         [NativeDisableUnsafePtrRestriction]
-        DynamicTree* _tree;
+        DynamicTree<T>* _tree;
+
+        Allocator _allocator;
 
         public bool IsCreated => _tree != null;
 
@@ -37,8 +39,9 @@ namespace DotsNav.Collections
             }
             AtomicSafetyHandle.SetStaticSafetyId(ref m_Safety, s_staticSafetyId.Data);
 #endif
-            _tree = (DynamicTree*) Util.Malloc<DynamicTree>(allocator);
-            *_tree = new DynamicTree(allocator);
+            _allocator = allocator;
+            _tree = (DynamicTree<T>*) Mem.Malloc<DynamicTree<T>>(allocator);
+            *_tree = new DynamicTree<T>(allocator);
 
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.SetBumpSecondaryVersionOnScheduleWrite(m_Safety, true);
@@ -51,11 +54,11 @@ namespace DotsNav.Collections
             DisposeSentinel.Dispose(ref m_Safety, ref m_DisposeSentinel);
 #endif
             _tree->Dispose();
-            UnsafeUtility.Free(_tree, _tree->Allocator);
+            UnsafeUtility.Free(_tree, _allocator);
             _tree = null;
         }
 
-        public int CreateProxy(AABB aabb, Entity userData)
+        public int CreateProxy(AABB aabb, T userData)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckWriteAndBumpSecondaryVersion(m_Safety);
@@ -79,7 +82,7 @@ namespace DotsNav.Collections
             return _tree->MoveProxy(proxyId, aabb, displacement);
         }
 
-        public Entity GetUserData(int proxyId)
+        public T GetUserData(int proxyId)
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
@@ -119,7 +122,7 @@ namespace DotsNav.Collections
             _tree->ShiftOrigin(newOrigin);
         }
 
-        public void Query<T>(T callback, AABB aabb) where T : IQueryResultCollector
+        public void Query<TC>(TC callback, AABB aabb) where TC : IQueryResultCollector<T>
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckReadAndThrow(m_Safety);
@@ -127,7 +130,7 @@ namespace DotsNav.Collections
             _tree->Query(callback, aabb);
         }
 
-        public void RayCast<T>(T callback, RayCastInput input) where T : IRayCastResultCollector
+        public void RayCast<TC>(TC callback, RayCastInput input) where TC : IRayCastResultCollector<T>
         {
 #if ENABLE_UNITY_COLLECTIONS_CHECKS
             AtomicSafetyHandle.CheckReadAndThrow(m_Safety);

@@ -1,9 +1,7 @@
-﻿using Unity.Entities;
-
-namespace DotsNav.Collections
+﻿namespace DotsNav.Collections
 {
-    public interface IRayCastResultCollector
+    public interface IRayCastResultCollector<in T>
     {
-        float RayCastCallback(RayCastInput subInput, Entity node);
+        float RayCastCallback(RayCastInput subInput, T node);
     }
 }

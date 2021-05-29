@@ -47,8 +47,8 @@ namespace DotsNav.Collections
         public Deque(int capacity, Allocator allocator)
         {
             capacity = math.ceilpow2(math.max(2, capacity));
-            _control = (DequeControl*) Util.Malloc<DequeControl>(allocator);
-            *_control = new DequeControl(capacity, allocator, Util.Malloc<T>(capacity, allocator));
+            _control = (DequeControl*) Mem.Malloc<DequeControl>(allocator);
+            *_control = new DequeControl(capacity, allocator, Mem.Malloc<T>(capacity, allocator));
         }
 
         public void PushBack(T e)
@@ -100,7 +100,7 @@ namespace DotsNav.Collections
             if (_control->Count < _control->Capacity)
                 return;
             var newCapacity = _control->Capacity * 2;
-            var t = Util.Malloc<T>(newCapacity, _control->Allocator);
+            var t = Mem.Malloc<T>(newCapacity, _control->Allocator);
             var front = FrontIndex;
             var size = UnsafeUtility.SizeOf<T>();
 

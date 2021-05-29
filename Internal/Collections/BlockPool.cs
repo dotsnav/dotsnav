@@ -33,7 +33,7 @@ namespace DotsNav.Collections
 
         void AddBlock()
         {
-            var ptr = (T*) Util.Malloc<T>(_blockSize, _allocator);
+            var ptr = (T*) Mem.Malloc<T>(_blockSize, _allocator);
             for (int i = 0; i < _blockSize; i++)
                 _available.Push(ptr + i);
             _blocks.Add((IntPtr) ptr);

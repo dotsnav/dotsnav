@@ -31,7 +31,7 @@ namespace DotsNav.Collections
 
         public HashSet(int capacity, Allocator allocator)
         {
-            _control = (HashSetControl*) Util.Malloc<HashSetControl>(allocator);
+            _control = (HashSetControl*) Mem.Malloc<HashSetControl>(allocator);
             var prime = HashHelpers.GetPrime(capacity);
             _buckets = new List<int>(prime, allocator);
             _slots = new List<Slot>(prime, allocator);
