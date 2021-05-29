@@ -14,7 +14,7 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
 
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        dstManager.AddComponentData(entity, new Agent
+        dstManager.AddComponentData(entity, new RVOComponent
         {
             PrefSpeed = PrefSpeed,
             NeighbourDist = NeighbourDist,

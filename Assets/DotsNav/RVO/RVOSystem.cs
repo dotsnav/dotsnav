@@ -25,7 +25,7 @@ class RVOSystem : SystemBase
 
        Entities
             .WithBurst()
-            .ForEach((Translation translation, AgentDirectionComponent agentDirectionComponent, ref Agent agent, ref VelocityObstacleComponent obstacle) =>
+            .ForEach((Translation translation, AgentDirectionComponent agentDirectionComponent, ref RVOComponent agent, ref VelocityObstacleComponent obstacle) =>
             {
                 agent.Position = translation.Value.xz;
                 agent.PrefVelocity = agentDirectionComponent.Value * agent.PrefSpeed;
@@ -41,10 +41,10 @@ class RVOSystem : SystemBase
 
         Entities
             .WithBurst()
-            .WithAll<Agent>()
+            .WithAll<RVOComponent>()
             .WithReadOnly(tree)
             .WithReadOnly(velocityObstacleLookup)
-            .ForEach((ref Agent agent) =>
+            .ForEach((ref RVOComponent agent) =>
             {
                 var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
                 var ext = agent.NeighbourDist / 2;

@@ -66,7 +66,7 @@ class MoveSystem : SystemBase
 
         Entities
             .WithBurst()
-            .ForEach((Agent agent, ref Translation translation) =>
+            .ForEach((RVOComponent agent, ref Translation translation) =>
             {
                 translation.Value += (agent.Velocity * dt).ToXxY();
             })
