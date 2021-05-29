@@ -20,7 +20,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.entities": {
-      "version": "0.17.0-preview.41",
+      "version": "0.17.0-preview.42",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -156,11 +156,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.rendering.hybrid": {
-      "version": "0.11.0-preview.43",
+      "version": "0.11.0-preview.44",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.entities": "0.17.0-preview.41"
+        "com.unity.entities": "0.17.0-preview.42"
       },
       "url": "https://packages.unity.com"
     },
@@ -185,7 +185,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.1.24",
+      "version": "1.1.26",
       "depth": 0,
       "source": "registry",
       "dependencies": {
