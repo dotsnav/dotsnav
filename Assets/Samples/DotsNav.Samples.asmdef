@@ -1,18 +1,14 @@
 {
-    "name": "Demo",
+    "name": "DotsNav.Samples",
     "rootNamespace": "",
     "references": [
-        "GUID:734d92eba21c94caba915361bd5ac177",
-        "GUID:d8b63aba1907145bea998dd612889d6b",
-        "GUID:2665a8d13d1b3f18800f46e256720795",
-        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:51245d85d99ca744e82a8b5345804657",
         "GUID:82a3bf30a03c29645a9cc46224b8d70b",
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
         "GUID:5b99e91e326fec84d976c850b1d7a000",
         "GUID:7f74e96d832a450ba518a2f19e48196c",
-        "GUID:8819f35a0fc84499b990e90a4ca1911f",
-        "GUID:7df58cbbbcd3d9e4ca295793e1dab235",
-        "GUID:2597f5f780478c84492999c26822073d"
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:e0cd26848372d4e5c891c569017e11f1",
+        "GUID:734d92eba21c94caba915361bd5ac177"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
