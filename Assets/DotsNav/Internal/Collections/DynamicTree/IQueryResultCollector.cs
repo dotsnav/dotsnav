@@ -1,9 +1,8 @@
-﻿using Unity.Entities;
-
+﻿
 namespace DotsNav.Collections
 {
-    public interface IQueryResultCollector
+    public interface IQueryResultCollector<in T>
     {
-        bool QueryCallback(Entity node);
+        bool QueryCallback(T node);
     }
 }

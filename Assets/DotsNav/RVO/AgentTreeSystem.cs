@@ -11,11 +11,11 @@ using Unity.Transforms;
 class AgentTreeSystem : SystemBase
 {
     public JobHandle OutputDependecy;
-    public NativeDynamicTree Tree;
+    public NativeDynamicTree<Entity> Tree;
 
     protected override void OnCreate()
     {
-        Tree  = new NativeDynamicTree(Allocator.Persistent);
+        Tree  = new NativeDynamicTree<Entity>(Allocator.Persistent);
     }
 
     protected override void OnDestroy()

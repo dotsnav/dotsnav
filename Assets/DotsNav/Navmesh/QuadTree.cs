@@ -39,7 +39,7 @@ namespace DotsNav
             return Malloc();
         }
 
-        Vertex** Malloc() => (Vertex**) Util.Malloc<IntPtr>(_bucketSize, _allocator);
+        Vertex** Malloc() => (Vertex**) Mem.Malloc<IntPtr>(_bucketSize, _allocator);
 
         public Vertex* FindClosest(float2 p, float rangeSq = float.MaxValue)
         {

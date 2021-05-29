@@ -57,7 +57,7 @@ class RVOSystem : SystemBase
             .ScheduleParallel();
     }
 
-    struct VelocityObstacleCollector : IQueryResultCollector
+    struct VelocityObstacleCollector : IQueryResultCollector<Entity>
     {
         readonly float2 _position;
         readonly int _maxResults;
