@@ -1,4 +1,3 @@
-using DotsNav.Core.Extensions;
 using Unity.Entities;
 
 namespace DotsNav.Navmesh

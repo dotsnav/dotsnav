@@ -2,7 +2,6 @@
 using System.Text;
 using DotsNav;
 using DotsNav.Core.Collections;
-using DotsNav.Core.Extensions;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding;
 using Unity.Collections;

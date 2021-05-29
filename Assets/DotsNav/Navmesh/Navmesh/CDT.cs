@@ -1,5 +1,4 @@
 using DotsNav.Core;
-using DotsNav.Core.Extensions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;

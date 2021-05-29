@@ -2,7 +2,6 @@
 using UnityEngine;
 using DotsNav;
 using DotsNav.Core;
-using DotsNav.Core.Extensions;
 using DotsNav.Navmesh.Hybrid;
 
 [ExecuteInEditMode]

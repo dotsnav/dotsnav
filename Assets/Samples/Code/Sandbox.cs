@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotsNav;
 using DotsNav.CollisionDetection.Hybrid;
 using DotsNav.Core;
-using DotsNav.Navmesh;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
-using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;

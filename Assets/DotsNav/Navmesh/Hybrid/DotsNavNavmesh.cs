@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using DotsNav.Core;
-using DotsNav.Core.Extensions;
 using DotsNav.Core.Systems;
 using DotsNav.Navmesh.Data;
-using DotsNav.Navmesh.Systems;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;

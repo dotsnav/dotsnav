@@ -3,7 +3,6 @@ using Unity.Mathematics;
 using UnityEngine;
 using DotsNav;
 using DotsNav.Core;
-using DotsNav.Core.Extensions;
 
 [ExecuteInEditMode]
 public class CircleSegmentIntersection : MonoBehaviour
