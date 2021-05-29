@@ -1,6 +1,5 @@
 using DotsNav.Core;
 using DotsNav.Core.Drawing;
-using DotsNav.Core.Extensions;
 using DotsNav.Core.Systems;
 using DotsNav.Navmesh.Data;
 using Unity.Collections;

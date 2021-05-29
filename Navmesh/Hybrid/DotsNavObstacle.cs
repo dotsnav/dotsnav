@@ -1,6 +1,5 @@
 using System.Linq;
 using DotsNav.Core;
-using DotsNav.Core.Extensions;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Editor;
 using Unity.Entities;

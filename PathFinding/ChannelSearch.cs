@@ -3,7 +3,6 @@ using System.Diagnostics;
 using DotsNav.Core;
 using DotsNav.Core.Collections;
 using DotsNav.Core.Drawing;
-using DotsNav.Core.Extensions;
 using DotsNav.Core.Predicates;
 using DotsNav.Navmesh;
 using DotsNav.PathFinding.Data;

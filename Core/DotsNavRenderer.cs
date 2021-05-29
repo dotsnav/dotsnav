@@ -1,5 +1,4 @@
 using System;
-using DotsNav.Core;
 using DotsNav.Core.Drawing;
 using Unity.Jobs;
 using UnityEngine;
