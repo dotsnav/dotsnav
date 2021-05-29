@@ -7,12 +7,10 @@ namespace DotsNav.PathFinding.Data
     /// Entities with Agent DynamicBuffer&lt;PathSegmentElement&gt; and DynamicBuffer&lt;TriangleElement&gt; are considered for
     /// path searches when their State is part of PathFinderComponent.RecalculateFlags
     /// </summary>
-    public struct AgentComponent : IComponentData
+    public struct LCTPathFindingComponent : IComponentData
     {
         public float2 From;
         public float2 To;
-
-        public float Radius;
 
         /// <summary>
         /// When State is part of PathFinderComponent.RecalculateFlags a path search is performed

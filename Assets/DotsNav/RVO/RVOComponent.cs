@@ -9,7 +9,6 @@ public struct RVOComponent : IComponentData
     public float NeighbourDist;
     public float InvTimeHorizon;
     public float MaxSpeed;
-    public float Radius;
     public float2 Velocity;
     public float InvTimeHorizonObst;
     public int MaxNeighbours;

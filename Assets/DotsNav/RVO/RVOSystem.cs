@@ -1,5 +1,6 @@
 ﻿using DotsNav;
 using DotsNav.Collections;
+using DotsNav.Core;
 using DotsNav.Data;
 using DotsNav.Systems;
 using Unity.Collections;
@@ -25,13 +26,13 @@ class RVOSystem : SystemBase
 
        Entities
             .WithBurst()
-            .ForEach((Translation translation, AgentDirectionComponent agentDirectionComponent, ref RVOComponent agent, ref VelocityObstacleComponent obstacle) =>
+            .ForEach((Translation translation, DirectionComponent agentDirectionComponent, RadiusComponent radius, ref RVOComponent agent, ref VelocityObstacleComponent obstacle) =>
             {
                 agent.Position = translation.Value.xz;
                 agent.PrefVelocity = agentDirectionComponent.Value * agent.PrefSpeed;
                 obstacle.Position = agent.Position;
                 obstacle.Velocity = agent.Velocity;
-                obstacle.Radius = agent.Radius;
+                obstacle.Radius = radius;
             })
             .ScheduleParallel();
 
@@ -44,7 +45,7 @@ class RVOSystem : SystemBase
             .WithAll<RVOComponent>()
             .WithReadOnly(tree)
             .WithReadOnly(velocityObstacleLookup)
-            .ForEach((ref RVOComponent agent) =>
+            .ForEach((RadiusComponent radius, ref RVOComponent agent) =>
             {
                 var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
                 var ext = agent.NeighbourDist / 2;
@@ -52,7 +53,7 @@ class RVOSystem : SystemBase
                 tree.Query(new VelocityObstacleCollector(agent.Position, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
                 var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                 var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
-                agent.Velocity = RVO.CalculateNewVelocity(agent, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
+                agent.Velocity = RVO.CalculateNewVelocity(agent, radius, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
             })
             .ScheduleParallel();
     }

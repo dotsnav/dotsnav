@@ -48,7 +48,7 @@ class DirectionSystem : SystemBase
     {
         Entities
             .WithBurst()
-            .ForEach((Translation translation, TargetComponent target, ref AgentDirectionComponent direction) =>
+            .ForEach((Translation translation, TargetComponent target, ref DirectionComponent direction) =>
             {
                 direction.Value = math.normalize(target.Value - translation.Value.xz);
             })

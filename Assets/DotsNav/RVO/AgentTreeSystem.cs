@@ -1,4 +1,5 @@
 ﻿using DotsNav.Collections;
+using DotsNav.Core;
 using DotsNav.PathFinding.Data;
 using DotsNav.Systems;
 using Unity.Collections;
@@ -31,11 +32,12 @@ class AgentTreeSystem : SystemBase
 
         Entities
             .WithBurst()
+            .WithAll<AgentTreeComponent>()
             .WithNone<AgentTreeSystemStateComponent>()
-            .ForEach((Entity entity, in AgentTreeComponent data, in Translation translation, in RVOComponent agent) =>
+            .ForEach((Entity entity, in Translation translation, in RadiusComponent radius) =>
             {
                 var pos = translation.Value.xz;
-                var aabb = new AABB {LowerBound = pos - agent.Radius, UpperBound = pos + agent.Radius};
+                var aabb = new AABB {LowerBound = pos - radius, UpperBound = pos + radius};
                 var id = tree.CreateProxy(aabb, entity);
                 buffer.AddComponent(entity, new AgentTreeSystemStateComponent {Id = id, PreviousPosition = pos});
             })
@@ -55,10 +57,10 @@ class AgentTreeSystem : SystemBase
 
         Entities
             .WithBurst()
-            .ForEach((ref AgentTreeSystemStateComponent state, in Translation translation, in RVOComponent agent) =>
+            .ForEach((ref AgentTreeSystemStateComponent state, in Translation translation, in RadiusComponent radius) =>
             {
                 var pos = translation.Value.xz;
-                var aabb = new AABB {LowerBound = pos - agent.Radius, UpperBound = pos + agent.Radius};
+                var aabb = new AABB {LowerBound = pos - radius, UpperBound = pos + radius};
                 tree.MoveProxy(state.Id, aabb, pos - state.PreviousPosition);
                 state.PreviousPosition = pos;
             })

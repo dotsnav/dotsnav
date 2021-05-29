@@ -1,3 +1,4 @@
+using DotsNav.Core;
 using DotsNav.Data;
 using Unity.Entities;
 using UnityEngine;
@@ -20,12 +21,12 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
             NeighbourDist = NeighbourDist,
             InvTimeHorizon = 1 / TimeHorizon,
             MaxSpeed = MaxSpeed,
-            Radius = Radius,
             InvTimeHorizonObst = 1 / TimeHorizonObst,
             MaxNeighbours = MaxNeighbours,
         });
 
-        dstManager.AddComponent<AgentDirectionComponent>(entity);
+        dstManager.AddComponentData(entity, new RadiusComponent(Radius));
+        dstManager.AddComponent<DirectionComponent>(entity);
         dstManager.AddComponent<AgentTreeComponent>(entity);
         dstManager.AddComponent<VelocityObstacleComponent>(entity);
     }
