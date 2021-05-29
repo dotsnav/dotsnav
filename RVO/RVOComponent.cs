@@ -3,7 +3,6 @@ using Unity.Mathematics;
 
 public struct RVOComponent : IComponentData
 {
-    public float2 Position;
     public float2 PrefVelocity;
     public float PrefSpeed;
     public float NeighbourDist;
