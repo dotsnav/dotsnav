@@ -91,8 +91,8 @@ namespace DotsNav.Core.Collections.BVH
 
         public void Remove(int id)
         {
-            Unity.Assertions.Assert.IsTrue(0 <= id && id < _nodeCapacity);
-            Unity.Assertions.Assert.IsTrue(_nodes[id].IsLeaf);
+            Assert.IsTrue(0 <= id && id < _nodeCapacity);
+            Assert.IsTrue(_nodes[id].IsLeaf);
 
             RemoveLeaf(id);
             FreeNode(id);
@@ -108,25 +108,25 @@ namespace DotsNav.Core.Collections.BVH
 
         public T GetUserData(int id)
         {
-            Unity.Assertions.Assert.IsTrue(0 <= id && id < _nodeCapacity);
+            Assert.IsTrue(0 <= id && id < _nodeCapacity);
             return _nodes[id].UserData;
         }
 
         internal bool WasMoved(int id)
         {
-            Unity.Assertions.Assert.IsTrue(0 <= id && id < _nodeCapacity);
+            Assert.IsTrue(0 <= id && id < _nodeCapacity);
             return _nodes[id].Moved;
         }
 
         internal void ClearMoved(int id)
         {
-            Unity.Assertions.Assert.IsTrue(0 <= id && id < _nodeCapacity);
+            Assert.IsTrue(0 <= id && id < _nodeCapacity);
             _nodes[id].Moved = false;
         }
 
         public AABB GetAABB(int id)
         {
-            Unity.Assertions.Assert.IsTrue(0 <= id && id < _nodeCapacity);
+            Assert.IsTrue(0 <= id && id < _nodeCapacity);
             return _nodes[id].AABB;
         }
 
@@ -174,7 +174,7 @@ namespace DotsNav.Core.Collections.BVH
             var p1 = input.P1;
             var p2 = input.P2;
             var r = p2 - p1;
-            Unity.Assertions.Assert.IsTrue(math.any(r != 0.0f));
+            Assert.IsTrue(math.any(r != 0.0f));
             r = math.normalize(r);
 
             // v is perpendicular to the segment.
@@ -270,7 +270,7 @@ namespace DotsNav.Core.Collections.BVH
             // Expand the node pool as needed.
             if (_freeList == NullNode)
             {
-                Unity.Assertions.Assert.IsTrue(_nodeCount == _nodeCapacity);
+                Assert.IsTrue(_nodeCount == _nodeCapacity);
 
                 // The free list is empty. Rebuild a bigger pool.
                 var oldNodes = _nodes;
@@ -308,8 +308,8 @@ namespace DotsNav.Core.Collections.BVH
         // Return a node to the pool.
         void FreeNode(int nodeId)
         {
-            Unity.Assertions.Assert.IsTrue(0 <= nodeId && nodeId < _nodeCapacity);
-            Unity.Assertions.Assert.IsTrue(0 < _nodeCount);
+            Assert.IsTrue(0 <= nodeId && nodeId < _nodeCapacity);
+            Assert.IsTrue(0 < _nodeCount);
             _nodes[nodeId].Next = _freeList;
             _nodes[nodeId].Height = -1;
             _freeList = nodeId;
@@ -431,8 +431,8 @@ namespace DotsNav.Core.Collections.BVH
                 var child1 = _nodes[index].Child1;
                 var child2 = _nodes[index].Child2;
 
-                Unity.Assertions.Assert.IsTrue(child1 != NullNode);
-                Unity.Assertions.Assert.IsTrue(child2 != NullNode);
+                Assert.IsTrue(child1 != NullNode);
+                Assert.IsTrue(child2 != NullNode);
 
                 _nodes[index].Height = 1 + math.max(_nodes[child1].Height, _nodes[child2].Height);
                 _nodes[index].AABB.Combine(_nodes[child1].AABB, _nodes[child2].AABB);
@@ -495,7 +495,7 @@ namespace DotsNav.Core.Collections.BVH
         // Returns the new root index.
         int Balance(int iA)
         {
-            Unity.Assertions.Assert.IsTrue(iA != NullNode);
+            Assert.IsTrue(iA != NullNode);
 
             var A = _nodes + iA;
             if (A->IsLeaf || A->Height < 2)
@@ -503,8 +503,8 @@ namespace DotsNav.Core.Collections.BVH
 
             var iB = A->Child1;
             var iC = A->Child2;
-            Unity.Assertions.Assert.IsTrue(0 <= iB && iB < _nodeCapacity);
-            Unity.Assertions.Assert.IsTrue(0 <= iC && iC < _nodeCapacity);
+            Assert.IsTrue(0 <= iB && iB < _nodeCapacity);
+            Assert.IsTrue(0 <= iC && iC < _nodeCapacity);
 
             var B = _nodes + iB;
             var C = _nodes + iC;
@@ -518,8 +518,8 @@ namespace DotsNav.Core.Collections.BVH
                 var iG = C->Child2;
                 var F = _nodes + iF;
                 var G = _nodes + iG;
-                Unity.Assertions.Assert.IsTrue(0 <= iF && iF < _nodeCapacity);
-                Unity.Assertions.Assert.IsTrue(0 <= iG && iG < _nodeCapacity);
+                Assert.IsTrue(0 <= iF && iF < _nodeCapacity);
+                Assert.IsTrue(0 <= iG && iG < _nodeCapacity);
 
                 // Swap A and C
                 C->Child1 = iA;
@@ -535,7 +535,7 @@ namespace DotsNav.Core.Collections.BVH
                     }
                     else
                     {
-                        Unity.Assertions.Assert.IsTrue(_nodes[C->Parent].Child2 == iA);
+                        Assert.IsTrue(_nodes[C->Parent].Child2 == iA);
                         _nodes[C->Parent].Child2 = iC;
                     }
                 }
@@ -578,8 +578,8 @@ namespace DotsNav.Core.Collections.BVH
                 var iE = B->Child2;
                 var D = _nodes + iD;
                 var E = _nodes + iE;
-                Unity.Assertions.Assert.IsTrue(0 <= iD && iD < _nodeCapacity);
-                Unity.Assertions.Assert.IsTrue(0 <= iE && iE < _nodeCapacity);
+                Assert.IsTrue(0 <= iD && iD < _nodeCapacity);
+                Assert.IsTrue(0 <= iE && iE < _nodeCapacity);
 
                 // Swap A and B
                 B->Child1 = iA;
@@ -595,7 +595,7 @@ namespace DotsNav.Core.Collections.BVH
                     }
                     else
                     {
-                        Unity.Assertions.Assert.IsTrue(_nodes[B->Parent].Child2 == iA);
+                        Assert.IsTrue(_nodes[B->Parent].Child2 == iA);
                         _nodes[B->Parent].Child2 = iB;
                     }
                 }
@@ -663,7 +663,7 @@ namespace DotsNav.Core.Collections.BVH
         // Compute the height of a sub-tree.
         int ComputeHeight(int nodeId)
         {
-            Unity.Assertions.Assert.IsTrue(0 <= nodeId && nodeId < _nodeCapacity);
+            Assert.IsTrue(0 <= nodeId && nodeId < _nodeCapacity);
             var node = _nodes + nodeId;
 
             if (node->IsLeaf)
@@ -682,7 +682,7 @@ namespace DotsNav.Core.Collections.BVH
                 return;
 
             if (index == _root)
-                Unity.Assertions.Assert.IsTrue(_nodes[index].Parent == NullNode);
+                Assert.IsTrue(_nodes[index].Parent == NullNode);
 
             var node = _nodes + index;
 
@@ -691,17 +691,17 @@ namespace DotsNav.Core.Collections.BVH
 
             if (node->IsLeaf)
             {
-                Unity.Assertions.Assert.IsTrue(child1 == NullNode);
-                Unity.Assertions.Assert.IsTrue(child2 == NullNode);
-                Unity.Assertions.Assert.IsTrue(node->Height == 0);
+                Assert.IsTrue(child1 == NullNode);
+                Assert.IsTrue(child2 == NullNode);
+                Assert.IsTrue(node->Height == 0);
                 return;
             }
 
-            Unity.Assertions.Assert.IsTrue(0 <= child1 && child1 < _nodeCapacity);
-            Unity.Assertions.Assert.IsTrue(0 <= child2 && child2 < _nodeCapacity);
+            Assert.IsTrue(0 <= child1 && child1 < _nodeCapacity);
+            Assert.IsTrue(0 <= child2 && child2 < _nodeCapacity);
 
-            Unity.Assertions.Assert.IsTrue(_nodes[child1].Parent == index);
-            Unity.Assertions.Assert.IsTrue(_nodes[child2].Parent == index);
+            Assert.IsTrue(_nodes[child1].Parent == index);
+            Assert.IsTrue(_nodes[child2].Parent == index);
 
             ValidateStructure(child1);
             ValidateStructure(child2);
@@ -719,25 +719,25 @@ namespace DotsNav.Core.Collections.BVH
 
             if (node->IsLeaf)
             {
-                Unity.Assertions.Assert.IsTrue(child1 == NullNode);
-                Unity.Assertions.Assert.IsTrue(child2 == NullNode);
-                Unity.Assertions.Assert.IsTrue(node->Height == 0);
+                Assert.IsTrue(child1 == NullNode);
+                Assert.IsTrue(child2 == NullNode);
+                Assert.IsTrue(node->Height == 0);
                 return;
             }
 
-            Unity.Assertions.Assert.IsTrue(0 <= child1 && child1 < _nodeCapacity);
-            Unity.Assertions.Assert.IsTrue(0 <= child2 && child2 < _nodeCapacity);
+            Assert.IsTrue(0 <= child1 && child1 < _nodeCapacity);
+            Assert.IsTrue(0 <= child2 && child2 < _nodeCapacity);
 
             var height1 = _nodes[child1].Height;
             var height2 = _nodes[child2].Height;
             var height = 1 + math.max(height1, height2);
-            Unity.Assertions.Assert.IsTrue(node->Height == height);
+            Assert.IsTrue(node->Height == height);
 
             AABB aabb = default;
             aabb.Combine(_nodes[child1].AABB, _nodes[child2].AABB);
 
-            Unity.Assertions.Assert.IsTrue(math.all(aabb.LowerBound == node->AABB.LowerBound));
-            Unity.Assertions.Assert.IsTrue(math.all(aabb.UpperBound == node->AABB.UpperBound));
+            Assert.IsTrue(math.all(aabb.LowerBound == node->AABB.LowerBound));
+            Assert.IsTrue(math.all(aabb.UpperBound == node->AABB.UpperBound));
 
             ValidateMetrics(child1);
             ValidateMetrics(child2);
@@ -753,14 +753,14 @@ namespace DotsNav.Core.Collections.BVH
             var freeIndex = _freeList;
             while (freeIndex != NullNode)
             {
-                Unity.Assertions.Assert.IsTrue(0 <= freeIndex && freeIndex < _nodeCapacity);
+                Assert.IsTrue(0 <= freeIndex && freeIndex < _nodeCapacity);
                 freeIndex = _nodes[freeIndex].Next;
                 ++freeCount;
             }
 
-            Unity.Assertions.Assert.IsTrue(Height == ComputeHeight());
+            Assert.IsTrue(Height == ComputeHeight());
 
-            Unity.Assertions.Assert.IsTrue(_nodeCount + freeCount == _nodeCapacity);
+            Assert.IsTrue(_nodeCount + freeCount == _nodeCapacity);
         }
 
         internal int GetMaxBalance()
@@ -772,7 +772,7 @@ namespace DotsNav.Core.Collections.BVH
                 if (node->Height <= 1)
                     continue;
 
-                Unity.Assertions.Assert.IsTrue(node->IsLeaf == false);
+                Assert.IsTrue(node->IsLeaf == false);
 
                 var child1 = node->Child1;
                 var child2 = node->Child2;
