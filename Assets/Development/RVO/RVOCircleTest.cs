@@ -12,6 +12,7 @@ public class RVOCircleTest : MonoBehaviour
     public float SpawnRadius;
     public RVOAgent Prefab;
     BlobAssetStore _store;
+    int _i;
 
     void Start()
     {
@@ -21,14 +22,32 @@ public class RVOCircleTest : MonoBehaviour
         var entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(Prefab.gameObject, convSettings);
         var entityManager = world.EntityManager;
 
-        for (int i = 0; i < AgentAmount; i++)
+        SpawnTree(0);
+        SpawnTree(new float2(SpawnRadius * 1f, 0));
+
+        void SpawnTree(float2 origin)
         {
-            var entity = entityManager.Instantiate(entityPrefab);
-            var p = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
-            entityManager.SetComponentData(entity, new Translation {Value = p.ToXxY()});
-            entityManager.AddComponentData(entity, new TargetComponent {Value = -p});
+            var agentTree = entityManager.CreateEntity(typeof(AgentTreeComponent));
+
+            for (int i = 0; i < AgentAmount; i++)
+            {
+                var entity = entityManager.Instantiate(entityPrefab);
+                var p = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
+                entityManager.SetComponentData(entity, new Translation {Value = (origin + p).ToXxY()});
+                entityManager.AddComponentData(entity, new TargetComponent {Value = origin - p});
+                entityManager.AddSharedComponentData(entity, new AgentTreeSharedComponent(agentTree));
+            }
         }
     }
+
+    // void Update()
+    // {
+    //     if (++_i == 50)
+    //     {
+    //         var em = World.All[0].EntityManager;
+    //         em.DestroyEntity(em.CreateEntityQuery(typeof(AgentTreeSharedComponent)));
+    //     }
+    // }
 
     void OnDestroy()
     {

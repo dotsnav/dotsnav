@@ -1,4 +1,5 @@
-﻿using DotsNav.Core;
+﻿using System.Collections.Generic;
+using DotsNav.Core;
 using DotsNav.Core.Collections.BVH;
 using DotsNav.Core.Data;
 using DotsNav.Core.Systems;
@@ -13,9 +14,10 @@ namespace DotsNav.LocalAvoidance
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(AgentTreeSystem))]
-    class RVOSystem : SystemBase
+    unsafe class RVOSystem : SystemBase
     {
         AgentTreeSystem _treeSystem;
+        readonly List<AgentTreeSharedComponent> _agentTreeSharedComponents = new List<AgentTreeSharedComponent>();
 
         protected override void OnCreate()
         {
@@ -38,26 +40,34 @@ namespace DotsNav.LocalAvoidance
                 .ScheduleParallel();
 
             Dependency = JobHandle.CombineDependencies(Dependency, _treeSystem.OutputDependecy);
-            var tree = _treeSystem.Tree;
+            var agentTreeLookup = GetComponentDataFromEntity<AgentTreeComponent>();
             var velocityObstacleLookup = GetComponentDataFromEntity<VelocityObstacleComponent>(true);
+            _agentTreeSharedComponents.Clear();
+            EntityManager.GetAllUniqueSharedComponentData(_agentTreeSharedComponents);
 
-            Entities
-                .WithBurst()
-                .WithAll<RVOComponent>()
-                .WithReadOnly(tree)
-                .WithReadOnly(velocityObstacleLookup)
-                .ForEach((Translation translation, RadiusComponent radius, ref RVOComponent agent) =>
-                {
-                    var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
-                    var pos = translation.Value.xz;
-                    var ext = agent.NeighbourDist / 2;
-                    var aabb = new AABB {LowerBound = pos - ext, UpperBound = pos + ext};
-                    tree.Query(new VelocityObstacleCollector(pos, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
-                    var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
-                    var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
-                    agent.Velocity = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
-                })
-                .ScheduleParallel();
+            for (int i = 1; i < _agentTreeSharedComponents.Count; i++)
+            {
+                var treeEntity = _agentTreeSharedComponents[i];
+                Entities
+                    .WithBurst()
+                    .WithAll<RVOComponent>()
+                    .WithReadOnly(agentTreeLookup)
+                    .WithReadOnly(velocityObstacleLookup)
+                    .WithSharedComponentFilter(treeEntity)
+                    .ForEach((Translation translation, RadiusComponent radius, ref RVOComponent agent) =>
+                    {
+                        var tree = agentTreeLookup[treeEntity].Tree;
+                        var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
+                        var pos = translation.Value.xz;
+                        var ext = agent.NeighbourDist / 2;
+                        var aabb = new AABB {LowerBound = pos - ext, UpperBound = pos + ext};
+                        tree->Query(new VelocityObstacleCollector(pos, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
+                        var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
+                        var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
+                        agent.Velocity = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
+                    })
+                    .ScheduleParallel();
+            }
         }
 
         struct VelocityObstacleCollector : IQueryResultCollector<Entity>

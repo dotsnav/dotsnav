@@ -27,7 +27,6 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
 
         dstManager.AddComponentData(entity, new RadiusComponent(Radius));
         dstManager.AddComponent<DirectionComponent>(entity);
-        dstManager.AddComponent<AgentTreeComponent>(entity);
         dstManager.AddComponent<VelocityObstacleComponent>(entity);
     }
 }
