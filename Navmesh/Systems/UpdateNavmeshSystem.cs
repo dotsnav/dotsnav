@@ -1,3 +1,4 @@
+using DotsNav.Core.Systems;
 using DotsNav.Navmesh.Data;
 using Unity.Collections;
 using Unity.Entities;

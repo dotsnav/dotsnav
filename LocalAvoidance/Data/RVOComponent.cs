@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav.LocalAvoidance
+namespace DotsNav.LocalAvoidance.Data
 {
     public struct RVOComponent : IComponentData
     {
