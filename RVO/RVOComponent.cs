@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
 
-public struct Agent : IComponentData
+public struct RVOComponent : IComponentData
 {
     public float2 Position;
     public float2 PrefVelocity;

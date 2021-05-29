@@ -37,7 +37,7 @@ static class RVO
 {
     const float Epsilon = 0.00001f;
 
-    public static float2 CalculateNewVelocity(Agent agent, NativeList<VelocityObstacle> neighbours, NativeList<ObstacleDistance> obstacleNeighbours,
+    public static float2 CalculateNewVelocity(RVOComponent agent, NativeList<VelocityObstacle> neighbours, NativeList<ObstacleDistance> obstacleNeighbours,
                                               NativeList<Obstacle> allObstacles, float invTimeStep)
     {
         var orcaLines = new NativeArray<Line>(neighbours.Length, Allocator.Temp);

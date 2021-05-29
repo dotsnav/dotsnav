@@ -32,7 +32,7 @@ class AgentTreeSystem : SystemBase
         Entities
             .WithBurst()
             .WithNone<AgentTreeSystemStateComponent>()
-            .ForEach((Entity entity, in AgentTreeComponent data, in Translation translation, in Agent agent) =>
+            .ForEach((Entity entity, in AgentTreeComponent data, in Translation translation, in RVOComponent agent) =>
             {
                 var pos = translation.Value.xz;
                 var aabb = new AABB {LowerBound = pos - agent.Radius, UpperBound = pos + agent.Radius};
@@ -55,7 +55,7 @@ class AgentTreeSystem : SystemBase
 
         Entities
             .WithBurst()
-            .ForEach((ref AgentTreeSystemStateComponent state, in Translation translation, in Agent agent) =>
+            .ForEach((ref AgentTreeSystemStateComponent state, in Translation translation, in RVOComponent agent) =>
             {
                 var pos = translation.Value.xz;
                 var aabb = new AABB {LowerBound = pos - agent.Radius, UpperBound = pos + agent.Radius};
