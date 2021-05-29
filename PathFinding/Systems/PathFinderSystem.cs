@@ -1,3 +1,4 @@
+using DotsNav.Core;
 using DotsNav.Data;
 using DotsNav.PathFinding.Data;
 using DotsNav.Systems;
@@ -46,7 +47,7 @@ namespace DotsNav.PathFinding
             Entities
                 .WithBurst()
                 .WithReadOnly(destroyed)
-                .ForEach((Entity entity, int nativeThreadIndex, ref AgentComponent query, ref DynamicBuffer<TriangleElement> triangles) =>
+                .ForEach((Entity entity, int nativeThreadIndex, ref LCTPathFindingComponent query, ref DynamicBuffer<TriangleElement> triangles) =>
                 {
                     if (query.State == AgentState.PathFound)
                     {
@@ -76,7 +77,8 @@ namespace DotsNav.PathFinding
             Dependency = new FindPathJob
                 {
                     Agents = buffer.AsDeferredJobArray(),
-                    PathQueries = GetComponentDataFromEntity<AgentComponent>(),
+                    Queries = GetComponentDataFromEntity<LCTPathFindingComponent>(),
+                    Radii = GetComponentDataFromEntity<RadiusComponent>(),
                     PathSegments = GetBufferFromEntity<PathSegmentElement>(),
                     TriangleIds = GetBufferFromEntity<TriangleElement>(),
                     PathFinder = resources,
@@ -92,7 +94,9 @@ namespace DotsNav.PathFinding
             [ReadOnly]
             public NativeArray<Entity> Agents;
             [NativeDisableContainerSafetyRestriction]
-            public ComponentDataFromEntity<AgentComponent> PathQueries;
+            public ComponentDataFromEntity<LCTPathFindingComponent> Queries;
+            [NativeDisableContainerSafetyRestriction]
+            public ComponentDataFromEntity<RadiusComponent> Radii;
             [NativeDisableContainerSafetyRestriction]
             public BufferFromEntity<PathSegmentElement> PathSegments;
             [NativeDisableContainerSafetyRestriction]
@@ -113,17 +117,17 @@ namespace DotsNav.PathFinding
                 }
 
                 var agent = Agents[index];
-                var query = PathQueries[agent];
+                var query = Queries[agent];
                 var segments = PathSegments[agent];
                 segments.Clear();
                 var ids = TriangleIds[agent];
                 ids.Clear();
                 var instanceIndex = _threadId - 1;
                 var instance = PathFinder.Instances[instanceIndex];
-                query.State = instance.FindPath(query.From, query.To, query.Radius, segments, ids, Navmesh, out _);
+                query.State = instance.FindPath(query.From, query.To, Radii[agent], segments, ids, Navmesh, out _);
                 if (query.State == AgentState.PathFound)
                     ++query.Version;
-                PathQueries[agent] = query;
+                Queries[agent] = query;
             }
         }
 

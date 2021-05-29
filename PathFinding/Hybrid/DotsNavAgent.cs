@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DotsNav.Core;
 using DotsNav.Data;
 using DotsNav.Hybrid;
 using DotsNav.PathFinding.Data;
@@ -20,13 +21,9 @@ namespace DotsNav.PathFinding.Hybrid
                 agent.Entity = entity;
                 Assert.IsTrue(agent.Radius > 0, "Radius must be larger than 0");
 
-                DstEntityManager.AddComponentData(entity, new Data.AgentComponent
-                {
-                    Radius = agent.Radius,
-                    State = AgentState.Inactive
-                });
-
-                DstEntityManager.AddComponentData(entity, new AgentDirectionComponent());
+                DstEntityManager.AddComponentData(entity, new LCTPathFindingComponent {State = AgentState.Inactive});
+                DstEntityManager.AddComponentData(entity, new RadiusComponent {Value = agent.Radius});
+                DstEntityManager.AddComponentData(entity, new DirectionComponent());
                 DstEntityManager.AddBuffer<PathSegmentElement>(entity);
                 DstEntityManager.AddBuffer<TriangleElement>(entity);
                 DstEntityManager.AddComponentData(entity, new AgentDrawComponent {Draw = true});

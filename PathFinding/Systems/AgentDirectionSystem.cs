@@ -1,3 +1,4 @@
+using DotsNav.Core;
 using DotsNav.Data;
 using DotsNav.PathFinding;
 using DotsNav.PathFinding.Data;
@@ -15,7 +16,7 @@ namespace DotsNav.Systems
         {
             Entities
                 .WithBurst()
-                .ForEach((AgentComponent agent, Translation translation, DynamicBuffer<PathSegmentElement> path, ref AgentDirectionComponent data) =>
+                .ForEach((LCTPathFindingComponent agent, RadiusComponent radius, Translation translation, DynamicBuffer<PathSegmentElement> path, ref DirectionComponent data) =>
                 {
                     if (agent.State != AgentState.PathFound)
                         return;
@@ -45,7 +46,7 @@ namespace DotsNav.Systems
                             var fromAngle = Math.Angle(segment.To - corner);
                             var toAngle = Math.Angle(path[i + 1].From - corner);
                             dir = Angle.Clamp(Math.Angle(p - corner), fromAngle, toAngle);
-                            point = corner + Math.Rotate(agent.Radius, dir);
+                            point = corner + Math.Rotate(radius, dir);
                             var left = Math.CcwFast(segment.From, segment.To, corner);
                             dir += left ? -math.PI / 2 : math.PI / 2;
                         }
@@ -72,7 +73,7 @@ namespace DotsNav.Systems
                     float2 GetDirection(Angle angle)
                     {
                         var distToPath = math.distance(p, closest);
-                        var f = math.min(1, distToPath / (agent.Radius / 2));
+                        var f = math.min(1, distToPath / (radius / 2));
                         var angleToPath = Math.Angle(closest - p);
                         return Angle.Lerp(angle, angleToPath, f).ToVector();
                     }
