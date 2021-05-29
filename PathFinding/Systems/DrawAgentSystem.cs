@@ -16,7 +16,7 @@ namespace DotsNav.PathFinding
         {
             Entities
                 .WithBurst()
-                .ForEach((LCTPathFindingComponent agent, RadiusComponent radius, AgentDrawComponent debug, DynamicBuffer<PathSegmentElement> path) =>
+                .ForEach((PathQueryComponent agent, RadiusComponent radius, AgentDrawComponent debug, DynamicBuffer<PathSegmentElement> path) =>
                 {
                     if (!debug.Draw || path.Length == 0)
                         return;

@@ -47,18 +47,18 @@ namespace DotsNav.PathFinding
             Entities
                 .WithBurst()
                 .WithReadOnly(destroyed)
-                .ForEach((Entity entity, int nativeThreadIndex, ref LCTPathFindingComponent query, ref DynamicBuffer<TriangleElement> triangles) =>
+                .ForEach((Entity entity, int nativeThreadIndex, ref PathQueryComponent query, ref DynamicBuffer<TriangleElement> triangles) =>
                 {
-                    if (query.State == AgentState.PathFound)
+                    if (query.State == PathQueryState.PathFound)
                     {
                         var seq0 = destroyed[navmeshEntity].Reinterpret<int>();
                         var seq1 = triangles.Reinterpret<int>();
 
                         if (SortedSequencesContainIdenticalElement(seq0, seq1))
-                            query.State = AgentState.Invalidated;
+                            query.State = PathQueryState.Invalidated;
                     }
 
-                    if ((query.State & data.RecalculateFlags & ~AgentState.Inactive) != 0)
+                    if ((query.State & data.RecalculateFlags & ~PathQueryState.Inactive) != 0)
                         writer.Enqueue(entity);
 
                 })
@@ -77,7 +77,7 @@ namespace DotsNav.PathFinding
             Dependency = new FindPathJob
                 {
                     Agents = buffer.AsDeferredJobArray(),
-                    Queries = GetComponentDataFromEntity<LCTPathFindingComponent>(),
+                    Queries = GetComponentDataFromEntity<PathQueryComponent>(),
                     Radii = GetComponentDataFromEntity<RadiusComponent>(),
                     PathSegments = GetBufferFromEntity<PathSegmentElement>(),
                     TriangleIds = GetBufferFromEntity<TriangleElement>(),
@@ -94,7 +94,7 @@ namespace DotsNav.PathFinding
             [ReadOnly]
             public NativeArray<Entity> Agents;
             [NativeDisableContainerSafetyRestriction]
-            public ComponentDataFromEntity<LCTPathFindingComponent> Queries;
+            public ComponentDataFromEntity<PathQueryComponent> Queries;
             [NativeDisableContainerSafetyRestriction]
             public ComponentDataFromEntity<RadiusComponent> Radii;
             [NativeDisableContainerSafetyRestriction]
@@ -125,7 +125,7 @@ namespace DotsNav.PathFinding
                 var instanceIndex = _threadId - 1;
                 var instance = PathFinder.Instances[instanceIndex];
                 query.State = instance.FindPath(query.From, query.To, Radii[agent], segments, ids, Navmesh, out _);
-                if (query.State == AgentState.PathFound)
+                if (query.State == PathQueryState.PathFound)
                     ++query.Version;
                 Queries[agent] = query;
             }

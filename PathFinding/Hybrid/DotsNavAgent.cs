@@ -21,7 +21,7 @@ namespace DotsNav.PathFinding.Hybrid
                 agent.Entity = entity;
                 Assert.IsTrue(agent.Radius > 0, "Radius must be larger than 0");
 
-                DstEntityManager.AddComponentData(entity, new LCTPathFindingComponent {State = AgentState.Inactive});
+                DstEntityManager.AddComponentData(entity, new PathQueryComponent {State = PathQueryState.Inactive});
                 DstEntityManager.AddComponentData(entity, new RadiusComponent {Value = agent.Radius});
                 DstEntityManager.AddComponentData(entity, new DirectionComponent());
                 DstEntityManager.AddBuffer<PathSegmentElement>(entity);
@@ -54,7 +54,7 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// The state of the agent. Use FindPath and Deactivate to update.
         /// </summary>
-        public AgentState State { get; internal set; } = AgentState.Inactive;
+        public PathQueryState State { get; internal set; } = PathQueryState.Inactive;
 
         /// <summary>
         /// Increased each time a path is computed successfully. The path found can be identical to the previous path
@@ -92,7 +92,7 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// No more paths will be computed for this agent until FindPath is called
         /// </summary>
-        public void Deactivate() => State = AgentState.Inactive;
+        public void Deactivate() => State = PathQueryState.Inactive;
 
         /// <summary>
         /// Set goal and activate agent. Start is set to the agent's current position.
@@ -106,7 +106,7 @@ namespace DotsNav.PathFinding.Hybrid
         {
             Start = start;
             Goal = goal;
-            State = AgentState.Pending;
+            State = PathQueryState.Pending;
         }
 
         /// <summary>

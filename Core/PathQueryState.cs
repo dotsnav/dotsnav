@@ -3,10 +3,10 @@ using System;
 namespace DotsNav.PathFinding
 {
     /// <summary>
-    /// Indicates current agent state, set to Pending to trigger a path query
+    /// Indicates path query state, set to Pending to trigger a path query
     /// </summary>
     [Flags]
-    public enum AgentState
+    public enum PathQueryState
     {
         Inactive = 1,
         Pending = 2,
@@ -18,7 +18,7 @@ namespace DotsNav.PathFinding
     }
 
     /// <summary>
-    /// Indicates which agent states, in addition to Pending, should trigger a path query
+    /// Indicates which path query states, in addition to Pending, should trigger a path query
     /// </summary>
     [Flags]
     public enum RecalculateFlags
