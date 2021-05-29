@@ -14,10 +14,10 @@ namespace DotsNav.PathFinding.Data
         /// <summary>
         /// Use to indicate paths for agents in which states should be recomputed
         /// </summary>
-        public AgentState RecalculateFlags;
-        public const AgentState DefaultRecalculateFlags = ~(AgentState.Inactive | AgentState.PathFound);
+        public PathQueryState RecalculateFlags;
+        public const PathQueryState DefaultRecalculateFlags = ~(PathQueryState.Inactive | PathQueryState.PathFound);
 
-        public PathFinderComponent(AgentState recalculateFlags)
+        public PathFinderComponent(PathQueryState recalculateFlags)
         {
             MaxInstances = JobsUtility.JobWorkerMaximumCount + 2;
             RecalculateFlags = recalculateFlags;

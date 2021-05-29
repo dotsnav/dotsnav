@@ -28,7 +28,7 @@ namespace DotsNav.PathFinding.Hybrid
 
         bool _created;
 
-        internal AgentState GetRecalculateFlags() => (AgentState) (int) RecalculateFlags | AgentState.Pending;
+        internal PathQueryState GetRecalculateFlags() => (PathQueryState) (int) RecalculateFlags | PathQueryState.Pending;
 
         void Awake()
         {

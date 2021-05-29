@@ -22,7 +22,7 @@ namespace DotsNav.PathFinding
 
             Entities
                 .WithoutBurst()
-                .ForEach((DotsNavAgent hybrid, ref LCTPathFindingComponent agent, ref RadiusComponent radius, ref Translation translation, ref AgentDrawComponent drawData) =>
+                .ForEach((DotsNavAgent hybrid, ref PathQueryComponent agent, ref RadiusComponent radius, ref Translation translation, ref AgentDrawComponent drawData) =>
                 {
                     agent.State = hybrid.State;
                     agent.From = hybrid.Start;

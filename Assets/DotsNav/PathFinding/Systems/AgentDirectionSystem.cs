@@ -16,9 +16,9 @@ namespace DotsNav.Systems
         {
             Entities
                 .WithBurst()
-                .ForEach((LCTPathFindingComponent agent, RadiusComponent radius, Translation translation, DynamicBuffer<PathSegmentElement> path, ref DirectionComponent data) =>
+                .ForEach((PathQueryComponent agent, RadiusComponent radius, Translation translation, DynamicBuffer<PathSegmentElement> path, ref DirectionComponent data) =>
                 {
-                    if (agent.State != AgentState.PathFound)
+                    if (agent.State != PathQueryState.PathFound)
                         return;
 
                     var p = translation.Value.xz;

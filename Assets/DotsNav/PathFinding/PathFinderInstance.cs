@@ -30,11 +30,11 @@ namespace DotsNav.PathFinding
             _path.Dispose();
         }
 
-        public AgentState FindPath(float2 from, float2 to, float radius, DynamicBuffer<PathSegmentElement> segments, DynamicBuffer<TriangleElement> triangleIds, Navmesh navmesh, out int cost)
+        public PathQueryState FindPath(float2 from, float2 to, float radius, DynamicBuffer<PathSegmentElement> segments, DynamicBuffer<TriangleElement> triangleIds, Navmesh navmesh, out int cost)
         {
             triangleIds.Clear();
             var result = _astar.Search(from, to, navmesh, _channel, radius, triangleIds, out cost);
-            if (result == AgentState.PathFound)
+            if (result == PathQueryState.PathFound)
             {
                 _funnel.GetPath(_channel, from, to, radius, _path);
                 triangleIds.Reinterpret<int>().AsNativeArray().Sort();
