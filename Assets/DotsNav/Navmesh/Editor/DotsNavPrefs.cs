@@ -4,89 +4,92 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-class DotsNavPrefs
+namespace DotsNav.Navmesh.Editor
 {
-    const string PrefName = "DotsNavPreferences";
-    public static Color GizmoColor;
-    public static Color EditColor;
-    public static Color FadeColor;
-    static bool _loaded;
-    static StringBuilder _sb;
-
-    [PreferenceItem("DotsNav")]
-    static void DotsNavPreferences()
+    class DotsNavPrefs
     {
-        Init();
+        const string PrefName = "DotsNavPreferences";
+        public static Color GizmoColor;
+        public static Color EditColor;
+        public static Color FadeColor;
+        static bool _loaded;
+        static StringBuilder _sb;
 
-        EditorGUILayout.LabelField("Colors");
-        GizmoColor = EditorGUILayout.ColorField("Gizmo", GizmoColor);
-        EditColor = EditorGUILayout.ColorField("Edit", EditColor);
-        FadeColor = EditorGUILayout.ColorField("Fade", FadeColor);
-
-        if (GUI.changed)
-            Store();
-    }
-
-    static DotsNavPrefs()
-    {
-        Init();
-    }
-
-    static void Init()
-    {
-        if (!_loaded)
+        [PreferenceItem("DotsNav")]
+        static void DotsNavPreferences()
         {
-            _loaded = true;
-            _sb = new StringBuilder();
+            Init();
 
-            if (EditorPrefs.HasKey(PrefName))
+            EditorGUILayout.LabelField("Colors");
+            GizmoColor = EditorGUILayout.ColorField("Gizmo", GizmoColor);
+            EditColor = EditorGUILayout.ColorField("Edit", EditColor);
+            FadeColor = EditorGUILayout.ColorField("Fade", FadeColor);
+
+            if (GUI.changed)
+                Store();
+        }
+
+        static DotsNavPrefs()
+        {
+            Init();
+        }
+
+        static void Init()
+        {
+            if (!_loaded)
             {
-                try
+                _loaded = true;
+                _sb = new StringBuilder();
+
+                if (EditorPrefs.HasKey(PrefName))
                 {
-                    var data = EditorPrefs.GetString(PrefName).Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
-                    GizmoColor = GetColor(data[0]);
-                    EditColor = GetColor(data[1]);
-                    FadeColor = GetColor(data[2]);
+                    try
+                    {
+                        var data = EditorPrefs.GetString(PrefName).Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                        GizmoColor = GetColor(data[0]);
+                        EditColor = GetColor(data[1]);
+                        FadeColor = GetColor(data[2]);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Failed to load dotsnav preferences: {e}");
+                        SetDefaults();
+                        Store();
+                    }
                 }
-                catch (Exception e)
+                else
                 {
-                    Console.WriteLine($"Failed to load dotsnav preferences: {e}");
                     SetDefaults();
-                    Store();
                 }
-            }
-            else
-            {
-                SetDefaults();
             }
         }
-    }
 
-    static void SetDefaults()
-    {
-        GizmoColor = Color.red;
-        EditColor = Color.red;
-        FadeColor = Color.white;
-    }
+        static void SetDefaults()
+        {
+            GizmoColor = Color.red;
+            EditColor = Color.red;
+            FadeColor = Color.white;
+        }
 
-    static void Store()
-    {
-        _sb.Clear();
-        Append(GizmoColor, _sb);
-        Append(EditColor, _sb);
-        Append(FadeColor, _sb);
-        EditorPrefs.SetString(PrefName, _sb.ToString());
-    }
+        static void Store()
+        {
+            _sb.Clear();
+            Append(GizmoColor, _sb);
+            Append(EditColor, _sb);
+            Append(FadeColor, _sb);
+            EditorPrefs.SetString(PrefName, _sb.ToString());
+        }
 
-    static void Append(Color color, StringBuilder sb)
-    {
-        sb.Append($"{Convert.ToString(color.r)},{Convert.ToString(color.g)},{Convert.ToString(color.b)},{Convert.ToString(color.a)};");
-    }
+        static void Append(Color color, StringBuilder sb)
+        {
+            sb.Append($"{Convert.ToString(color.r)},{Convert.ToString(color.g)},{Convert.ToString(color.b)},{Convert.ToString(color.a)};");
+        }
 
-    static Color GetColor(string s)
-    {
-        var d = s.Split(',');
-        return new Color(Convert.ToSingle(d[0]), Convert.ToSingle(d[1]), Convert.ToSingle(d[2]), Convert.ToSingle(d[3]));
+        static Color GetColor(string s)
+        {
+            var d = s.Split(',');
+            return new Color(Convert.ToSingle(d[0]), Convert.ToSingle(d[1]), Convert.ToSingle(d[2]), Convert.ToSingle(d[3]));
+        }
     }
 }
 #endif

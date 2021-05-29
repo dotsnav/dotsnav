@@ -1,6 +1,7 @@
 using DotsNav;
-using DotsNav.Data;
-using DotsNav.Hybrid;
+using DotsNav.Navmesh;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Hybrid;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;

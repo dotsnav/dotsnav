@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using DotsNav;
-using DotsNav.Hybrid;
+using DotsNav.Navmesh;
+using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Mathematics;
 using UnityEngine;

@@ -1,10 +1,9 @@
 using System;
 using System.Diagnostics;
-using Unity.Burst;
 using Unity.Collections;
 using Debug = UnityEngine.Debug;
 
-namespace DotsNav.Assertions
+namespace DotsNav.Core
 {
     static class Assert
     {

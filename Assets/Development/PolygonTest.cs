@@ -1,14 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using DotsNav;
-using DotsNav.Data;
-using DotsNav.Hybrid;
+using DotsNav.Core;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Hybrid;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using Navmesh = DotsNav.Navmesh;
+using Navmesh = DotsNav.Navmesh.Navmesh.Navmesh;
 using Random = Unity.Mathematics.Random;
 
 unsafe class PolygonTest : MonoBehaviour
@@ -23,7 +25,7 @@ unsafe class PolygonTest : MonoBehaviour
     public bool Remove;
     public bool BurstRemove = true;
     public bool BurstSafetyChecks = true;
-    public DotsNav.Hybrid.DotsNavNavmesh Navmesh;
+    public DotsNavNavmesh Navmesh;
     int _i;
     List<Entity> _ids;
     public bool Track;

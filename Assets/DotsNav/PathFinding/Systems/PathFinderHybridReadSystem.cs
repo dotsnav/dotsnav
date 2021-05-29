@@ -1,11 +1,11 @@
-using DotsNav.Core;
+using DotsNav.Core.Data;
+using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
 using DotsNav.PathFinding.Hybrid;
-using DotsNav.Systems;
 using Unity.Entities;
 using Unity.Transforms;
 
-namespace DotsNav.PathFinding
+namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderFirst = true)]
     class PathFinderHybridReadSystem : SystemBase

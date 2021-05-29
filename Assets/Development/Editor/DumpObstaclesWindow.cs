@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
-using DotsNav.Hybrid;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Entities;
 using Unity.Mathematics;

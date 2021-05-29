@@ -1,5 +1,5 @@
 ﻿using DotsNav;
-using DotsNav.Assertions;
+using DotsNav.Core;
 using Unity.Mathematics;
 using UnityEngine;
 

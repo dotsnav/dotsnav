@@ -1,10 +1,9 @@
 using System;
 using System.Diagnostics;
-using DotsNav.Assertions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsNav.Collections
+namespace DotsNav.Core.Collections
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(PriorityQueueDebugView<>))]

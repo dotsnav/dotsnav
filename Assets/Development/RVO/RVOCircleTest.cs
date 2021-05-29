@@ -1,5 +1,7 @@
-using DotsNav.Data;
-using DotsNav.Systems;
+using DotsNav.Core.Data;
+using DotsNav.Core.Extensions;
+using DotsNav.LocalAvoidance;
+using DotsNav.Navmesh.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;

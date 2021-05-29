@@ -1,6 +1,8 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
 using DotsNav;
+using DotsNav.Core;
+using DotsNav.Navmesh.Hybrid;
 
 [ExecuteInEditMode]
 public class ProjectTest : MonoBehaviour

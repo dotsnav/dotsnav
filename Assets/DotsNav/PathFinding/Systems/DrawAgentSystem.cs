@@ -1,13 +1,16 @@
 using DotsNav.Core;
-using DotsNav.Drawing;
+using DotsNav.Core.Data;
+using DotsNav.Core.Drawing;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh;
+using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
-using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 
-namespace DotsNav.PathFinding
+namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup))]
     class DrawAgentSystem : SystemBase

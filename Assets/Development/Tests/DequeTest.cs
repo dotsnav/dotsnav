@@ -1,4 +1,4 @@
-using DotsNav.Collections;
+using DotsNav.Core.Collections;
 using Unity.Collections;
 using UnityEngine;
 

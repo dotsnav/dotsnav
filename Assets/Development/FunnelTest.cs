@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using System.Text;
 using DotsNav;
-using DotsNav.Collections;
+using DotsNav.Core.Collections;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -57,7 +59,7 @@ public class FunnelTest : MonoBehaviour
         }
 
         var end = End.position.xz();
-        var ll = new DotsNav.Collections.List<Gate>(64, Allocator.Persistent);
+        var ll = new List<Gate>(64, Allocator.Persistent);
         foreach (var portal in l) 
             ll.Add(portal);
 

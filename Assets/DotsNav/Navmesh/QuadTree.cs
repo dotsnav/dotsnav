@@ -1,11 +1,10 @@
-using DotsNav.Collections;
-using DotsNav.Assertions;
+using DotsNav.Core;
+using DotsNav.Core.Collections;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
-using UnityEngine;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     readonly unsafe struct QuadTree
     {

@@ -3,7 +3,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Runtime.Serialization;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsNav
+namespace DotsNav.Core
 {
     [Serializable]
     unsafe struct IntPtr : ISerializable, IEquatable<IntPtr>

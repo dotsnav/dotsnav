@@ -1,6 +1,6 @@
 using System;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     class InfiniteLoopException : Exception
     {

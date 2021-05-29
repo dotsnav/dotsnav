@@ -1,9 +1,9 @@
 using System;
-using DotsNav.Assertions;
+using DotsNav.Core;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
-using Math = DotsNav.Math;
+using Math = DotsNav.Core.Math;
 
 // todo recycle lists when empty
 public readonly unsafe struct Grid<T> where T : struct, Grid<T>.IElement<T>

@@ -1,3 +1,4 @@
+using DotsNav.Navmesh.Hybrid;
 using Unity.Assertions;
 using Unity.Mathematics;
 using UnityEngine;

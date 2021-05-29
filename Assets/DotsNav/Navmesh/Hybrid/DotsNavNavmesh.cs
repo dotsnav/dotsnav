@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using DotsNav.Assertions;
-using DotsNav.Data;
-using DotsNav.Systems;
+using DotsNav.Core;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Systems;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
@@ -10,7 +11,7 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace DotsNav.Hybrid
+namespace DotsNav.Navmesh.Hybrid
 {
     class NavmeshConversionSystem : GameObjectConversionSystem
     {
@@ -248,7 +249,7 @@ namespace DotsNav.Hybrid
         /// Returns the native navmesh which exposes the triangulation. This structure is invalidated each update and
         /// the latest version should be obtained each cycle
         /// </summary>
-        public Navmesh GetNativeNavmesh() => World.All[0].EntityManager.GetComponentData<Navmesh>(Entity);
+        public Navmesh.Navmesh GetNativeNavmesh() => World.All[0].EntityManager.GetComponentData<Navmesh.Navmesh>(Entity);
 
         void OnDrawGizmos()
         {

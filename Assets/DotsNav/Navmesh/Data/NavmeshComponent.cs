@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav.Data
+namespace DotsNav.Navmesh.Data
 {
     /// <summary>
     /// Create to trigger creation of a navmesh. Destroy to trigger destruction of a navmesh.

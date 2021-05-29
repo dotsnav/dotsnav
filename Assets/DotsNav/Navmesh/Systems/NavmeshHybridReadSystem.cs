@@ -1,7 +1,7 @@
-using DotsNav.Data;
+using DotsNav.Navmesh.Data;
 using Unity.Entities;
 
-namespace DotsNav.Systems
+namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderFirst = true)]
     class NavmeshHybridReadSystem : SystemBase

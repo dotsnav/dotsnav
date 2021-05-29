@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using DotsNav;
-using RobustGeometricPredicates;
+using DotsNav.Core.Predicates;
+using DotsNav.Navmesh.Hybrid;
 using Unity.Mathematics;
 using UnityEngine;
-using Math = DotsNav.Math;
+using Math = DotsNav.Core.Math;
 
 [ExecuteInEditMode]
 public class SameTriangle : MonoBehaviour

@@ -1,5 +1,6 @@
 using DotsNav.Core;
-using DotsNav.Data;
+using DotsNav.Core.Data;
+using DotsNav.LocalAvoidance;
 using Unity.Entities;
 using UnityEngine;
 

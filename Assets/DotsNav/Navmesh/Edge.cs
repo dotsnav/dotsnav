@@ -1,7 +1,7 @@
-using DotsNav.Assertions;
+using DotsNav.Core.Extensions;
 using Unity.Entities;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// A directed edge in the triangulation. Traversal operators assume counter clockwise rotation,
@@ -54,7 +54,7 @@ namespace DotsNav
             get
             {
                 if (_clearanceLeft == -1)
-                    _clearanceLeft = Navmesh.GetLocalClearance(OPrev->Dest->Point, Org->Point, Dest->Point, DNext);
+                    _clearanceLeft = Navmesh.Navmesh.GetLocalClearance(OPrev->Dest->Point, Org->Point, Dest->Point, DNext);
                 return _clearanceLeft;
             }
             internal set => _clearanceLeft = value;
@@ -68,7 +68,7 @@ namespace DotsNav
             get
             {
                 if (_clearanceRight == -1)
-                    _clearanceRight = Navmesh.GetLocalClearance(ONext->Dest->Point, Org->Point, Dest->Point, DPrev->Sym);
+                    _clearanceRight = Navmesh.Navmesh.GetLocalClearance(ONext->Dest->Point, Org->Point, Dest->Point, DPrev->Sym);
                 return _clearanceRight;
             }
             internal set => _clearanceRight = value;

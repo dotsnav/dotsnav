@@ -1,11 +1,14 @@
 using System.Linq;
-using DotsNav.Data;
+using DotsNav.Core;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Editor;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.Hybrid
+namespace DotsNav.Navmesh.Hybrid
 {
     [UpdateAfter(typeof(NavmeshConversionSystem))]
     class ObstacleConversionSystem : GameObjectConversionSystem

@@ -1,12 +1,14 @@
 using System;
 using DotsNav;
-using DotsNav.Collections;
-using DotsNav.Assertions;
+using DotsNav.Core;
+using DotsNav.Core.Collections;
+using DotsNav.Navmesh;
+using DotsNav.Navmesh.Navmesh;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using IntPtr = DotsNav.IntPtr;
-using Math = DotsNav.Math;
+using IntPtr = DotsNav.Core.IntPtr;
+using Math = DotsNav.Core.Math;
 
 unsafe struct LctValidator
 {

@@ -1,7 +1,7 @@
-using DotsNav.Data;
+using DotsNav.Navmesh.Data;
 using Unity.Entities;
 
-namespace DotsNav.Systems
+namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [AlwaysUpdateSystem]
@@ -13,10 +13,10 @@ namespace DotsNav.Systems
             var buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities
                 .WithBurst()
-                .WithNone<Navmesh>()
+                .WithNone<Navmesh.Navmesh>()
                 .ForEach((Entity entity, int entityInQueryIndex, in NavmeshComponent data) =>
                 {
-                    var resources = new Navmesh();
+                    var resources = new Navmesh.Navmesh();
                     resources.Allocate(data);
                     buffer.AddComponent(entityInQueryIndex, entity, resources);
                 })
@@ -26,10 +26,10 @@ namespace DotsNav.Systems
             Entities
                 .WithBurst()
                 .WithNone<NavmeshComponent>()
-                .ForEach((Entity entity, int entityInQueryIndex, Navmesh resources) =>
+                .ForEach((Entity entity, int entityInQueryIndex, Navmesh.Navmesh resources) =>
                 {
                     resources.Dispose();
-                    buffer.RemoveComponent<Navmesh>(entityInQueryIndex, entity);
+                    buffer.RemoveComponent<Navmesh.Navmesh>(entityInQueryIndex, entity);
                 })
                 .Schedule();
             ecbSource.AddJobHandleForProducer(Dependency);
@@ -39,7 +39,7 @@ namespace DotsNav.Systems
         {
             Entities
                 .WithBurst()
-                .ForEach((Navmesh resources)
+                .ForEach((Navmesh.Navmesh resources)
                     => resources.Dispose())
                 .Run();
         }

@@ -1,7 +1,9 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
 using DotsNav;
-using DotsNav.Assertions;
+using DotsNav.Core;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh.Hybrid;
 
 [ExecuteInEditMode]
 public class ClampedIntersection : MonoBehaviour

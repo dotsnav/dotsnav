@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Core
 {
     struct Quad
     {

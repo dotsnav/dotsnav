@@ -1,12 +1,12 @@
-using DotsNav.Collections;
-using DotsNav.Data;
-using DotsNav.Assertions;
+using DotsNav.Core;
+using DotsNav.Core.Collections;
+using DotsNav.Navmesh.Data;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh.Navmesh
 {
     /// <summary>
     /// Provides access to edges and vertices in the triangulation. This component is created and destroyed automatically, see NavmeshData

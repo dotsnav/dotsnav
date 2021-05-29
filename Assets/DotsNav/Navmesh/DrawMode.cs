@@ -1,4 +1,4 @@
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// Used to indicate whether unconstrained and or constrained edges should be drawn

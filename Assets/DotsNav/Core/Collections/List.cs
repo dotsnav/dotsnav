@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using DotsNav.Assertions;
+using DotsNav.Core.Extensions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsNav.Collections
+namespace DotsNav.Core.Collections
 {
     [DebuggerDisplay("Length = {Length}")]
     [DebuggerTypeProxy(typeof(ListHandleDebugView<>))]

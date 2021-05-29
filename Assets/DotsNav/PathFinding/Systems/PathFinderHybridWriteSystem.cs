@@ -1,9 +1,9 @@
-using DotsNav.Data;
+using DotsNav.Core.Data;
+using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
-using DotsNav.Systems;
 using Unity.Entities;
 
-namespace DotsNav.PathFinding
+namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
     class PathFinderHybridWriteSystem : SystemBase

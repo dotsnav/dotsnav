@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsNav.Collections
+namespace DotsNav.Core.Collections
 {
     struct HashSetControl
     {
