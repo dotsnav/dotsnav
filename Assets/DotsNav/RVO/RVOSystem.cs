@@ -28,9 +28,8 @@ class RVOSystem : SystemBase
             .WithBurst()
             .ForEach((Translation translation, DirectionComponent agentDirectionComponent, RadiusComponent radius, ref RVOComponent agent, ref VelocityObstacleComponent obstacle) =>
             {
-                agent.Position = translation.Value.xz;
                 agent.PrefVelocity = agentDirectionComponent.Value * agent.PrefSpeed;
-                obstacle.Position = agent.Position;
+                obstacle.Position = translation.Value.xz;
                 obstacle.Velocity = agent.Velocity;
                 obstacle.Radius = radius;
             })
@@ -45,15 +44,16 @@ class RVOSystem : SystemBase
             .WithAll<RVOComponent>()
             .WithReadOnly(tree)
             .WithReadOnly(velocityObstacleLookup)
-            .ForEach((RadiusComponent radius, ref RVOComponent agent) =>
+            .ForEach((Translation translation, RadiusComponent radius, ref RVOComponent agent) =>
             {
                 var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
+                var pos = translation.Value.xz;
                 var ext = agent.NeighbourDist / 2;
-                var aabb = new AABB {LowerBound = agent.Position - ext, UpperBound = agent.Position + ext};
-                tree.Query(new VelocityObstacleCollector(agent.Position, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
+                var aabb = new AABB {LowerBound = pos - ext, UpperBound = pos + ext};
+                tree.Query(new VelocityObstacleCollector(pos, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
                 var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                 var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
-                agent.Velocity = RVO.CalculateNewVelocity(agent, radius, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
+                agent.Velocity = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
             })
             .ScheduleParallel();
     }
