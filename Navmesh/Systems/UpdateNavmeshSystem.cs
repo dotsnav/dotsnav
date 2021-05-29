@@ -1,11 +1,11 @@
-using DotsNav.Data;
+using DotsNav.Navmesh.Data;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Profiling;
 using Unity.Transforms;
 
-namespace DotsNav.Systems
+namespace DotsNav.Navmesh.Systems
 {
     /// <summary>
     /// Queued insertion and removal of obstacles are processed by this system
@@ -139,7 +139,7 @@ namespace DotsNav.Systems
                     (
                         int entityInQueryIndex,
                         DynamicBuffer<DestroyedTriangleElement> destroyed,
-                        ref Navmesh navmesh
+                        ref Navmesh.Navmesh navmesh
                     ) =>
                     {
                         destroyed.Clear();

@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using DotsNav.Assertions;
+using DotsNav.Core;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     public unsafe struct ReadOnly<T> : IEnumerable<T> where T : unmanaged
     {

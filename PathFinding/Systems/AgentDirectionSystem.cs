@@ -1,12 +1,12 @@
 using DotsNav.Core;
-using DotsNav.Data;
-using DotsNav.PathFinding;
+using DotsNav.Core.Data;
+using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace DotsNav.Systems
+namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(PathFinderSystem))]

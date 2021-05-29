@@ -1,4 +1,4 @@
-﻿namespace DotsNav.Collections
+﻿namespace DotsNav.Core.Collections.BVH
 {
     public interface IRayCastResultCollector<in T>
     {

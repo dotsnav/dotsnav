@@ -1,4 +1,5 @@
 using System;
+using DotsNav.Navmesh;
 using Unity.Mathematics;
 
 namespace DotsNav.PathFinding

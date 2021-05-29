@@ -1,7 +1,7 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsNav
+namespace DotsNav.Core
 {
     static unsafe class Mem
     {

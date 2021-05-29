@@ -58,7 +58,7 @@
 
 using Unity.Mathematics;
 
-namespace RobustGeometricPredicates
+namespace DotsNav.Core.Predicates
 {
     using EA = ExactArithmetic;
 
@@ -68,7 +68,7 @@ namespace RobustGeometricPredicates
     /// an ~Exact version which completed the full calculation in exact arithmetic, and the preferred version which
     /// implements the adaptive routines returning the correct sign and an approximate value.
     /// </summary>
-    public static unsafe class GeometricPredicates
+    static unsafe class GeometricPredicates
     {
         #region Error bounds
         // epsilon is equal to Math.Pow(2.0, -53) and is the largest power of

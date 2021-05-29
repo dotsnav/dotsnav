@@ -1,5 +1,6 @@
 using Unity.Mathematics;
 using System;
+using DotsNav.Navmesh;
 using Unity.Collections;
 
 namespace DotsNav.CollisionDetection
@@ -28,7 +29,7 @@ namespace DotsNav.CollisionDetection
         /// </summary>
         /// <param name="discCast">Cast data</param>
         /// <param name="allocator">Allocator used to create internal buffers</param>
-        public static void CastDisc<T>(this Navmesh navmesh, T discCast, Allocator allocator) where T : IDiscCast
+        public static void CastDisc<T>(this Navmesh.Navmesh.Navmesh navmesh, T discCast, Allocator allocator) where T : IDiscCast
         {
             var open = new NativeList<IntPtr>(allocator);
             var closed = new NativeHashSet<int>(32, allocator);
@@ -43,7 +44,7 @@ namespace DotsNav.CollisionDetection
         /// <param name="discCast">Cast data</param>
         /// <param name="open">NativeQueue for internal use, is cleared before use</param>
         /// <param name="closed">NativeHashSet for internal use, is cleared before use</param>
-        public static void CastDisc<T>(this Navmesh navmesh, T discCast, NativeList<IntPtr> open, NativeHashSet<int> closed) where T : IDiscCast
+        public static void CastDisc<T>(this Navmesh.Navmesh.Navmesh navmesh, T discCast, NativeList<IntPtr> open, NativeHashSet<int> closed) where T : IDiscCast
         {
             var o = discCast.Origin;
             var r = discCast.Radius;

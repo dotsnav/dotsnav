@@ -1,10 +1,10 @@
-using DotsNav.Collections;
-using DotsNav.Assertions;
+using DotsNav.Core;
+using DotsNav.Core.Collections;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     readonly struct EdgeSearch
     {
@@ -46,7 +46,7 @@ namespace DotsNav
                         if (!step.Edge->IsConstrainedBy(constraintId))
                         {
                             step.Edge->AddConstraint(constraintId);
-                            Navmesh.ResetClearance(step.Edge);
+                            Navmesh.Navmesh.ResetClearance(step.Edge);
                         }
 
                         step = steps[step.Previous];

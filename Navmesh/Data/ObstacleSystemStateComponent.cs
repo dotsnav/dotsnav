@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Data
+namespace DotsNav.Navmesh.Data
 {
     struct ObstacleSystemStateComponent : ISystemStateComponentData
     {

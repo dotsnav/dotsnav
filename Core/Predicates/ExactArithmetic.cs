@@ -56,12 +56,12 @@
 //-------------------------------------------------------------------------
 #endregion
 
-namespace RobustGeometricPredicates
+namespace DotsNav.Core.Predicates
 {
     /// <summary>
     /// Implements the exact floating-point described by Shewchuck, and implemented in predicates.c
     /// </summary>
-    public static unsafe class ExactArithmetic
+    static unsafe class ExactArithmetic
     {
         #region Basic arithmetic - Sum, Diff and Product
         // Only valid if |a| >= |b|

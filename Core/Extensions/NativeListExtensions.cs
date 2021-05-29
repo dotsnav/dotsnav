@@ -1,60 +1,61 @@
 using System;
-using System.Linq;
-using DotsNav.Collections;
-using DotsNav.Assertions;
+using DotsNav.Core.Collections;
 using Unity.Collections;
 
-static class NativeListExtensions
+namespace DotsNav.Core.Extensions
 {
-    public static void Reverse<T>(this List<T> l) where T : unmanaged
+    static class NativeListExtensions
     {
-        var i0 = 0;
-        var i1 = l.Length - 1;
-        while (i0 < i1)
+        public static void Reverse<T>(this List<T> l) where T : unmanaged
         {
-            var e = l[i0];
-            l[i0] = l[i1];
-            l[i1] = e;
-            ++i0;
-            --i1;
+            var i0 = 0;
+            var i1 = l.Length - 1;
+            while (i0 < i1)
+            {
+                var e = l[i0];
+                l[i0] = l[i1];
+                l[i1] = e;
+                ++i0;
+                --i1;
+            }
         }
-    }
 
-    public static bool Contains<T>(this List<T> list, T value) where T : struct, IEquatable<T>
-    {
-        for (int i = 0; i < list.Length; i++)
-            if (list[i].Equals(value))
-                return true;
-        return false;
-    }
-
-    public static T Last<T>(this List<T> l) where T : unmanaged => l[l.Length - 1];
-
-    public static void Insert<T>(this List<T> list, int index, T t) where T : unmanaged
-    {
-        Assert.IsTrue(index <= list.Length);
-        if (index == list.Length)
-            list.Add(t);
-        else
+        public static bool Contains<T>(this List<T> list, T value) where T : struct, IEquatable<T>
         {
-            list.Add(list.Last());
-            for (int i = list.Length - 2; i > index; i--)
-                list[i] = list[i - 1];
-            list[index] = t;
+            for (int i = 0; i < list.Length; i++)
+                if (list[i].Equals(value))
+                    return true;
+            return false;
         }
-    }
 
-    public static void Insert<T>(this NativeList<T> list, int index, T t) where T : unmanaged
-    {
-        Assert.IsTrue(index <= list.Length);
-        if (index == list.Length)
-            list.Add(t);
-        else
+        public static T Last<T>(this List<T> l) where T : unmanaged => l[l.Length - 1];
+
+        public static void Insert<T>(this List<T> list, int index, T t) where T : unmanaged
         {
-            list.Add(list[list.Length - 1]);
-            for (int i = list.Length - 2; i > index; i--)
-                list[i] = list[i - 1];
-            list[index] = t;
+            Assert.IsTrue(index <= list.Length);
+            if (index == list.Length)
+                list.Add(t);
+            else
+            {
+                list.Add(list.Last());
+                for (int i = list.Length - 2; i > index; i--)
+                    list[i] = list[i - 1];
+                list[index] = t;
+            }
+        }
+
+        public static void Insert<T>(this NativeList<T> list, int index, T t) where T : unmanaged
+        {
+            Assert.IsTrue(index <= list.Length);
+            if (index == list.Length)
+                list.Add(t);
+            else
+            {
+                list.Add(list[list.Length - 1]);
+                for (int i = list.Length - 2; i > index; i--)
+                    list[i] = list[i - 1];
+                list[index] = t;
+            }
         }
     }
 }

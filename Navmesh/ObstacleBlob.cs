@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// Used for bulk obstacle insertion

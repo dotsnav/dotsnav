@@ -1,8 +1,7 @@
-using DotsNav.Data;
-using DotsNav.Drawing;
+using DotsNav.Navmesh.Data;
 using Unity.Entities;
 
-namespace DotsNav.Systems
+namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup), OrderFirst = true)]
     class ClearSystem : SystemBase

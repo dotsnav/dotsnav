@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Core
+namespace DotsNav.Core.Data
 {
     public struct RadiusComponent : IComponentData
     {

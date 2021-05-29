@@ -1,12 +1,13 @@
 #if UNITY_EDITOR
+using DotsNav.PathFinding.Hybrid;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.PathFinding.Hybrid
+namespace DotsNav.PathFinding.Editor
 {
     [CustomEditor(typeof(DotsNavAgent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
-    class AgentEditor : Editor
+    class AgentEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

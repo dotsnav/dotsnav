@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Core
 {
     [DebuggerDisplay("{_value} ({_value * 57.295779513f})")]
     readonly struct Angle : IFormattable

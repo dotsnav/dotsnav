@@ -3,7 +3,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace DotsNav.Drawing
+namespace DotsNav.Core.Drawing
 {
     class Managed : IDisposable
     {

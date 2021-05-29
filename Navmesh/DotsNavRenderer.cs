@@ -1,10 +1,10 @@
 using System;
-using DotsNav.Assertions;
-using DotsNav.Drawing;
+using DotsNav.Core;
+using DotsNav.Core.Drawing;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// Attach to any gameobject to render in the scene view, or the camera to also render in the game view

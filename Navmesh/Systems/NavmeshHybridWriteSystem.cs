@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Systems
+namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
     class NavmeshHybridWriteSystem : SystemBase
@@ -9,7 +9,7 @@ namespace DotsNav.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((Hybrid.DotsNavNavmesh hybrid, Navmesh navmesh) =>
+                .ForEach((Hybrid.DotsNavNavmesh hybrid, Navmesh.Navmesh navmesh) =>
                 {
                     hybrid.Vertices = navmesh.Vertices;
 #if UNITY_EDITOR

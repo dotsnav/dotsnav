@@ -23,7 +23,7 @@
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace DotsNav.Collections
+namespace DotsNav.Core.Collections.BVH
 {
     public struct DynamicTree<T> where T : unmanaged
     {

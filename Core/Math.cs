@@ -1,10 +1,9 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using RobustGeometricPredicates;
-using DotsNav.Assertions;
+using DotsNav.Core.Predicates;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Core
 {
     static class Math
     {

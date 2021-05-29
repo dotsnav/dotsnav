@@ -1,5 +1,5 @@
 ﻿
-namespace DotsNav.Collections
+namespace DotsNav.Core.Collections.BVH
 {
     public interface IQueryResultCollector<in T>
     {

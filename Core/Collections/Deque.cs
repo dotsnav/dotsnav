@@ -1,10 +1,9 @@
 using System.Diagnostics;
-using DotsNav.Assertions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
-namespace DotsNav.Collections
+namespace DotsNav.Core.Collections
 {
     [DebuggerDisplay("Count = {Count}, Capacity = {Capacity}")]
     [DebuggerTypeProxy(typeof(DequeDebugView<>))]

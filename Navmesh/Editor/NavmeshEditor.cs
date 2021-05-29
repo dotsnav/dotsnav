@@ -1,11 +1,12 @@
 #if UNITY_EDITOR
+using DotsNav.Navmesh.Hybrid;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.Hybrid
+namespace DotsNav.Navmesh.Editor
 {
     [CustomEditor(typeof(DotsNavNavmesh))]
-    class NavmeshEditor : Editor
+    class NavmeshEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {

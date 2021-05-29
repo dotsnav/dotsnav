@@ -1,8 +1,8 @@
+using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
-using DotsNav.Systems;
 using Unity.Entities;
 
-namespace DotsNav.PathFinding
+namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     class PathFinderResourceSystem : SystemBase

@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav.Data
+namespace DotsNav.Navmesh.Data
 {
     /// <summary>
     /// Add DynamicBuffer&lt;VertexElement&gt; in addition to ObstacleData to queue insertion of obstacles,

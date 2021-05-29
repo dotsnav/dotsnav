@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// Represents an undirected edge in the navmesh. For more information see:

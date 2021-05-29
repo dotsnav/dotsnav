@@ -1,7 +1,7 @@
-using DotsNav.Core;
-using DotsNav.Data;
+using DotsNav.Core.Data;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
-using DotsNav.Systems;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -9,7 +9,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace DotsNav.PathFinding
+namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(UpdateNavmeshSystem))]
@@ -20,7 +20,7 @@ namespace DotsNav.PathFinding
 
         protected override void OnCreate()
         {
-            RequireSingletonForUpdate<Navmesh>();
+            RequireSingletonForUpdate<Navmesh.Navmesh.Navmesh>();
             RequireSingletonForUpdate<PathFinderComponent>();
             RequireSingletonForUpdate<PathFinderSystemStateComponent>();
             _buffer = new NativeList<Entity>(Allocator.Persistent);
@@ -37,7 +37,7 @@ namespace DotsNav.PathFinding
         {
             var data = GetSingleton<PathFinderComponent>();
             var resources = GetSingleton<PathFinderSystemStateComponent>();
-            var navmesh = GetSingleton<Navmesh>();
+            var navmesh = GetSingleton<Navmesh.Navmesh.Navmesh>();
             var navmeshEntity = GetSingletonEntity<NavmeshComponent>();
             var destroyed = GetBufferFromEntity<DestroyedTriangleElement>(true);
             var buffer = _buffer;
@@ -106,7 +106,7 @@ namespace DotsNav.PathFinding
             [NativeSetThreadIndex]
             int _threadId;
 
-            public Navmesh Navmesh;
+            public Navmesh.Navmesh.Navmesh Navmesh;
 
             public void Execute(int index)
             {

@@ -1,7 +1,7 @@
 using System.Threading;
 using Unity.Mathematics;
 
-namespace DotsNav.Drawing
+namespace DotsNav.Core.Drawing
 {
     struct Unit
     {

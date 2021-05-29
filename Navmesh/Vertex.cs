@@ -1,7 +1,7 @@
-using DotsNav.Assertions;
+using DotsNav.Core;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// A vertex in the triangulation. Updating the navmesh invalidates this structure.

@@ -1,7 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
-namespace DotsNav.Data
+namespace DotsNav.Navmesh.Data
 {
     struct NavmeshDrawComponent : IComponentData
     {

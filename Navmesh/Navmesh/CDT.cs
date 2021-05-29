@@ -1,10 +1,11 @@
-using DotsNav.Assertions;
+using DotsNav.Core;
+using DotsNav.Core.Extensions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh.Navmesh
 {
     public unsafe partial struct Navmesh
     {

@@ -1,13 +1,15 @@
 #if UNITY_EDITOR
 using System.Linq;
+using DotsNav.Core.Extensions;
+using DotsNav.Navmesh.Hybrid;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.Hybrid
+namespace DotsNav.Navmesh.Editor
 {
     [CustomEditor(typeof(DotsNavObstacle), editorForChildClasses: true)]
-    class ObstacleEditor : Editor
+    class ObstacleEditor : UnityEditor.Editor
     {
         const int Width = 50;
         int _vertexIndex;

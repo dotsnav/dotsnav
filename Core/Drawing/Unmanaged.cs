@@ -1,7 +1,6 @@
 using Unity.Burst;
-using Unity.Mathematics;
 
-namespace DotsNav.Drawing
+namespace DotsNav.Core.Drawing
 {
     struct Unmanaged
     {
