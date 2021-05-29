@@ -1,4 +1,5 @@
 using DotsNav;
+using DotsNav.Core;
 using DotsNav.Navmesh;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Hybrid;

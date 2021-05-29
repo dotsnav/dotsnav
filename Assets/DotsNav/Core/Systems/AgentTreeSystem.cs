@@ -1,13 +1,12 @@
 ﻿using DotsNav.Core.Collections.BVH;
 using DotsNav.Core.Data;
-using DotsNav.Navmesh.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace DotsNav.LocalAvoidance
+namespace DotsNav.Core.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     class AgentTreeSystem : SystemBase

@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-namespace DotsNav.LocalAvoidance
+namespace DotsNav.Core.Data
 {
     public struct AgentTreeComponent : IComponentData
     {

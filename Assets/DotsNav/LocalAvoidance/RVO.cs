@@ -30,6 +30,7 @@
  */
 
 using DotsNav.Core;
+using DotsNav.LocalAvoidance.Data;
 using Unity.Collections;
 using Unity.Mathematics;
 

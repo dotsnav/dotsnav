@@ -1,6 +1,8 @@
 ﻿using DotsNav.Core;
 using DotsNav.Core.Collections.BVH;
 using DotsNav.Core.Data;
+using DotsNav.Core.Systems;
+using DotsNav.LocalAvoidance.Data;
 using DotsNav.Navmesh.Systems;
 using Unity.Collections;
 using Unity.Entities;

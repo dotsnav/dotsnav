@@ -1,3 +1,4 @@
+using DotsNav.Core.Systems;
 using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
 using Unity.Entities;

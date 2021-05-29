@@ -2,6 +2,7 @@ using DotsNav.Core;
 using DotsNav.Core.Data;
 using DotsNav.Core.Drawing;
 using DotsNav.Core.Extensions;
+using DotsNav.Core.Systems;
 using DotsNav.Navmesh;
 using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
