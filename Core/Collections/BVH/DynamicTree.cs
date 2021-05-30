@@ -1,15 +1,16 @@
-﻿using Unity.Collections;
+﻿using System;
+using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
 namespace DotsNav.Core.Collections.BVH
 {
-    public unsafe struct DynamicTree<T> where T : unmanaged
+    public unsafe struct DynamicTree<T> : IComparable<DynamicTree<T>>, IEquatable<DynamicTree<T>> where T : unmanaged
     {
         [NativeDisableUnsafePtrRestriction]
         UnsafeDynamicTree<T>* _tree;
 
-        public bool IsCreated => _tree != null;
+        public readonly bool IsCreated => _tree != null;
 
         public DynamicTree(Allocator allocator)
         {
@@ -24,54 +25,64 @@ namespace DotsNav.Core.Collections.BVH
             _tree = null;
         }
 
-        public int CreateProxy(AABB aabb, T userData)
+        public readonly int CreateProxy(AABB aabb, T userData)
         {
             return _tree->CreateProxy(aabb, userData);
         }
 
-        public void DestroyProxy(int proxyId)
+        public readonly void DestroyProxy(int proxyId)
         {
             _tree->DestroyProxy(proxyId);
         }
 
-        public bool MoveProxy(int proxyId, AABB aabb, float2 displacement)
+        public readonly bool MoveProxy(int proxyId, AABB aabb, float2 displacement)
         {
             return _tree->MoveProxy(proxyId, aabb, displacement);
         }
 
-        public T GetUserData(int proxyId)
+        public readonly T GetUserData(int proxyId)
         {
             return _tree->GetUserData(proxyId);
         }
 
-        public bool WasMoved(int proxyId)
+        public readonly bool WasMoved(int proxyId)
         {
             return _tree->WasMoved(proxyId);
         }
 
-        public void ClearMoved(int proxyId)
+        public readonly void ClearMoved(int proxyId)
         {
             _tree->ClearMoved(proxyId);
         }
 
-        public AABB GetFatAABB(int proxyId)
+        public readonly AABB GetFatAABB(int proxyId)
         {
             return _tree->GetFatAABB(proxyId);
         }
 
-        public void ShiftOrigin(float2 newOrigin)
+        public readonly void ShiftOrigin(float2 newOrigin)
         {
             _tree->ShiftOrigin(newOrigin);
         }
 
-        public void Query<TC>(TC callback, AABB aabb) where TC : IQueryResultCollector<T>
+        public readonly void Query<TC>(TC callback, AABB aabb) where TC : IQueryResultCollector<T>
         {
             _tree->Query(callback, aabb);
         }
 
-        public void RayCast<TC>(TC callback, RayCastInput input) where TC : IRayCastResultCollector<T>
+        public readonly void RayCast<TC>(TC callback, RayCastInput input) where TC : IRayCastResultCollector<T>
         {
             _tree->RayCast(callback, input);
+        }
+
+        public readonly int CompareTo(DynamicTree<T> other)
+        {
+            return _tree < other._tree ? -1 : 1;
+        }
+
+        public readonly bool Equals(DynamicTree<T> other)
+        {
+            return _tree == other._tree;
         }
     }
 }

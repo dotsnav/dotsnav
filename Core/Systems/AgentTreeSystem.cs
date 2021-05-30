@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DotsNav.Core.Collections.BVH;
 using DotsNav.Core.Data;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DotsNav.Core.Systems
 {
@@ -14,27 +15,26 @@ namespace DotsNav.Core.Systems
     class AgentTreeSystem : SystemBase
     {
         public JobHandle OutputDependecy;
-        readonly List<AgentTreeSharedComponent> _agentTreeSharedComponents = new List<AgentTreeSharedComponent>();
-        NativeQueue<RemoveAgentData> _removeAgentQueue;
+        NativeQueue<TreeOperation> _treeOperations;
 
         protected override void OnCreate()
         {
-            _removeAgentQueue = new NativeQueue<RemoveAgentData>(Allocator.Persistent);
+            _treeOperations = new NativeQueue<TreeOperation>(Allocator.Persistent);
         }
 
         protected override void OnDestroy()
         {
-            _removeAgentQueue.Dispose();
+            _treeOperations.Dispose();
             Entities.WithBurst().ForEach((TreeSystemStateComponent c) => c.Tree.Dispose()).Run();
         }
 
-        // todo manage dependecies
         protected override void OnUpdate()
         {
             var ecbSource = DotsNavSystemGroup.EcbSource;
             var parallelBuffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
 
             Entities
+                .WithName("Allocate_AgentTree")
                 .WithBurst()
                 .WithNone<TreeSystemStateComponent>()
                 .ForEach((Entity entity, int entityInQueryIndex, ref AgentTreeComponent agentTree) =>
@@ -45,6 +45,7 @@ namespace DotsNav.Core.Systems
                 .ScheduleParallel();
 
             Entities
+                .WithName("Dispose_AgentTree")
                 .WithBurst()
                 .WithNone<AgentTreeComponent>()
                 .ForEach((Entity entity, int entityInQueryIndex, TreeSystemStateComponent state) =>
@@ -54,84 +55,234 @@ namespace DotsNav.Core.Systems
                 })
                 .ScheduleParallel();
 
+            var treeOperations = _treeOperations;
+            var treeOperationsWriter = treeOperations.AsParallelWriter();
+            var agentTreeLookup = GetComponentDataFromEntity<AgentTreeComponent>(true);
+            var inputDependency = Dependency;
 
-            _agentTreeSharedComponents.Clear();
-            EntityManager.GetAllUniqueSharedComponentData(_agentTreeSharedComponents);
-            var agentTreeLookup = GetComponentDataFromEntity<AgentTreeComponent>();
-            var buffer = ecbSource.CreateCommandBuffer();
-            var agentToRemoveWriter = _removeAgentQueue.AsParallelWriter();
-
-            for (int i = 1; i < _agentTreeSharedComponents.Count; i++)
-            {
-                var treeEntity = _agentTreeSharedComponents[i];
-
-                Entities
-                    .WithBurst()
-                    .WithNone<AgentSystemStateComponent>()
-                    .WithSharedComponentFilter(treeEntity)
-                    .ForEach((Entity entity, in Translation translation, in RadiusComponent radius) =>
-                    {
-                        var tree = agentTreeLookup[treeEntity].Tree;
-                        var pos = translation.Value.xz;
-                        var aabb = new AABB {LowerBound = pos - radius, UpperBound = pos + radius};
-                        var id = tree.CreateProxy(aabb, entity);
-                        buffer.AddComponent(entity, new AgentSystemStateComponent {Id = id, PreviousPosition = pos, TreeEntity = treeEntity});
-                    })
-                    .Schedule();
-
-                Entities
-                    .WithBurst()
-                    .WithSharedComponentFilter(treeEntity)
-                    .ForEach((Entity entity, ref AgentSystemStateComponent state, in Translation translation, in RadiusComponent radius) =>
-                    {
-                        var tree = agentTreeLookup[treeEntity].Tree;
-                        var pos = translation.Value.xz;
-                        var aabb = new AABB {LowerBound = pos - radius, UpperBound = pos + radius};
-                        state.PreviousPosition = pos;
-
-                        if (state.TreeEntity != treeEntity)
-                        {
-                            agentToRemoveWriter.Enqueue(new RemoveAgentData{Id = state.Id, Tree = agentTreeLookup[state.TreeEntity].Tree});
-                            state.TreeEntity = treeEntity;
-                            state.Id = tree.CreateProxy(aabb, entity);
-                        }
-                        else
-                        {
-                            tree.MoveProxy(state.Id, aabb, pos - state.PreviousPosition);
-                        }
-                    })
-                    .Schedule();
-            }
-
-            // todo // as AgentTreeSharedComponent is already removed we can not run this in parallel
-            // todo // filtered by tree, look in to shared system state components?
             Entities
+                .WithName("Insert_Agent")
                 .WithBurst()
-                .WithNone<AgentTreeSharedComponent>()
-                .ForEach((Entity entity, AgentSystemStateComponent state) =>
+                .WithNone<AgentSystemStateComponent>()
+                .WithReadOnly(agentTreeLookup)
+                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref AgentTreeElementComponent element) =>
                 {
-                    if (!agentTreeLookup.HasComponent(state.TreeEntity))
-                        return;
-
-                    var tree = agentTreeLookup[state.TreeEntity].Tree;
-                    tree.DestroyProxy(state.Id);
-                    buffer.RemoveComponent<AgentSystemStateComponent>(entity);
+                    var tree = agentTreeLookup[element.Tree].Tree;
+                    element.TreeRef = tree;
+                    treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Insert, tree, entity, translation.Value.xz, radius.Value, element.Tree));
                 })
-                .Schedule();
+                .ScheduleParallel();
 
-            var removeAgentQueue = _removeAgentQueue;
+            Entities
+                .WithName("Destroy_Agent")
+                .WithBurst()
+                .WithNone<AgentTreeElementComponent>()
+                .ForEach((AgentSystemStateComponent state) =>
+                {
+                    treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Destroy, state.TreeRef, state.Id));
+                })
+                .ScheduleParallel();
 
-            Dependency = Job
+            Entities
+                .WithName("Update_Agent")
+                .WithBurst()
+                .WithReadOnly(agentTreeLookup)
+                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref AgentTreeElementComponent element, ref AgentSystemStateComponent state) =>
+                {
+                    var pos = translation.Value.xz;
+
+                    if (element.Tree == state.TreeEntity)
+                    {
+                        var displacement = pos - state.PreviousPosition;
+                        treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Move, element.TreeRef, state.Id, pos, displacement, radius.Value));
+                    }
+                    else
+                    {
+                        var oldTree = state.TreeRef;
+                        var newTree = agentTreeLookup[element.Tree].Tree;
+                        element.TreeRef = newTree;
+                        state.TreeRef = newTree;
+                        state.TreeEntity = element.Tree;
+                        treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Destroy, oldTree, state.Id));
+                        treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Reinsert, newTree, entity, pos, radius.Value, element.Tree));
+                    }
+
+                    state.PreviousPosition = pos;
+                })
+                .ScheduleParallel();
+
+            var sorted = new NativeList<TreeOperation>(Allocator.TempJob);
+            var chunks = new NativeList<int2>(Allocator.TempJob);
+
+            Job
+                .WithName("Sort_TreeOperations")
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    while (removeAgentQueue.TryDequeue(out var t))
-                        t.Tree.DestroyProxy(t.Id);
+                    var t = treeOperations.ToArray(Allocator.Temp);
+                    sorted.CopyFrom(t);
+                    treeOperations.Clear();
+
+                    if (sorted.Length < 2)
+                    {
+                        if (sorted.Length == 1)
+                            chunks.Add(new int2(0, 1));
+                        return;
+                    }
+
+                    sorted.Sort(new TreeOperation.Comparer());
+
+                    var prev = sorted[0].Tree;
+                    var start = 0;
+                    var amount = 1;
+                    for (int i = 1; i < sorted.Length; i++)
+                    {
+                        var tree = sorted[i].Tree;
+                        if (tree.Equals(prev))
+                        {
+                            ++amount;
+                        }
+                        else
+                        {
+                            chunks.Add(new int2(start, start += amount));
+                            amount = 1;
+                            prev = tree;
+                        }
+                    }
+                    chunks.Add(new int2(start, start + amount));
                 })
-                .Schedule(Dependency);
+                .Schedule();
+
+            Dependency = new TreeOperationJob
+                {
+                    Operations = sorted.AsDeferredJobArray(),
+                    Chunks = chunks.AsDeferredJobArray(),
+                    Ecb = ecbSource.CreateCommandBuffer().AsParallelWriter()
+                }
+                .Schedule(chunks, 1, Dependency);
 
             ecbSource.AddJobHandleForProducer(Dependency);
             OutputDependecy = Dependency;
+        }
+
+        [BurstCompile]
+        struct TreeOperationJob : IJobParallelForDefer
+        {
+            [NativeDisableParallelForRestriction]
+            public NativeArray<TreeOperation> Operations;
+            public NativeArray<int2> Chunks;
+            public EntityCommandBuffer.ParallelWriter Ecb;
+
+            public void Execute(int index)
+            {
+                var chunk = Chunks[index];
+                for (int i = chunk.x; i < chunk.y; i++)
+                {
+                    var op = Operations[i];
+                    switch (op.Type)
+                    {
+                        case TreeOperationType.Insert:
+                        {
+                            var aabb = new AABB(op.Pos, op.Radius);
+                            var id = op.Tree.CreateProxy(aabb, op.Agent);
+                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = op.Tree};
+                            Ecb.AddComponent(i, op.Agent, state);
+                            break;
+                        }
+                        case TreeOperationType.Move:
+                        {
+                            var aabb = new AABB(op.Pos, op.Radius);
+                            op.Tree.MoveProxy(op.Id, aabb, op.Displacement);
+                            break;
+                        }
+                        case TreeOperationType.Reinsert:
+                        {
+                            var aabb = new AABB(op.Pos, op.Radius);
+                            var id = op.Tree.CreateProxy(aabb, op.Agent);
+                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = op.Tree};
+                            Ecb.AddComponent(i, op.Agent, state);
+                            break;
+                        }
+                        case TreeOperationType.Destroy:
+                        {
+                            op.Tree.DestroyProxy(op.Id);
+                            break;
+                        }
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+            }
+        }
+
+        readonly struct TreeOperation
+        {
+            public readonly TreeOperationType Type;
+            public readonly DynamicTree<Entity> Tree;
+            public readonly int Id;
+            public readonly Entity Agent;
+            public readonly Entity TreeEntity;
+            public readonly float2 Pos;
+            public readonly float2 Displacement;
+            public readonly float Radius;
+
+            /// <summary>
+            /// Insert
+            /// </summary>
+            public TreeOperation(TreeOperationType type, DynamicTree<Entity> tree, Entity agent, float2 pos, float radius, Entity treeEntity)
+            {
+                Type = type;
+                Tree = tree;
+                Agent = agent;
+                Pos = pos;
+                Radius = radius;
+                TreeEntity = treeEntity;
+                Id = default;
+                Displacement = default;
+            }
+
+            /// <summary>
+            /// Destroy
+            /// </summary>
+            public TreeOperation(TreeOperationType type, DynamicTree<Entity> tree, int id)
+            {
+                Type = type;
+                Tree = tree;
+                Id = id;
+                Radius = default;
+                Agent = default;
+                Pos = default;
+                Displacement = default;
+                TreeEntity = default;
+            }
+
+            /// <summary>
+            /// Move
+            /// </summary>
+            public TreeOperation(TreeOperationType type, DynamicTree<Entity> tree, int id, float2 pos, float2 displacement, float radius)
+            {
+                Type = type;
+                Tree = tree;
+                Id = id;
+                Pos = pos;
+                Displacement = displacement;
+                Radius = radius;
+                Agent = default;
+                TreeEntity = default;
+            }
+
+            public struct Comparer : IComparer<TreeOperation>
+            {
+                public int Compare(TreeOperation x, TreeOperation y) => x.Tree.Equals(y.Tree) ? x.Type - y.Type : x.Tree.CompareTo(y.Tree);
+            }
+        }
+
+        enum TreeOperationType
+        {
+            Insert = 3,
+            Move = 2,
+            Reinsert = 4,
+            Destroy = 1,
         }
 
         struct TreeSystemStateComponent : ISystemStateComponentData
@@ -143,13 +294,8 @@ namespace DotsNav.Core.Systems
         {
             public int Id;
             public float2 PreviousPosition;
+            public DynamicTree<Entity> TreeRef;
             public Entity TreeEntity;
-        }
-
-        struct RemoveAgentData
-        {
-            public DynamicTree<Entity> Tree;
-            public int Id;
         }
     }
 }
