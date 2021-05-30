@@ -126,10 +126,7 @@ namespace DotsNav.Core.Systems
                 .WithCode(() =>
                 {
                     while (removeAgentQueue.TryDequeue(out var t))
-                    {
-                        Debug.Log($"removing moved entity");
                         t.Tree.DestroyProxy(t.Id);
-                    }
                 })
                 .Schedule(Dependency);
 
