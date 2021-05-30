@@ -13,7 +13,7 @@ namespace DotsNav.Core.Collections.BVH
 
         public DynamicTree(Allocator allocator)
         {
-            _tree = (UnsafeDynamicTree<T>*) Mem.Malloc<DynamicTree<T>>(allocator);
+            _tree = (UnsafeDynamicTree<T>*) Mem.Malloc<UnsafeDynamicTree<T>>(allocator);
             *_tree = new UnsafeDynamicTree<T>(allocator);
         }
 
