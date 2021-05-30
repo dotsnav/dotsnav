@@ -40,13 +40,13 @@ namespace DotsNav.Core.Collections.BVH
         int _freeList;
 
         int _insertionCount;
-        readonly Allocator _allocator;
+        internal readonly Allocator Allocator;
 
         public bool IsCreated => _nodes != null;
 
         public Tree(Allocator allocator)
         {
-            _allocator = allocator;
+            Allocator = allocator;
             _root = NullNode;
 
             _nodeCapacity = 16;
@@ -71,7 +71,7 @@ namespace DotsNav.Core.Collections.BVH
         public void Dispose()
         {
             // This frees the entire tree in one shot.
-            UnsafeUtility.Free(_nodes, _allocator);
+            UnsafeUtility.Free(_nodes, Allocator);
             _nodes = null;
         }
 
@@ -275,9 +275,9 @@ namespace DotsNav.Core.Collections.BVH
                 // The free list is empty. Rebuild a bigger pool.
                 var oldNodes = _nodes;
                 _nodeCapacity *= 2;
-                _nodes = (Node*) Mem.Malloc<Node>(_nodeCapacity, _allocator);
+                _nodes = (Node*) Mem.Malloc<Node>(_nodeCapacity, Allocator);
                 UnsafeUtility.MemCpy(_nodes, oldNodes, _nodeCount * sizeof(Node));
-                UnsafeUtility.Free(oldNodes, _allocator);
+                UnsafeUtility.Free(oldNodes, Allocator);
 
                 // Build a linked list for the free list. The parent
                 // pointer becomes the "next" pointer.
