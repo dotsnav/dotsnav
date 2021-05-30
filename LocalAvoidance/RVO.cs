@@ -43,6 +43,7 @@ namespace DotsNav.LocalAvoidance
         public static float2 CalculateNewVelocity(RVOComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours, NativeList<ObstacleDistance> obstacleNeighbours,
                                                   NativeList<Obstacle> allObstacles, float invTimeStep)
         {
+            Assert.IsTrue(agent.PrefVelocity.IsNumber());
             var orcaLines = new NativeArray<Line>(neighbours.Length, Allocator.Temp);
             var projLines = new NativeArray<Line>(agent.MaxNeighbours, Allocator.Temp);
             var lineCount = CreateOrcaLines(pos, radius, agent.Velocity, neighbours, orcaLines, agent.InvTimeHorizon,
