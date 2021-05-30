@@ -6,6 +6,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace DotsNav.Core.Systems
 {
@@ -14,6 +15,18 @@ namespace DotsNav.Core.Systems
     {
         public JobHandle OutputDependecy;
         readonly List<AgentTreeSharedComponent> _agentTreeSharedComponents = new List<AgentTreeSharedComponent>();
+        NativeQueue<RemoveAgentData> _removeAgentQueue;
+
+        protected override void OnCreate()
+        {
+            _removeAgentQueue = new NativeQueue<RemoveAgentData>(Allocator.Persistent);
+        }
+
+        protected override void OnDestroy()
+        {
+            _removeAgentQueue.Dispose();
+            Entities.WithBurst().ForEach((TreeSystemStateComponent c) => c.Tree.Dispose()).Run();
+        }
 
         // todo manage dependecies
         protected override void OnUpdate()
@@ -46,6 +59,7 @@ namespace DotsNav.Core.Systems
             EntityManager.GetAllUniqueSharedComponentData(_agentTreeSharedComponents);
             var agentTreeLookup = GetComponentDataFromEntity<AgentTreeComponent>();
             var buffer = ecbSource.CreateCommandBuffer();
+            var agentToRemoveWriter = _removeAgentQueue.AsParallelWriter();
 
             for (int i = 1; i < _agentTreeSharedComponents.Count; i++)
             {
@@ -68,13 +82,23 @@ namespace DotsNav.Core.Systems
                 Entities
                     .WithBurst()
                     .WithSharedComponentFilter(treeEntity)
-                    .ForEach((ref AgentSystemStateComponent state, in Translation translation, in RadiusComponent radius) =>
+                    .ForEach((Entity entity, ref AgentSystemStateComponent state, in Translation translation, in RadiusComponent radius) =>
                     {
                         var tree = agentTreeLookup[treeEntity].Tree;
                         var pos = translation.Value.xz;
                         var aabb = new AABB {LowerBound = pos - radius, UpperBound = pos + radius};
-                        tree.MoveProxy(state.Id, aabb, pos - state.PreviousPosition);
                         state.PreviousPosition = pos;
+
+                        if (state.TreeEntity != treeEntity)
+                        {
+                            agentToRemoveWriter.Enqueue(new RemoveAgentData{Id = state.Id, Tree = agentTreeLookup[state.TreeEntity].Tree});
+                            state.TreeEntity = treeEntity;
+                            state.Id = tree.CreateProxy(aabb, entity);
+                        }
+                        else
+                        {
+                            tree.MoveProxy(state.Id, aabb, pos - state.PreviousPosition);
+                        }
                     })
                     .Schedule();
             }
@@ -95,16 +119,22 @@ namespace DotsNav.Core.Systems
                 })
                 .Schedule();
 
+            var removeAgentQueue = _removeAgentQueue;
+
+            Dependency = Job
+                .WithBurst()
+                .WithCode(() =>
+                {
+                    while (removeAgentQueue.TryDequeue(out var t))
+                    {
+                        Debug.Log($"removing moved entity");
+                        t.Tree.DestroyProxy(t.Id);
+                    }
+                })
+                .Schedule(Dependency);
+
             ecbSource.AddJobHandleForProducer(Dependency);
             OutputDependecy = Dependency;
-        }
-
-        protected override void OnDestroy()
-        {
-            Entities
-                .WithBurst()
-                .ForEach((TreeSystemStateComponent c) => c.Tree.Dispose())
-                .Run();
         }
 
         struct TreeSystemStateComponent : ISystemStateComponentData
@@ -117,6 +147,12 @@ namespace DotsNav.Core.Systems
             public int Id;
             public float2 PreviousPosition;
             public Entity TreeEntity;
+        }
+
+        struct RemoveAgentData
+        {
+            public DynamicTree<Entity> Tree;
+            public int Id;
         }
     }
 }
