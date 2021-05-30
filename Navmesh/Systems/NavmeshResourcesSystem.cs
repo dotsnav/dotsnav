@@ -23,7 +23,6 @@ namespace DotsNav.Navmesh.Systems
                 })
                 .ScheduleParallel();
 
-            buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities
                 .WithBurst()
                 .WithNone<NavmeshComponent>()
@@ -32,7 +31,7 @@ namespace DotsNav.Navmesh.Systems
                     resources.Dispose();
                     buffer.RemoveComponent<Navmesh.Navmesh>(entityInQueryIndex, entity);
                 })
-                .Schedule();
+                .ScheduleParallel();
             ecbSource.AddJobHandleForProducer(Dependency);
         }
 
