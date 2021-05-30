@@ -14,7 +14,7 @@ namespace DotsNav.LocalAvoidance
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(AgentTreeSystem))]
-    unsafe class RVOSystem : SystemBase
+    class RVOSystem : SystemBase
     {
         AgentTreeSystem _treeSystem;
         readonly List<AgentTreeSharedComponent> _agentTreeSharedComponents = new List<AgentTreeSharedComponent>();
@@ -30,9 +30,9 @@ namespace DotsNav.LocalAvoidance
 
             Entities
                 .WithBurst()
-                .ForEach((Translation translation, DirectionComponent agentDirectionComponent, RadiusComponent radius, ref RVOComponent agent, ref VelocityObstacleComponent obstacle) =>
+                .ForEach((Translation translation, DirectionComponent direction, RadiusComponent radius, ref RVOComponent agent, ref VelocityObstacleComponent obstacle) =>
                 {
-                    agent.PrefVelocity = agentDirectionComponent.Value * agent.PrefSpeed;
+                    agent.PrefVelocity = direction.Value * agent.PrefSpeed;
                     obstacle.Position = translation.Value.xz;
                     obstacle.Velocity = agent.Velocity;
                     obstacle.Radius = radius;
