@@ -90,7 +90,8 @@ class DirectionSystem : SystemBase
             .WithBurst()
             .ForEach((Translation translation, TargetComponent target, ref DirectionComponent direction) =>
             {
-                direction.Value = math.normalize(target.Value - translation.Value.xz);
+                var toTarget = target.Value - translation.Value.xz;
+                direction.Value = math.all(toTarget == 0) ? 0 : math.normalize(toTarget);
             })
             .ScheduleParallel();
     }
