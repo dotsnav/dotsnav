@@ -4,6 +4,7 @@ using DotsNav.LocalAvoidance.Data;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEditor;
 using UnityEngine;
 
 public class RVOCircleTest : MonoBehaviour
@@ -19,12 +20,39 @@ public class RVOCircleTest : MonoBehaviour
     void Start()
     {
         _store = new BlobAssetStore();
+        InitTest();
+    }
+
+    void Update()
+    {
+        switch (++_i)
+        {
+            case 30:
+            {
+                // InitTest();
+                // EditorApplication.isPaused = true;
+                break;
+            }
+            case 50:
+            {
+                var em = World.All[0].EntityManager;
+                // em.SetSharedComponentData(_agent, new AgentTreeSharedComponent(_agentTree1));
+
+                // em.DestroyEntity(em.CreateEntityQuery(typeof(AgentTreeSharedComponent)));
+                break;
+            }
+        }
+    }
+
+    void InitTest()
+    {
         var world = World.All[0];
         var convSettings = GameObjectConversionSettings.FromWorld(world, _store);
         var entityPrefab = GameObjectConversionUtility.ConvertGameObjectHierarchy(Prefab.gameObject, convSettings);
         var entityManager = world.EntityManager;
 
-        SpawnMoveAgentTest();
+        // SpawnMoveAgentTest();
+        SpawnCircleTest();
 
         void SpawnMoveAgentTest()
         {
@@ -32,10 +60,8 @@ public class RVOCircleTest : MonoBehaviour
             _agentTree1 = entityManager.CreateEntity(typeof(AgentTreeComponent));
             _agent = entityManager.Instantiate(entityPrefab);
             entityManager.AddComponentData(_agent, new TargetComponent());
-            entityManager.AddSharedComponentData(_agent, new AgentTreeSharedComponent(agentTree0));
+            entityManager.AddComponentData(_agent, new AgentTreeElementComponent{Tree = agentTree0});
         }
-
-        // SpawnCircleTest();
 
         void SpawnCircleTest()
         {
@@ -52,20 +78,9 @@ public class RVOCircleTest : MonoBehaviour
                     var p = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
                     entityManager.SetComponentData(entity, new Translation {Value = (origin + p).ToXxY()});
                     entityManager.AddComponentData(entity, new TargetComponent {Value = origin - p});
-                    entityManager.AddSharedComponentData(entity, new AgentTreeSharedComponent(agentTree));
+                    entityManager.AddComponentData(entity, new AgentTreeElementComponent{Tree = agentTree});
                 }
             }
-        }
-    }
-
-    void Update()
-    {
-        if (++_i == 50)
-        {
-            var em = World.All[0].EntityManager;
-            em.SetSharedComponentData(_agent, new AgentTreeSharedComponent(_agentTree1));
-
-            // em.DestroyEntity(em.CreateEntityQuery(typeof(AgentTreeSharedComponent)));
         }
     }
 
