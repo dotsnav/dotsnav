@@ -102,6 +102,14 @@ namespace DotsNav.Core.Systems
             OutputDependecy = Dependency;
         }
 
+        protected override void OnDestroy()
+        {
+            Entities
+                .WithBurst()
+                .ForEach((TreeSystemStateComponent c) => c.Tree->Dispose())
+                .Run();
+        }
+
         struct TreeSystemStateComponent : ISystemStateComponentData
         {
             public DynamicTree<Entity>* Tree;
