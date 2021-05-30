@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Samples/Scenes/loadtest.unity
     guid: a55e2863fc064110a7391101acadbfec
   - enabled: 1
-    path: Assets/Samples/Scenes/menu.unity
+    path: Assets/Demo/menu.unity
     guid: 33c0c387470d1a247b721ba4ef15d743
   - enabled: 1
     path: Assets/Samples/Scenes/sandbox.unity
