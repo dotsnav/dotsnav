@@ -30,13 +30,7 @@ To have a quick look at DotsNav clone or download the master branch which contai
 
 The recommended way of installing DotsNav is through the [OpenUPM](https://openupm.com/packages/com.bassmit.dotsnav/) package installer (top right). Download and add the unitypackage to a project to install DotsNav, including setting up the scoped registry required.
 
-The package manager UI then needs to be augmented to show and install updates by installing [UpmGitExtension](https://openupm.com/packages/com.coffee.upm-git-extension/).
-
-Alternatively, open the package manager and choose Add package from git URL:
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image16.png?raw=true)
-
-And enter the url:
+Alternatively, open the package manager, choose Add package from git URL and enter:
 
     https://github.com/dotsnav/dotsnav.git#upm
 
