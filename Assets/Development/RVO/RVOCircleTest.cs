@@ -60,7 +60,7 @@ public class RVOCircleTest : MonoBehaviour
             _agentTree1 = entityManager.CreateEntity(typeof(AgentTreeComponent));
             _agent = entityManager.Instantiate(entityPrefab);
             entityManager.AddComponentData(_agent, new TargetComponent());
-            entityManager.AddComponentData(_agent, new AgentTreeElementComponent{Tree = agentTree0});
+            entityManager.AddComponentData(_agent, new AgentTreeElementComponent{TreeEntity = agentTree0});
         }
 
         void SpawnCircleTest()
@@ -78,7 +78,7 @@ public class RVOCircleTest : MonoBehaviour
                     var p = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
                     entityManager.SetComponentData(entity, new Translation {Value = (origin + p).ToXxY()});
                     entityManager.AddComponentData(entity, new TargetComponent {Value = origin - p});
-                    entityManager.AddComponentData(entity, new AgentTreeElementComponent{Tree = agentTree});
+                    entityManager.AddComponentData(entity, new AgentTreeElementComponent{TreeEntity = agentTree});
                 }
             }
         }
