@@ -28,7 +28,7 @@ namespace DotsNav.LocalAvoidance
 
             Entities
                 .WithBurst()
-                .ForEach((Translation translation, DirectionComponent direction, RadiusComponent radius, ref RVOComponent agent, ref VelocityObstacleComponent obstacle) =>
+                .ForEach((Translation translation, DirectionComponent direction, RadiusComponent radius, ref AgentComponent agent, ref VelocityObstacleComponent obstacle) =>
                 {
                     agent.PrefVelocity = direction.Value * agent.PrefSpeed;
                     obstacle.Position = translation.Value.xz;
@@ -42,9 +42,9 @@ namespace DotsNav.LocalAvoidance
 
             Entities
                 .WithBurst()
-                .WithAll<RVOComponent>()
+                .WithAll<AgentComponent>()
                 .WithReadOnly(velocityObstacleLookup)
-                .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent element, ref RVOComponent agent) =>
+                .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent element, ref AgentComponent agent) =>
                 {
                     var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
                     var pos = translation.Value.xz;
