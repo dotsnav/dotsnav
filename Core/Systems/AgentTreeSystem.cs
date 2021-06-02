@@ -4,7 +4,6 @@ using DotsNav.Core.Collections.BVH;
 using DotsNav.Core.Data;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
