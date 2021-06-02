@@ -3,7 +3,7 @@ using Unity.Mathematics;
 
 namespace DotsNav.LocalAvoidance.Data
 {
-    public struct RVOComponent : IComponentData
+    public struct AgentComponent : IComponentData
     {
         public float2 PrefVelocity;
         public float PrefSpeed;
