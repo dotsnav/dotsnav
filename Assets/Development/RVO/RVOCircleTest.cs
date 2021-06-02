@@ -56,11 +56,11 @@ public class RVOCircleTest : MonoBehaviour
 
         void SpawnMoveAgentTest()
         {
-            var agentTree0 = entityManager.CreateEntity(typeof(AgentTreeComponent));
-            _agentTree1 = entityManager.CreateEntity(typeof(AgentTreeComponent));
+            var agentTree0 = entityManager.CreateEntity(typeof(DynamicTreeComponent));
+            _agentTree1 = entityManager.CreateEntity(typeof(DynamicTreeComponent));
             _agent = entityManager.Instantiate(entityPrefab);
             entityManager.AddComponentData(_agent, new TargetComponent());
-            entityManager.AddComponentData(_agent, new AgentTreeElementComponent{TreeEntity = agentTree0});
+            entityManager.AddComponentData(_agent, new DynamicTreeElementComponent{Tree = agentTree0});
         }
 
         void SpawnCircleTest()
@@ -70,7 +70,7 @@ public class RVOCircleTest : MonoBehaviour
 
             void SpawnTree(float2 origin)
             {
-                var agentTree = entityManager.CreateEntity(typeof(AgentTreeComponent));
+                var agentTree = entityManager.CreateEntity(typeof(DynamicTreeComponent));
 
                 for (int i = 0; i < AgentAmount; i++)
                 {
@@ -78,7 +78,7 @@ public class RVOCircleTest : MonoBehaviour
                     var p = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
                     entityManager.SetComponentData(entity, new Translation {Value = (origin + p).ToXxY()});
                     entityManager.AddComponentData(entity, new TargetComponent {Value = origin - p});
-                    entityManager.AddComponentData(entity, new AgentTreeElementComponent{TreeEntity = agentTree});
+                    entityManager.AddComponentData(entity, new DynamicTreeElementComponent{Tree = agentTree});
                 }
             }
         }

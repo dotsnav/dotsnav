@@ -12,14 +12,14 @@ using Unity.Transforms;
 namespace DotsNav.LocalAvoidance
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    [UpdateAfter(typeof(AgentTreeSystem))]
+    [UpdateAfter(typeof(DynamicTreeSystem))]
     class RVOSystem : SystemBase
     {
-        AgentTreeSystem _treeSystem;
+        DynamicTreeSystem _treeSystem;
 
         protected override void OnCreate()
         {
-            _treeSystem = World.GetOrCreateSystem<AgentTreeSystem>();
+            _treeSystem = World.GetOrCreateSystem<DynamicTreeSystem>();
         }
 
         protected override void OnUpdate()
@@ -44,7 +44,7 @@ namespace DotsNav.LocalAvoidance
                 .WithBurst()
                 .WithAll<RVOComponent>()
                 .WithReadOnly(velocityObstacleLookup)
-                .ForEach((Translation translation, RadiusComponent radius, AgentTreeElementComponent element, ref RVOComponent agent) =>
+                .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent element, ref RVOComponent agent) =>
                 {
                     var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
                     var pos = translation.Value.xz;
