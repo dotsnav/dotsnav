@@ -26,7 +26,7 @@ namespace DotsNav.Core.Systems
         {
             _operations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
             _trees = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
-            _dependencies = new NativeArray<JobHandle>(4, Allocator.Persistent);
+            _dependencies = new NativeArray<JobHandle>(3, Allocator.Persistent);
         }
 
         protected override void OnDestroy()
@@ -75,7 +75,7 @@ namespace DotsNav.Core.Systems
             operations.Clear();
             var operationsWriter = operations.AsParallelWriter();
 
-            _dependencies[2] =
+            _dependencies[0] =
                 Entities
                     .WithName("Insert")
                     .WithBurst()
@@ -88,9 +88,9 @@ namespace DotsNav.Core.Systems
                         element.TreeRef = tree;
                         operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, translation.Value.xz, radius.Value, element.Tree));
                     })
-                    .ScheduleParallel(Dependency);
+                    .ScheduleParallel(_dependencies[0]);
 
-            _dependencies[3] =
+            _dependencies[2] =
                 Entities
                     .WithName("Destroy")
                     .WithBurst()
@@ -102,7 +102,7 @@ namespace DotsNav.Core.Systems
                     })
                     .ScheduleParallel(Dependency);
 
-            _dependencies[2] =
+            _dependencies[0] =
                 Entities
                     .WithName("Update")
                     .WithBurst()
@@ -130,7 +130,7 @@ namespace DotsNav.Core.Systems
 
                         state.PreviousPosition = pos;
                     })
-                    .ScheduleParallel(_dependencies[2]);
+                    .ScheduleParallel(_dependencies[0]);
 
             Dependency = JobHandle.CombineDependencies(_dependencies);
 
