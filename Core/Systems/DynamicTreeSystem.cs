@@ -12,25 +12,25 @@ using Unity.Transforms;
 namespace DotsNav.Core.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    class AgentTreeSystem : SystemBase
+    class DynamicTreeSystem : SystemBase
     {
         public JobHandle OutputDependecy;
-        NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _treeOperations;
-        NativeList<DynamicTree<Entity>> _uniqueKeys;
-        EntityQuery _insertAgentQuery;
-        EntityQuery _destroyAgentQuery;
-        EntityQuery _updateAgentQuery;
+        NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
+        NativeList<DynamicTree<Entity>> _trees;
+        EntityQuery _insertQuery;
+        EntityQuery _destroyQuery;
+        EntityQuery _updateQuery;
 
         protected override void OnCreate()
         {
-            _treeOperations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
-            _uniqueKeys = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
+            _operations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
+            _trees = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
         }
 
         protected override void OnDestroy()
         {
-            _treeOperations.Dispose();
-            _uniqueKeys.Dispose();
+            _operations.Dispose();
+            _trees.Dispose();
             Entities.WithBurst().ForEach((TreeSystemStateComponent c) => c.Tree.Dispose()).Run();
         }
 
@@ -40,10 +40,10 @@ namespace DotsNav.Core.Systems
             var parallelBuffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
 
             Entities
-                .WithName("Allocate_AgentTree")
+                .WithName("Allocate_Tree")
                 .WithBurst()
                 .WithNone<TreeSystemStateComponent>()
-                .ForEach((Entity entity, int entityInQueryIndex, ref AgentTreeComponent agentTree) =>
+                .ForEach((Entity entity, int entityInQueryIndex, ref DynamicTreeComponent agentTree) =>
                 {
                     agentTree.Tree = new DynamicTree<Entity>(Allocator.Persistent);
                     parallelBuffer.AddComponent(entityInQueryIndex, entity, new TreeSystemStateComponent {Tree = agentTree.Tree});
@@ -51,9 +51,9 @@ namespace DotsNav.Core.Systems
                 .ScheduleParallel();
 
             Entities
-                .WithName("Dispose_AgentTree")
+                .WithName("Dispose_Tree")
                 .WithBurst()
-                .WithNone<AgentTreeComponent>()
+                .WithNone<DynamicTreeComponent>()
                 .ForEach((Entity entity, int entityInQueryIndex, TreeSystemStateComponent state) =>
                 {
                     state.Tree.Dispose();
@@ -61,94 +61,94 @@ namespace DotsNav.Core.Systems
                 })
                 .ScheduleParallel();
 
-            var agentTreeLookup = GetComponentDataFromEntity<AgentTreeComponent>(true);
+            var treeLookup = GetComponentDataFromEntity<DynamicTreeComponent>(true);
             var inputDependency = Dependency;
 
-            var treeOperations = _treeOperations;
-            var minCapacity = _insertAgentQuery.CalculateEntityCount() + _destroyAgentQuery.CalculateEntityCount() + 2 * _updateAgentQuery.CalculateEntityCount();
-            if (treeOperations.Capacity < minCapacity)
-                treeOperations.Capacity = minCapacity;
-            treeOperations.Clear();
-            var treeOperationsWriter = treeOperations.AsParallelWriter();
+            var operations = _operations;
+            var minCapacity = _insertQuery.CalculateEntityCount() + _destroyQuery.CalculateEntityCount() + 2 * _updateQuery.CalculateEntityCount();
+            if (operations.Capacity < minCapacity)
+                operations.Capacity = minCapacity;
+            operations.Clear();
+            var operationsWriter = operations.AsParallelWriter();
 
             Entities
-                .WithName("Insert_Agent")
+                .WithName("Insert")
                 .WithBurst()
-                .WithNone<AgentSystemStateComponent>()
-                .WithReadOnly(agentTreeLookup)
-                .WithStoreEntityQueryInField(ref _insertAgentQuery)
-                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref AgentTreeElementComponent element) =>
+                .WithNone<ElementSystemStateComponent>()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery)
+                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref DynamicTreeElementComponent element) =>
                 {
-                    var tree = agentTreeLookup[element.TreeEntity].Tree;
+                    var tree = treeLookup[element.Tree].Tree;
                     element.TreeRef = tree;
-                    treeOperationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, translation.Value.xz, radius.Value, element.TreeEntity));
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, translation.Value.xz, radius.Value, element.Tree));
                 })
                 .ScheduleParallel();
 
             Entities
-                .WithName("Destroy_Agent")
+                .WithName("Destroy")
                 .WithBurst()
-                .WithNone<AgentTreeElementComponent>()
-                .WithStoreEntityQueryInField(ref _destroyAgentQuery)
-                .ForEach((AgentSystemStateComponent state) =>
+                .WithNone<DynamicTreeElementComponent>()
+                .WithStoreEntityQueryInField(ref _destroyQuery)
+                .ForEach((ElementSystemStateComponent state) =>
                 {
-                    treeOperationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, state.Id));
+                    operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, state.Id));
                 })
                 .ScheduleParallel();
 
             Entities
-                .WithName("Update_Agent")
+                .WithName("Update")
                 .WithBurst()
-                .WithReadOnly(agentTreeLookup)
-                .WithStoreEntityQueryInField(ref _updateAgentQuery)
-                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref AgentTreeElementComponent element, ref AgentSystemStateComponent state) =>
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _updateQuery)
+                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref DynamicTreeElementComponent element, ref ElementSystemStateComponent state) =>
                 {
                     var pos = translation.Value.xz;
 
-                    if (element.TreeEntity == state.TreeEntity)
+                    if (element.Tree == state.TreeEntity)
                     {
                         var displacement = pos - state.PreviousPosition;
-                        treeOperationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Move, state.Id, pos, displacement, radius.Value));
+                        operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Move, state.Id, pos, displacement, radius.Value));
                     }
                     else
                     {
                         var oldTree = state.TreeRef;
-                        var newTree = agentTreeLookup[element.TreeEntity].Tree;
+                        var newTree = treeLookup[element.Tree].Tree;
                         element.TreeRef = newTree;
                         state.TreeRef = newTree;
-                        state.TreeEntity = element.TreeEntity;
-                        treeOperationsWriter.Add(oldTree, new TreeOperation(TreeOperationType.Destroy, state.Id));
-                        treeOperationsWriter.Add(newTree, new TreeOperation(TreeOperationType.Reinsert, entity, pos, radius.Value, element.TreeEntity));
+                        state.TreeEntity = element.Tree;
+                        operationsWriter.Add(oldTree, new TreeOperation(TreeOperationType.Destroy, state.Id));
+                        operationsWriter.Add(newTree, new TreeOperation(TreeOperationType.Reinsert, entity, pos, radius.Value, element.Tree));
                     }
 
                     state.PreviousPosition = pos;
                 })
                 .ScheduleParallel();
 
-            var uniqueKeys = _uniqueKeys;
+            var trees = _trees;
             var set = new HashSet<DynamicTree<Entity>>(1024, Allocator.TempJob);
 
             Job
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    var enumerator = treeOperations.GetKeyArray(Allocator.Temp);
+                    var enumerator = operations.GetKeyArray(Allocator.Temp);
                     for (int i = 0; i < enumerator.Length; i++)
                         set.TryAdd(enumerator[i]);
-                    uniqueKeys.Clear();
+                    trees.Clear();
                     var e2 = set.GetEnumerator();
                     while (e2.MoveNext())
-                        uniqueKeys.Add(e2.Current);
+                        trees.Add(e2.Current);
                 })
                 .Schedule();
 
             Dependency = new TreeOperationJob
                 {
-                    Operations = treeOperations,
-                    Keys = uniqueKeys.AsDeferredJobArray(),
+                    Operations = operations,
+                    Keys = trees.AsDeferredJobArray(),
                     Ecb = ecbSource.CreateCommandBuffer().AsParallelWriter()
                 }
-                .Schedule(uniqueKeys, 1, Dependency);
+                .Schedule(trees, 1, Dependency);
 
             ecbSource.AddJobHandleForProducer(Dependency);
             OutputDependecy = Dependency;
@@ -178,7 +178,7 @@ namespace DotsNav.Core.Systems
                         {
                             var aabb = new AABB(op.Pos, op.Radius);
                             var id = tree.CreateProxy(aabb, op.Agent);
-                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
+                            var state = new ElementSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
                             Ecb.AddComponent(index, op.Agent, state);
                             break;
                         }
@@ -192,7 +192,7 @@ namespace DotsNav.Core.Systems
                         {
                             var aabb = new AABB(op.Pos, op.Radius);
                             var id = tree.CreateProxy(aabb, op.Agent);
-                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
+                            var state = new ElementSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
                             Ecb.AddComponent(index, op.Agent, state);
                             break;
                         }
@@ -274,7 +274,7 @@ namespace DotsNav.Core.Systems
             public DynamicTree<Entity> Tree;
         }
 
-        struct AgentSystemStateComponent : ISystemStateComponentData
+        struct ElementSystemStateComponent : ISystemStateComponentData
         {
             public int Id;
             public float2 PreviousPosition;

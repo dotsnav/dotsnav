@@ -3,9 +3,9 @@ using Unity.Entities;
 
 namespace DotsNav.Core.Data
 {
-    public struct AgentTreeElementComponent : IComponentData
+    public struct DynamicTreeElementComponent : IComponentData
     {
-        public Entity TreeEntity;
+        public Entity Tree;
         internal DynamicTree<Entity> TreeRef;
     }
 }
