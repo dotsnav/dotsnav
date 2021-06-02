@@ -15,16 +15,19 @@ namespace DotsNav.Core.Systems
     class AgentTreeSystem : SystemBase
     {
         public JobHandle OutputDependecy;
-        NativeQueue<TreeOperation> _treeOperations;
+        NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _treeOperations;
+        NativeList<DynamicTree<Entity>> _uniqueKeys;
 
         protected override void OnCreate()
         {
-            _treeOperations = new NativeQueue<TreeOperation>(Allocator.Persistent);
+            _treeOperations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(1024, Allocator.Persistent);
+            _uniqueKeys = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
         }
 
         protected override void OnDestroy()
         {
             _treeOperations.Dispose();
+            _uniqueKeys.Dispose();
             Entities.WithBurst().ForEach((TreeSystemStateComponent c) => c.Tree.Dispose()).Run();
         }
 
@@ -55,10 +58,11 @@ namespace DotsNav.Core.Systems
                 })
                 .ScheduleParallel();
 
-            var treeOperations = _treeOperations;
-            var treeOperationsWriter = treeOperations.AsParallelWriter();
             var agentTreeLookup = GetComponentDataFromEntity<AgentTreeComponent>(true);
             var inputDependency = Dependency;
+            var treeOperations = _treeOperations;
+            treeOperations.Clear();
+            var treeOperationsWriter = treeOperations.AsParallelWriter();
 
             Entities
                 .WithName("Insert_Agent")
@@ -67,9 +71,9 @@ namespace DotsNav.Core.Systems
                 .WithReadOnly(agentTreeLookup)
                 .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref AgentTreeElementComponent element) =>
                 {
-                    var tree = agentTreeLookup[element.Tree].Tree;
+                    var tree = agentTreeLookup[element.TreeEntity].Tree;
                     element.TreeRef = tree;
-                    treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Insert, tree, entity, translation.Value.xz, radius.Value, element.Tree));
+                    treeOperationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, translation.Value.xz, radius.Value, element.TreeEntity));
                 })
                 .ScheduleParallel();
 
@@ -79,7 +83,7 @@ namespace DotsNav.Core.Systems
                 .WithNone<AgentTreeElementComponent>()
                 .ForEach((AgentSystemStateComponent state) =>
                 {
-                    treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Destroy, state.TreeRef, state.Id));
+                    treeOperationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, state.Id));
                 })
                 .ScheduleParallel();
 
@@ -91,75 +95,46 @@ namespace DotsNav.Core.Systems
                 {
                     var pos = translation.Value.xz;
 
-                    if (element.Tree == state.TreeEntity)
+                    if (element.TreeEntity == state.TreeEntity)
                     {
                         var displacement = pos - state.PreviousPosition;
-                        treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Move, element.TreeRef, state.Id, pos, displacement, radius.Value));
+                        treeOperationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Move, state.Id, pos, displacement, radius.Value));
                     }
                     else
                     {
                         var oldTree = state.TreeRef;
-                        var newTree = agentTreeLookup[element.Tree].Tree;
+                        var newTree = agentTreeLookup[element.TreeEntity].Tree;
                         element.TreeRef = newTree;
                         state.TreeRef = newTree;
-                        state.TreeEntity = element.Tree;
-                        treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Destroy, oldTree, state.Id));
-                        treeOperationsWriter.Enqueue(new TreeOperation(TreeOperationType.Reinsert, newTree, entity, pos, radius.Value, element.Tree));
+                        state.TreeEntity = element.TreeEntity;
+                        treeOperationsWriter.Add(oldTree, new TreeOperation(TreeOperationType.Destroy, state.Id));
+                        treeOperationsWriter.Add(newTree, new TreeOperation(TreeOperationType.Reinsert, entity, pos, radius.Value, element.TreeEntity));
                     }
 
                     state.PreviousPosition = pos;
                 })
                 .ScheduleParallel();
 
-            var sorted = new NativeList<TreeOperation>(Allocator.TempJob);
-            var chunks = new NativeList<int2>(Allocator.TempJob);
+            var uniqueKeys = _uniqueKeys;
 
             Job
-                .WithName("Sort_TreeOperations")
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    var t = treeOperations.ToArray(Allocator.Temp);
-                    sorted.CopyFrom(t);
-                    treeOperations.Clear();
-
-                    if (sorted.Length < 2)
-                    {
-                        if (sorted.Length == 1)
-                            chunks.Add(new int2(0, 1));
-                        return;
-                    }
-
-                    sorted.Sort(new TreeOperation.Comparer());
-
-                    var prev = sorted[0].Tree;
-                    var start = 0;
-                    var amount = 1;
-                    for (int i = 1; i < sorted.Length; i++)
-                    {
-                        var tree = sorted[i].Tree;
-                        if (tree.Equals(prev))
-                        {
-                            ++amount;
-                        }
-                        else
-                        {
-                            chunks.Add(new int2(start, start += amount));
-                            amount = 1;
-                            prev = tree;
-                        }
-                    }
-                    chunks.Add(new int2(start, start + amount));
+                    var result = treeOperations.GetKeyArray(Allocator.Temp);
+                    result.Sort();
+                    var uniques = result.Unique();
+                    uniqueKeys.CopyFrom(result.GetSubArray(0, uniques));
                 })
                 .Schedule();
 
             Dependency = new TreeOperationJob
                 {
-                    Operations = sorted.AsDeferredJobArray(),
-                    Chunks = chunks.AsDeferredJobArray(),
+                    Operations = treeOperations,
+                    Keys = uniqueKeys.AsDeferredJobArray(),
                     Ecb = ecbSource.CreateCommandBuffer().AsParallelWriter()
                 }
-                .Schedule(chunks, 1, Dependency);
+                .Schedule(uniqueKeys, 1, Dependency);
 
             ecbSource.AddJobHandleForProducer(Dependency);
             OutputDependecy = Dependency;
@@ -168,44 +143,48 @@ namespace DotsNav.Core.Systems
         [BurstCompile]
         struct TreeOperationJob : IJobParallelForDefer
         {
-            [NativeDisableParallelForRestriction]
-            public NativeArray<TreeOperation> Operations;
-            public NativeArray<int2> Chunks;
+            [ReadOnly]
+            public NativeArray<DynamicTree<Entity>> Keys;
+            [ReadOnly]
+            public NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> Operations;
+
             public EntityCommandBuffer.ParallelWriter Ecb;
 
             public void Execute(int index)
             {
-                var chunk = Chunks[index];
-                for (int i = chunk.x; i < chunk.y; i++)
+                var tree = Keys[index];
+                var enumerator = Operations.GetValuesForKey(tree);
+
+                while (enumerator.MoveNext())
                 {
-                    var op = Operations[i];
+                    var op = enumerator.Current;
                     switch (op.Type)
                     {
                         case TreeOperationType.Insert:
                         {
                             var aabb = new AABB(op.Pos, op.Radius);
-                            var id = op.Tree.CreateProxy(aabb, op.Agent);
-                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = op.Tree};
-                            Ecb.AddComponent(i, op.Agent, state);
+                            var id = tree.CreateProxy(aabb, op.Agent);
+                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
+                            Ecb.AddComponent(index, op.Agent, state);
                             break;
                         }
                         case TreeOperationType.Move:
                         {
                             var aabb = new AABB(op.Pos, op.Radius);
-                            op.Tree.MoveProxy(op.Id, aabb, op.Displacement);
+                            tree.MoveProxy(op.Id, aabb, op.Displacement);
                             break;
                         }
                         case TreeOperationType.Reinsert:
                         {
                             var aabb = new AABB(op.Pos, op.Radius);
-                            var id = op.Tree.CreateProxy(aabb, op.Agent);
-                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = op.Tree};
-                            Ecb.AddComponent(i, op.Agent, state);
+                            var id = tree.CreateProxy(aabb, op.Agent);
+                            var state = new AgentSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
+                            Ecb.AddComponent(index, op.Agent, state);
                             break;
                         }
                         case TreeOperationType.Destroy:
                         {
-                            op.Tree.DestroyProxy(op.Id);
+                            tree.DestroyProxy(op.Id);
                             break;
                         }
                         default:
@@ -218,7 +197,6 @@ namespace DotsNav.Core.Systems
         readonly struct TreeOperation
         {
             public readonly TreeOperationType Type;
-            public readonly DynamicTree<Entity> Tree;
             public readonly int Id;
             public readonly Entity Agent;
             public readonly Entity TreeEntity;
@@ -229,10 +207,9 @@ namespace DotsNav.Core.Systems
             /// <summary>
             /// Insert
             /// </summary>
-            public TreeOperation(TreeOperationType type, DynamicTree<Entity> tree, Entity agent, float2 pos, float radius, Entity treeEntity)
+            public TreeOperation(TreeOperationType type, Entity agent, float2 pos, float radius, Entity treeEntity)
             {
                 Type = type;
-                Tree = tree;
                 Agent = agent;
                 Pos = pos;
                 Radius = radius;
@@ -244,10 +221,9 @@ namespace DotsNav.Core.Systems
             /// <summary>
             /// Destroy
             /// </summary>
-            public TreeOperation(TreeOperationType type, DynamicTree<Entity> tree, int id)
+            public TreeOperation(TreeOperationType type, int id)
             {
                 Type = type;
-                Tree = tree;
                 Id = id;
                 Radius = default;
                 Agent = default;
@@ -259,21 +235,15 @@ namespace DotsNav.Core.Systems
             /// <summary>
             /// Move
             /// </summary>
-            public TreeOperation(TreeOperationType type, DynamicTree<Entity> tree, int id, float2 pos, float2 displacement, float radius)
+            public TreeOperation(TreeOperationType type, int id, float2 pos, float2 displacement, float radius)
             {
                 Type = type;
-                Tree = tree;
                 Id = id;
                 Pos = pos;
                 Displacement = displacement;
                 Radius = radius;
                 Agent = default;
                 TreeEntity = default;
-            }
-
-            public struct Comparer : IComparer<TreeOperation>
-            {
-                public int Compare(TreeOperation x, TreeOperation y) => x.Tree.Equals(y.Tree) ? x.Type - y.Type : x.Tree.CompareTo(y.Tree);
             }
         }
 

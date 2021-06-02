@@ -77,12 +77,17 @@ namespace DotsNav.Core.Collections.BVH
 
         public readonly int CompareTo(DynamicTree<T> other)
         {
-            return _tree < other._tree ? -1 : 1;
+            return _tree == other._tree ? 0 : _tree < other._tree ? -1 : 1;
         }
 
         public readonly bool Equals(DynamicTree<T> other)
         {
             return _tree == other._tree;
+        }
+
+        public override int GetHashCode()
+        {
+           return _tree == null ? 0 : ((ulong) _tree).GetHashCode();
         }
     }
 }

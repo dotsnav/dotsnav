@@ -5,7 +5,7 @@ namespace DotsNav.Core.Data
 {
     public struct AgentTreeElementComponent : IComponentData
     {
-        public Entity Tree;
+        public Entity TreeEntity;
         internal DynamicTree<Entity> TreeRef;
     }
 }
