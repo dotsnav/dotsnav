@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Unity.Collections;
 using Debug = UnityEngine.Debug;
 
-namespace DotsNav.Core
+namespace DotsNav
 {
     static class Assert
     {

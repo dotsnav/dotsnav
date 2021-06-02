@@ -1,7 +1,6 @@
-using DotsNav.Core;
-using DotsNav.Core.Drawing;
-using DotsNav.Core.Systems;
+using DotsNav.Drawing;
 using DotsNav.Navmesh.Data;
+using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
@@ -27,7 +26,7 @@ namespace DotsNav.Navmesh.Systems
             Entities
                 .WithBurst()
                 .WithAll<NavmeshComponent>()
-                .ForEach((Navmesh.Navmesh navmesh) =>
+                .ForEach((Navmesh navmesh) =>
                 {
                     var enumerator = navmesh.GetEdgeEnumerator();
                     var lines = new NativeList<Line>(navmesh.Vertices * 3, Allocator.Temp);

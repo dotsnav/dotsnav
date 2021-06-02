@@ -30,7 +30,7 @@ namespace DotsNav.CollisionDetection.Hybrid
     struct DiscCastJob : IJob
     {
         public DiscCast Input;
-        public Navmesh.Navmesh.Navmesh Navmesh;
+        public Navmesh.Navmesh Navmesh;
 
         public void Execute()
         {

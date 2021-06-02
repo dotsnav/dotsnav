@@ -1,6 +1,6 @@
-using DotsNav.Core.Data;
-using DotsNav.Core.Systems;
+using DotsNav.Data;
 using DotsNav.PathFinding.Data;
+using DotsNav.Systems;
 using Unity.Entities;
 
 namespace DotsNav.PathFinding.Systems

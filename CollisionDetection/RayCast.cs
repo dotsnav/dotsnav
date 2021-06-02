@@ -33,7 +33,7 @@ namespace DotsNav.CollisionDetection
         /// </summary>
         /// <param name="segmentCast">Cast data</param>
         /// <param name="allocator">Allocator used to create internal buffers</param>
-        public static void CastRay<T>(this Navmesh.Navmesh.Navmesh navmesh, T rayCast, Allocator allocator) where T : IRayCast
+        public static void CastRay<T>(this Navmesh.Navmesh navmesh, T rayCast, Allocator allocator) where T : IRayCast
         {
             var open = new NativeList<IntPtr>(allocator);
             navmesh.CastRay(rayCast, open);
@@ -46,7 +46,7 @@ namespace DotsNav.CollisionDetection
         /// </summary>
         /// <param name="segmentCast">Cast data</param>
         /// <param name="open">NativeList for internal use, is cleared before use</param>
-        public static void CastRay<T>(this Navmesh.Navmesh.Navmesh navmesh, T rayCast, NativeList<IntPtr> open) where T : IRayCast
+        public static void CastRay<T>(this Navmesh.Navmesh navmesh, T rayCast, NativeList<IntPtr> open) where T : IRayCast
         {
             Assert.IsTrue(rayCast.Distance >= 0, "Ray cast distance should be larger than or equal to zero");
             Assert.IsTrue(math.abs(1 - math.length(rayCast.Direction)) < .001f, "Ray cast direction should be normalized");

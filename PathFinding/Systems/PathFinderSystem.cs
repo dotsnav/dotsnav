@@ -1,8 +1,8 @@
-using DotsNav.Core.Data;
-using DotsNav.Core.Systems;
+using DotsNav.Data;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Systems;
 using DotsNav.PathFinding.Data;
+using DotsNav.Systems;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -21,7 +21,7 @@ namespace DotsNav.PathFinding.Systems
 
         protected override void OnCreate()
         {
-            RequireSingletonForUpdate<Navmesh.Navmesh.Navmesh>();
+            RequireSingletonForUpdate<Navmesh.Navmesh>();
             RequireSingletonForUpdate<PathFinderComponent>();
             RequireSingletonForUpdate<PathFinderSystemStateComponent>();
             _buffer = new NativeList<Entity>(Allocator.Persistent);
@@ -38,7 +38,7 @@ namespace DotsNav.PathFinding.Systems
         {
             var data = GetSingleton<PathFinderComponent>();
             var resources = GetSingleton<PathFinderSystemStateComponent>();
-            var navmesh = GetSingleton<Navmesh.Navmesh.Navmesh>();
+            var navmesh = GetSingleton<Navmesh.Navmesh>();
             var navmeshEntity = GetSingletonEntity<NavmeshComponent>();
             var destroyed = GetBufferFromEntity<DestroyedTriangleElement>(true);
             var buffer = _buffer;
@@ -107,7 +107,7 @@ namespace DotsNav.PathFinding.Systems
             [NativeSetThreadIndex]
             int _threadId;
 
-            public Navmesh.Navmesh.Navmesh Navmesh;
+            public Navmesh.Navmesh Navmesh;
 
             public void Execute(int index)
             {

@@ -31,7 +31,7 @@ namespace DotsNav.CollisionDetection
         /// </summary>
         /// <param name="segmentCast">Cast data</param>
         /// <param name="allocator">Allocator used to create internal buffers</param>
-        public static void CastSegment<T>(this Navmesh.Navmesh.Navmesh navmesh, T segmentCast, Allocator allocator) where T : ISegmentCast
+        public static void CastSegment<T>(this Navmesh.Navmesh navmesh, T segmentCast, Allocator allocator) where T : ISegmentCast
         {
             var open = new NativeList<IntPtr>(allocator);
             navmesh.CastSegment(segmentCast, open);
@@ -44,7 +44,7 @@ namespace DotsNav.CollisionDetection
         /// </summary>
         /// <param name="segmentCast">Cast data</param>
         /// <param name="open">NativeList for internal use, is cleared before use</param>
-        public static void CastSegment<T>(this Navmesh.Navmesh.Navmesh navmesh, T segmentCast, NativeList<IntPtr> open) where T : ISegmentCast
+        public static void CastSegment<T>(this Navmesh.Navmesh navmesh, T segmentCast, NativeList<IntPtr> open) where T : ISegmentCast
         {
             var o = segmentCast.Origin;
             var d = segmentCast.Destination;

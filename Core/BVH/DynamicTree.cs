@@ -3,9 +3,9 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
-namespace DotsNav.Core.Collections.BVH
+namespace DotsNav.BVH
 {
-    public unsafe struct DynamicTree<T> : IComparable<DynamicTree<T>>, IEquatable<DynamicTree<T>> where T : unmanaged
+    unsafe struct DynamicTree<T> : IComparable<DynamicTree<T>>, IEquatable<DynamicTree<T>> where T : unmanaged
     {
         [NativeDisableUnsafePtrRestriction]
         UnsafeDynamicTree<T>* _tree;

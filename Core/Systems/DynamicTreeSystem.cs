@@ -1,7 +1,7 @@
 ﻿using System;
-using DotsNav.Core.Collections;
-using DotsNav.Core.Collections.BVH;
-using DotsNav.Core.Data;
+using DotsNav.BVH;
+using DotsNav.Collections;
+using DotsNav.Data;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -9,7 +9,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace DotsNav.Core.Systems
+namespace DotsNav.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     public class DynamicTreeSystem : SystemBase

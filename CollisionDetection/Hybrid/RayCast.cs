@@ -31,7 +31,7 @@ namespace DotsNav.CollisionDetection.Hybrid
     struct RayCastJob : IJob
     {
         public RayCast Input;
-        public Navmesh.Navmesh.Navmesh Navmesh;
+        public Navmesh.Navmesh Navmesh;
 
         public void Execute()
         {

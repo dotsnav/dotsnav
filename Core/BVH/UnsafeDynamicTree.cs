@@ -23,9 +23,9 @@
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace DotsNav.Core.Collections.BVH
+namespace DotsNav.BVH
 {
-    public struct UnsafeDynamicTree<T> where T : unmanaged
+    struct UnsafeDynamicTree<T> where T : unmanaged
     {
         const float AABBExtension = .1f;
         const float AABBMultiplier = 4;

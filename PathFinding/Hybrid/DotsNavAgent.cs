@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using DotsNav.Core.Data;
+using DotsNav.Data;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Data;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Assert = DotsNav.Core.Assert;
+using Assert = DotsNav.Assert;
 
 namespace DotsNav.PathFinding.Hybrid
 {

@@ -1,5 +1,4 @@
-using DotsNav.Core;
-using DotsNav.Core.Collections;
+using DotsNav.Collections;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -46,7 +45,7 @@ namespace DotsNav.Navmesh
                         if (!step.Edge->IsConstrainedBy(constraintId))
                         {
                             step.Edge->AddConstraint(constraintId);
-                            Navmesh.Navmesh.ResetClearance(step.Edge);
+                            Navmesh.ResetClearance(step.Edge);
                         }
 
                         step = steps[step.Previous];

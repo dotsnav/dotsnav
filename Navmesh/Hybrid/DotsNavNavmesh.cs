@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using DotsNav.Core;
-using DotsNav.Core.Systems;
 using DotsNav.Navmesh.Data;
+using DotsNav.Systems;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
@@ -248,7 +247,7 @@ namespace DotsNav.Navmesh.Hybrid
         /// Returns the native navmesh which exposes the triangulation. This structure is invalidated each update and
         /// the latest version should be obtained each cycle
         /// </summary>
-        public Navmesh.Navmesh GetNativeNavmesh() => World.All[0].EntityManager.GetComponentData<Navmesh.Navmesh>(Entity);
+        public Navmesh GetNativeNavmesh() => World.All[0].EntityManager.GetComponentData<Navmesh>(Entity);
 
         void OnDrawGizmos()
         {

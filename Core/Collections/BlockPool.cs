@@ -1,7 +1,7 @@
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
-namespace DotsNav.Core.Collections
+namespace DotsNav.Collections
 {
     unsafe struct BlockPool<T> where T : unmanaged
     {

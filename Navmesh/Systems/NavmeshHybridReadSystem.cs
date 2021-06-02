@@ -1,5 +1,5 @@
-using DotsNav.Core.Systems;
 using DotsNav.Navmesh.Data;
+using DotsNav.Systems;
 using Unity.Entities;
 
 namespace DotsNav.Navmesh.Systems

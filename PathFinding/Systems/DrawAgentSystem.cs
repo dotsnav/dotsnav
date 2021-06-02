@@ -1,8 +1,7 @@
-using DotsNav.Core;
-using DotsNav.Core.Data;
-using DotsNav.Core.Drawing;
-using DotsNav.Core.Systems;
+using DotsNav.Data;
+using DotsNav.Drawing;
 using DotsNav.PathFinding.Data;
+using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;

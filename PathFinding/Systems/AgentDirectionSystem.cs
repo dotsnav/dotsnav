@@ -1,7 +1,6 @@
-using DotsNav.Core;
-using DotsNav.Core.Data;
-using DotsNav.Core.Systems;
+using DotsNav.Data;
 using DotsNav.PathFinding.Data;
+using DotsNav.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;

@@ -29,7 +29,6 @@
  * <http://gamma.cs.unc.edu/RVO2/>
  */
 
-using DotsNav.Core;
 using DotsNav.LocalAvoidance.Data;
 using Unity.Collections;
 using Unity.Mathematics;

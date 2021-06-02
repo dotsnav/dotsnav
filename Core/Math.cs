@@ -1,9 +1,9 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using DotsNav.Core.Predicates;
+using DotsNav.Predicates;
 using Unity.Mathematics;
 
-namespace DotsNav.Core
+namespace DotsNav
 {
     static class Math
     {

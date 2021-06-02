@@ -1,17 +1,16 @@
 using System;
 using System.Diagnostics;
-using DotsNav.Core;
-using DotsNav.Core.Collections;
-using DotsNav.Core.Drawing;
-using DotsNav.Core.Predicates;
+using DotsNav.Collections;
+using DotsNav.Drawing;
 using DotsNav.Navmesh;
 using DotsNav.PathFinding.Data;
+using DotsNav.Predicates;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using IntPtr = DotsNav.Core.IntPtr;
-using Math = DotsNav.Core.Math;
+using IntPtr = DotsNav.IntPtr;
+using Math = DotsNav.Math;
 
 namespace DotsNav.PathFinding
 {
@@ -36,7 +35,7 @@ namespace DotsNav.PathFinding
             _validGoalEdges = new List<int>(allocator);
         }
 
-        public PathQueryState Search(float2 start, float2 goal, Navmesh.Navmesh.Navmesh navmesh, List<Gate> path, float radius, DynamicBuffer<TriangleElement> triangleIds, out int cost)
+        public PathQueryState Search(float2 start, float2 goal, Navmesh.Navmesh navmesh, List<Gate> path, float radius, DynamicBuffer<TriangleElement> triangleIds, out int cost)
         {
             var open = _open;
             var closed = _closed;
@@ -367,7 +366,7 @@ namespace DotsNav.PathFinding
                 var sgi = Math.ProjectLine(e->Org->Point, e->Dest->Point, v);
                 opposite = (float2) (sgi + math.normalize(sgi - v) * d);
 
-                var c = Navmesh.Navmesh.Navmesh.TryGetConstraint(math.length(opposite - v), v, e->Sym);
+                var c = Navmesh.Navmesh.TryGetConstraint(math.length(opposite - v), v, e->Sym);
 
                 if (c == null)
                     return false;

@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Core.Systems
+namespace DotsNav.Systems
 {
     /// <summary>
     /// Runs as last system in DotsNavSystemGroup. Assign to DotsNavSystemGroup.EcbSource to us as an alternative

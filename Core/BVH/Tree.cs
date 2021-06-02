@@ -21,13 +21,14 @@
 // SOFTWARE.
 
 using System.Diagnostics;
+using DotsNav.Collections;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
-namespace DotsNav.Core.Collections.BVH
+namespace DotsNav.BVH
 {
-    public unsafe struct Tree<T> where T : unmanaged
+    unsafe struct Tree<T> where T : unmanaged
     {
         const int NullNode = -1;
 
