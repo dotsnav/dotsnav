@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Core.Systems
+namespace DotsNav.Systems
 {
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup), OrderFirst = true)]
     class ClearSystem : SystemBase

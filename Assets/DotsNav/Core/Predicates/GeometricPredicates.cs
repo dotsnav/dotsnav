@@ -58,7 +58,7 @@
 
 using Unity.Mathematics;
 
-namespace DotsNav.Core.Predicates
+namespace DotsNav.Predicates
 {
     using EA = ExactArithmetic;
 

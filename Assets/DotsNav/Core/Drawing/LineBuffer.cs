@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
-namespace DotsNav.Core.Drawing
+namespace DotsNav.Drawing
 {
     unsafe struct UnsafeArray<T> : IDisposable where T : unmanaged
     {

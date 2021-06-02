@@ -1,6 +1,6 @@
 ﻿using Unity.Mathematics;
 
-namespace DotsNav.Core.Collections.BVH
+namespace DotsNav.BVH
 {
     public struct AABB
     {

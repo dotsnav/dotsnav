@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Unity.Collections;
 
-namespace DotsNav.Core.Collections
+namespace DotsNav.Collections
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(PtrStackDebugView<>))]

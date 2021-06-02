@@ -1,5 +1,5 @@
-using DotsNav.Core.Systems;
 using DotsNav.Navmesh.Data;
+using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -140,7 +140,7 @@ namespace DotsNav.Navmesh.Systems
                     (
                         int entityInQueryIndex,
                         DynamicBuffer<DestroyedTriangleElement> destroyed,
-                        ref Navmesh.Navmesh navmesh
+                        ref Navmesh navmesh
                     ) =>
                     {
                         destroyed.Clear();

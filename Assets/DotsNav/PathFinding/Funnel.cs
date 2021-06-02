@@ -1,9 +1,8 @@
 using System;
-using DotsNav.Core;
-using DotsNav.Core.Collections;
+using DotsNav.Collections;
 using Unity.Collections;
 using Unity.Mathematics;
-using Math = DotsNav.Core.Math;
+using Math = DotsNav.Math;
 
 namespace DotsNav.PathFinding
 {

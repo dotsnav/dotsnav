@@ -1,7 +1,7 @@
-﻿using DotsNav.Core.Collections.BVH;
+﻿using DotsNav.BVH;
 using Unity.Entities;
 
-namespace DotsNav.Core.Data
+namespace DotsNav.Data
 {
     public struct DynamicTreeComponent : IComponentData
     {

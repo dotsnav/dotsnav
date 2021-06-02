@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav.Core.Data
+namespace DotsNav.Data
 {
     /// <summary>
     /// When a Translation and DynamicBuffer&lt;PathSegmentElement&gt; are present the direction needed to follow the path is calculated

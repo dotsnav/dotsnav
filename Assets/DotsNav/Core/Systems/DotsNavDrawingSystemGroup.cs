@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Core.Systems
+namespace DotsNav.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
     public class DotsNavDrawingSystemGroup : ComponentSystemGroup

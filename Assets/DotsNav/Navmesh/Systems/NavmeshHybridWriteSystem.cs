@@ -1,4 +1,4 @@
-using DotsNav.Core.Systems;
+using DotsNav.Systems;
 using Unity.Entities;
 
 namespace DotsNav.Navmesh.Systems
@@ -10,7 +10,7 @@ namespace DotsNav.Navmesh.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((Hybrid.DotsNavNavmesh hybrid, Navmesh.Navmesh navmesh) =>
+                .ForEach((Hybrid.DotsNavNavmesh hybrid, Navmesh navmesh) =>
                 {
                     hybrid.Vertices = navmesh.Vertices;
 #if UNITY_EDITOR

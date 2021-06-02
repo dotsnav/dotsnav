@@ -1,6 +1,5 @@
 using UnityEngine;
 using DotsNav;
-using DotsNav.Core;
 using DotsNav.Navmesh.Hybrid;
 
 [ExecuteInEditMode]

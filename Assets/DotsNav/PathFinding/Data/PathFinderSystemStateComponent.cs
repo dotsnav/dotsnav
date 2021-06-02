@@ -1,5 +1,4 @@
-using DotsNav.Core;
-using DotsNav.Core.Collections;
+using DotsNav.Collections;
 using Unity.Collections;
 using Unity.Entities;
 

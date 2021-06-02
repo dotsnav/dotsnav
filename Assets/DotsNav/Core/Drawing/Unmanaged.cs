@@ -1,6 +1,6 @@
 using Unity.Burst;
 
-namespace DotsNav.Core.Drawing
+namespace DotsNav.Drawing
 {
     struct Unmanaged
     {

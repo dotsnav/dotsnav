@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Core.Systems
+namespace DotsNav.Systems
 {
     /// <summary>
     /// All DotsNav operations occur in this System Group, which is updated in FixedStepSimulationSystemGroup by default.

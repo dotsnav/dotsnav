@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotsNav.Core;
+using DotsNav;
 using DotsNav.Navmesh.Hybrid;
 using Unity.Mathematics;
 using UnityEngine;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using DotsNav.Core;
+using DotsNav;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Hybrid;
 using Unity.Burst;
@@ -8,7 +8,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using Navmesh = DotsNav.Navmesh.Navmesh.Navmesh;
+using Navmesh = DotsNav.Navmesh.Navmesh;
 using Random = Unity.Mathematics.Random;
 
 unsafe class PolygonTest : MonoBehaviour

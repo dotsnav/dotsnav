@@ -3,7 +3,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace DotsNav.Core.Drawing
+namespace DotsNav.Drawing
 {
     // struct Color
     // {

@@ -1,9 +1,8 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
 using DotsNav;
-using DotsNav.Core;
-using DotsNav.Core.Predicates;
 using DotsNav.Navmesh.Hybrid;
+using DotsNav.Predicates;
 
 [ExecuteInEditMode]
 public class RectFromCircle : MonoBehaviour

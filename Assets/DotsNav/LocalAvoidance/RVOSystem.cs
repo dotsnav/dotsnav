@@ -1,8 +1,7 @@
-﻿using DotsNav.Core;
-using DotsNav.Core.Collections.BVH;
-using DotsNav.Core.Data;
-using DotsNav.Core.Systems;
+﻿using DotsNav.BVH;
+using DotsNav.Data;
 using DotsNav.LocalAvoidance.Data;
+using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
