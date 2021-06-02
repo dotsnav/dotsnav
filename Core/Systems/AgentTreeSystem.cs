@@ -17,11 +17,14 @@ namespace DotsNav.Core.Systems
         public JobHandle OutputDependecy;
         NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _treeOperations;
         NativeList<DynamicTree<Entity>> _uniqueKeys;
+        EntityQuery _insertAgentQuery;
+        EntityQuery _destroyAgentQuery;
+        EntityQuery _updateAgentQuery;
 
         protected override void OnCreate()
         {
-            _treeOperations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(1024, Allocator.Persistent);
-            _uniqueKeys = new NativeList<DynamicTree<Entity>>(1024, Allocator.Persistent);
+            _treeOperations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
+            _uniqueKeys = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
         }
 
         protected override void OnDestroy()
@@ -60,7 +63,11 @@ namespace DotsNav.Core.Systems
 
             var agentTreeLookup = GetComponentDataFromEntity<AgentTreeComponent>(true);
             var inputDependency = Dependency;
+
             var treeOperations = _treeOperations;
+            var minCapacity = _insertAgentQuery.CalculateEntityCount() + _destroyAgentQuery.CalculateEntityCount() + 2 * _updateAgentQuery.CalculateEntityCount();
+            if (treeOperations.Capacity < minCapacity)
+                treeOperations.Capacity = minCapacity;
             treeOperations.Clear();
             var treeOperationsWriter = treeOperations.AsParallelWriter();
 
@@ -69,6 +76,7 @@ namespace DotsNav.Core.Systems
                 .WithBurst()
                 .WithNone<AgentSystemStateComponent>()
                 .WithReadOnly(agentTreeLookup)
+                .WithStoreEntityQueryInField(ref _insertAgentQuery)
                 .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref AgentTreeElementComponent element) =>
                 {
                     var tree = agentTreeLookup[element.TreeEntity].Tree;
@@ -81,6 +89,7 @@ namespace DotsNav.Core.Systems
                 .WithName("Destroy_Agent")
                 .WithBurst()
                 .WithNone<AgentTreeElementComponent>()
+                .WithStoreEntityQueryInField(ref _destroyAgentQuery)
                 .ForEach((AgentSystemStateComponent state) =>
                 {
                     treeOperationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, state.Id));
@@ -91,6 +100,7 @@ namespace DotsNav.Core.Systems
                 .WithName("Update_Agent")
                 .WithBurst()
                 .WithReadOnly(agentTreeLookup)
+                .WithStoreEntityQueryInField(ref _updateAgentQuery)
                 .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref AgentTreeElementComponent element, ref AgentSystemStateComponent state) =>
                 {
                     var pos = translation.Value.xz;
@@ -253,10 +263,10 @@ namespace DotsNav.Core.Systems
 
         enum TreeOperationType
         {
-            Insert = 3,
-            Move = 2,
-            Reinsert = 4,
-            Destroy = 1,
+            Insert,
+            Move,
+            Reinsert,
+            Destroy
         }
 
         struct TreeSystemStateComponent : ISystemStateComponentData
