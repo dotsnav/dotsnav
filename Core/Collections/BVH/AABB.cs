@@ -52,10 +52,10 @@ namespace DotsNav.Core.Collections.BVH
             return result;
         }
 
-        internal float2 LowerBound;
+        public float2 LowerBound;
 
         //< the lower vertex
-        internal float2 UpperBound; //< the upper vertex
+        public float2 UpperBound; //< the upper vertex
 
         public AABB(float2 centre, float radius)
         {

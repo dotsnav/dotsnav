@@ -50,7 +50,7 @@ namespace DotsNav.LocalAvoidance
                     var pos = translation.Value.xz;
                     var ext = agent.NeighbourDist / 2;
                     var aabb = new AABB {LowerBound = pos - ext, UpperBound = pos + ext};
-                    element.TreeRef.Query(new VelocityObstacleCollector(pos, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
+                    element.Query(new VelocityObstacleCollector(pos, agent.NeighbourDist, agent.MaxNeighbours, neighbours, velocityObstacleLookup), aabb);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                     var allObstacles = new NativeList<Obstacle>(0, Allocator.Temp);
                     agent.Velocity = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, allObstacles, invTimeStep);
