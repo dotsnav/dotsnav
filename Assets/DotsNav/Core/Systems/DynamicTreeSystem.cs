@@ -12,7 +12,7 @@ using Unity.Transforms;
 namespace DotsNav.Core.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    class DynamicTreeSystem : SystemBase
+    public class DynamicTreeSystem : SystemBase
     {
         public JobHandle OutputDependecy;
         NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
