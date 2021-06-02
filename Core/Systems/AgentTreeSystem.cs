@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using DotsNav.Core.Collections;
 using DotsNav.Core.Collections.BVH;
 using DotsNav.Core.Data;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -21,7 +22,7 @@ namespace DotsNav.Core.Systems
         protected override void OnCreate()
         {
             _treeOperations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(1024, Allocator.Persistent);
-            _uniqueKeys = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
+            _uniqueKeys = new NativeList<DynamicTree<Entity>>(1024, Allocator.Persistent);
         }
 
         protected override void OnDestroy()
@@ -116,15 +117,19 @@ namespace DotsNav.Core.Systems
                 .ScheduleParallel();
 
             var uniqueKeys = _uniqueKeys;
+            var set = new HashSet<DynamicTree<Entity>>(1024, Allocator.TempJob);
 
             Job
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    var result = treeOperations.GetKeyArray(Allocator.Temp);
-                    result.Sort();
-                    var uniques = result.Unique();
-                    uniqueKeys.CopyFrom(result.GetSubArray(0, uniques));
+                    var enumerator = treeOperations.GetKeyArray(Allocator.Temp);
+                    for (int i = 0; i < enumerator.Length; i++)
+                        set.TryAdd(enumerator[i]);
+                    uniqueKeys.Clear();
+                    var e2 = set.GetEnumerator();
+                    while (e2.MoveNext())
+                        uniqueKeys.Add(e2.Current);
                 })
                 .Schedule();
 
