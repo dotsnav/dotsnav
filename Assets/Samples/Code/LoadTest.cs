@@ -1,4 +1,5 @@
 using DotsNav;
+using DotsNav.Drawing;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Hybrid;
 using Unity.Collections;
