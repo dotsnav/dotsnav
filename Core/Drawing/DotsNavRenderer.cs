@@ -1,9 +1,8 @@
 using System;
-using DotsNav.Drawing;
 using Unity.Jobs;
 using UnityEngine;
 
-namespace DotsNav
+namespace DotsNav.Drawing
 {
     /// <summary>
     /// Attach to any gameobject to render in the scene view, or the camera to also render in the game view

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DotsNav.Drawing;
 using DotsNav.Navmesh.Data;
 using DotsNav.Systems;
 using Unity.Burst;
