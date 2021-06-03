@@ -1,7 +1,9 @@
 using DotsNav;
 using DotsNav.Data;
+using DotsNav.LocalAvoidance;
 using DotsNav.LocalAvoidance.Data;
 using DotsNav.Systems;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -67,11 +69,27 @@ public class RVOCircleTest : MonoBehaviour
         void SpawnCircleTest()
         {
             SpawnTree(0);
-            SpawnTree(new float2(SpawnRadius * 1f, 0));
+
+            // SpawnTree(new float2(SpawnRadius * 1f, 0));
 
             void SpawnTree(float2 origin)
             {
                 var agentTree = entityManager.CreateEntity(typeof(DynamicTreeComponent));
+
+                var obstacleTreeEntity = entityManager.CreateEntity();
+                var tree = new ObstacleTree(Allocator.Persistent);
+
+                var l = new NativeList<float2>(4, Allocator.Temp);
+                l.Add(new float2(-5, -5));
+                l.Add(new float2(5, -5));
+                l.Add(new float2(5, 5));
+                l.Add(new float2(-5, 5));
+                l.Add(new float2(-5, -5));
+
+                tree.InsertObstacle(entityManager.CreateEntity(), l.AsArray());
+
+                var obstacleTree = new ObstacleTreeElementComponent {TreeRef = tree};
+                entityManager.AddComponentData(obstacleTreeEntity, obstacleTree);
 
                 for (int i = 0; i < AgentAmount; i++)
                 {
@@ -80,6 +98,7 @@ public class RVOCircleTest : MonoBehaviour
                     entityManager.SetComponentData(entity, new Translation {Value = (origin + p).ToXxY()});
                     entityManager.AddComponentData(entity, new TargetComponent {Value = origin - p});
                     entityManager.AddComponentData(entity, new DynamicTreeElementComponent{Tree = agentTree});
+                    entityManager.AddComponentData(entity, obstacleTree);
                 }
             }
         }

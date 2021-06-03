@@ -40,8 +40,8 @@ namespace DotsNav.Systems
         protected override void OnUpdate()
         {
             var ecbSource = DotsNavSystemGroup.EcbSource;
-            var parallelBuffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
 
+            var parallelBuffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
             _dependencies[0] =
                 Entities
                     .WithName("Allocate_Tree")
@@ -54,6 +54,7 @@ namespace DotsNav.Systems
                     })
                     .ScheduleParallel(Dependency);
 
+            parallelBuffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
             _dependencies[1] =
                 Entities
                     .WithName("Dispose_Tree")
@@ -82,6 +83,7 @@ namespace DotsNav.Systems
                     .WithNone<ElementSystemStateComponent>()
                     .WithReadOnly(treeLookup)
                     .WithStoreEntityQueryInField(ref _insertQuery)
+                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
                     .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref DynamicTreeElementComponent element) =>
                     {
                         var tree = treeLookup[element.Tree].Tree;
@@ -90,17 +92,18 @@ namespace DotsNav.Systems
                     })
                     .ScheduleParallel(_dependencies[0]);
 
-            _dependencies[2] =
+            _dependencies[0] =
                 Entities
                     .WithName("Destroy")
                     .WithBurst()
                     .WithNone<DynamicTreeElementComponent>()
                     .WithStoreEntityQueryInField(ref _destroyQuery)
+                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
                     .ForEach((ElementSystemStateComponent state) =>
                     {
                         operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, state.Id));
                     })
-                    .ScheduleParallel(Dependency);
+                    .ScheduleParallel(_dependencies[0]);
 
             _dependencies[0] =
                 Entities
@@ -108,6 +111,7 @@ namespace DotsNav.Systems
                     .WithBurst()
                     .WithReadOnly(treeLookup)
                     .WithStoreEntityQueryInField(ref _updateQuery)
+                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
                     .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref DynamicTreeElementComponent element, ref ElementSystemStateComponent state) =>
                     {
                         var pos = translation.Value.xz;
@@ -185,22 +189,19 @@ namespace DotsNav.Systems
                     {
                         case TreeOperationType.Insert:
                         {
-                            var aabb = new AABB(op.Pos, op.Radius);
-                            var id = tree.CreateProxy(aabb, op.Agent);
+                            var id = tree.CreateProxy(AABB.FromRadius(op.Pos, op.Radius), op.Agent);
                             var state = new ElementSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
                             Ecb.AddComponent(index, op.Agent, state);
                             break;
                         }
                         case TreeOperationType.Move:
                         {
-                            var aabb = new AABB(op.Pos, op.Radius);
-                            tree.MoveProxy(op.Id, aabb, op.Displacement);
+                            tree.MoveProxy(op.Id, AABB.FromRadius(op.Pos, op.Radius), op.Displacement);
                             break;
                         }
                         case TreeOperationType.Reinsert:
                         {
-                            var aabb = new AABB(op.Pos, op.Radius);
-                            var id = tree.CreateProxy(aabb, op.Agent);
+                            var id = tree.CreateProxy(AABB.FromRadius(op.Pos, op.Radius), op.Agent);
                             var state = new ElementSystemStateComponent{Id = id, PreviousPosition = op.Pos, TreeEntity = op.TreeEntity, TreeRef = tree};
                             Ecb.AddComponent(index, op.Agent, state);
                             break;

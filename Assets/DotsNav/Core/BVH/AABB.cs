@@ -57,10 +57,9 @@ namespace DotsNav.BVH
         //< the lower vertex
         public float2 UpperBound; //< the upper vertex
 
-        public AABB(float2 centre, float radius)
-        {
-            LowerBound = centre - radius;
-            UpperBound = centre + radius;
-        }
+        public override string ToString() => $"AABB: {LowerBound:0.00}, {UpperBound:0.00}";
+
+        public static AABB FromRadius(float2 centre, float radius) => new AABB {LowerBound = centre - radius, UpperBound = centre + radius};
+        public static AABB FromOpposingCorners(float2 a, float2 b) => new AABB {LowerBound = math.min(a, b), UpperBound = math.max(a, b)};
     }
 }

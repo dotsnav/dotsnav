@@ -19,9 +19,9 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
         {
             PrefSpeed = PrefSpeed,
             NeighbourDist = NeighbourDist,
-            InvTimeHorizon = 1 / TimeHorizon,
+            TimeHorizon = TimeHorizon,
             MaxSpeed = MaxSpeed,
-            InvTimeHorizonObst = 1 / TimeHorizonObst,
+            TimeHorizonObst = TimeHorizonObst,
             MaxNeighbours = MaxNeighbours,
         });
 

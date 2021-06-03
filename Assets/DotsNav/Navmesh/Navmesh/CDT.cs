@@ -1038,7 +1038,7 @@ namespace DotsNav.Navmesh
 
         Edge* CreateEdge(Vertex* a, Vertex* b)
         {
-            var q = _quadEdges.Set(new QuadEdge {Crep = GetCrep(), Id = NextEdgeId});
+            var q = _quadEdges.GetElementPointer(new QuadEdge {Crep = GetCrep(), Id = NextEdgeId});
 
             q->Edge0 = new Edge(q, 0);
             q->Edge1 = new Edge(q, 1);
@@ -1081,7 +1081,7 @@ namespace DotsNav.Navmesh
 
         Vertex* CreateVertex(float2 p)
         {
-            var v = _vertices.Set(new Vertex {Point = p, SeqPos = _verticesSeq.Length});
+            var v = _vertices.GetElementPointer(new Vertex {Point = p, SeqPos = _verticesSeq.Length});
             _verticesSeq.Add((IntPtr) v);
             _qt.Insert(v);
             return v;

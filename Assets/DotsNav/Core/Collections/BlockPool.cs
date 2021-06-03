@@ -21,7 +21,7 @@ namespace DotsNav.Collections
                 AddBlock();
         }
 
-        public T* Set(T value)
+        public T* GetElementPointer(T value = default)
         {
             if (_available.Count == 0)
                 AddBlock();
