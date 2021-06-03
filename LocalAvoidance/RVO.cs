@@ -35,18 +35,18 @@ using Unity.Mathematics;
 
 namespace DotsNav.LocalAvoidance
 {
-    static class RVO
+    unsafe static class RVO
     {
         const float Epsilon = 0.00001f;
 
-        public static float2 CalculateNewVelocity(AgentComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours, NativeList<ObstacleDistance> obstacleNeighbours,
-                                                  NativeList<Obstacle> allObstacles, float invTimeStep)
+        public static float2 CalculateNewVelocity(AgentComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
+                                                  NativeList<ObstacleDistance> obstacleNeighbours, float invTimeStep)
         {
             Assert.IsTrue(agent.PrefVelocity.IsNumber());
-            var orcaLines = new NativeArray<Line>(neighbours.Length, Allocator.Temp);
-            var projLines = new NativeArray<Line>(agent.MaxNeighbours, Allocator.Temp);
-            var lineCount = CreateOrcaLines(pos, radius, agent.Velocity, neighbours, orcaLines, agent.InvTimeHorizon,
-                out var numObstLines, agent.InvTimeHorizonObst, allObstacles, obstacleNeighbours, invTimeStep);
+            var orcaLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
+            var projLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
+            var lineCount = CreateOrcaLines(pos, radius, agent.Velocity, neighbours, orcaLines, 1 / agent.TimeHorizon,
+                out var numObstLines, 1 / agent.TimeHorizonObst, obstacleNeighbours, invTimeStep);
             var lineFail = LinearProgram2(orcaLines, agent.MaxSpeed, agent.PrefVelocity, false, out var newVelocity, lineCount);
             if (lineFail < lineCount)
                 LinearProgram3(orcaLines, numObstLines, lineFail, agent.MaxSpeed, ref newVelocity, projLines, lineCount);
@@ -54,19 +54,19 @@ namespace DotsNav.LocalAvoidance
         }
 
         static int CreateOrcaLines(float2 position, float radius, float2 velocity, NativeList<VelocityObstacle> neighbours,
-                                   NativeSlice<Line> lines, float invTimeHorizon, out int numObstLines, float invTimeHorizonObst,
-                                   NativeList<Obstacle> allObstacles, NativeList<ObstacleDistance> obstacles, float invTimeStep)
+                                   NativeArray<Line> lines, float invTimeHorizon, out int numObstLines, float invTimeHorizonObst,
+                                   NativeList<ObstacleDistance> obstacles, float invTimeStep)
         {
             var lineCount = 0;
 
             /* Create obstacle ORCA lines. */
             for (var i = 0; i < obstacles.Length; ++i)
             {
-                var obstacle1 = allObstacles[obstacles[i].Obstacle];
-                var obstacle2 = allObstacles[obstacle1.Next];
+                var obstacle1 = obstacles[i].Obstacle;
+                var obstacle2 = obstacle1->Next;
 
-                var relativePosition1 = obstacle1.Point - position;
-                var relativePosition2 = obstacle2.Point - position;
+                var relativePosition1 = obstacle1->Point - position;
+                var relativePosition2 = obstacle2->Point - position;
 
                 /*
              * Check if velocity obstacle of obstacle is already taken care
@@ -95,7 +95,7 @@ namespace DotsNav.LocalAvoidance
 
                 var radiusSq = Math.Square(radius);
 
-                var obstacleVector = obstacle2.Point - obstacle1.Point;
+                var obstacleVector = obstacle2->Point - obstacle1->Point;
                 var s = math.dot(-relativePosition1, obstacleVector) / math.lengthsq(obstacleVector);
                 var distSqLine = math.lengthsq(-relativePosition1 - s * obstacleVector);
 
@@ -104,7 +104,7 @@ namespace DotsNav.LocalAvoidance
                 if (s < 0.0f && distSq1 <= radiusSq)
                 {
                     /* Collision with left vertex. Ignore if non-convex. */
-                    if (obstacle1.Convex)
+                    if (obstacle1->Convex)
                     {
                         line.Point = new float2(0.0f, 0.0f);
                         line.Direction = math.normalize(new float2(-relativePosition1.y, relativePosition1.x));
@@ -119,7 +119,7 @@ namespace DotsNav.LocalAvoidance
                  * Collision with right vertex. Ignore if non-convex or if
                  * it will be taken care of by neighboring obstacle.
                  */
-                    if (obstacle2.Convex && math.determinant(new float2x2(relativePosition2, obstacle2.Direction)) >= 0.0f)
+                    if (obstacle2->Convex && math.determinant(new float2x2(relativePosition2, obstacle2->Direction)) >= 0.0f)
                     {
                         line.Point = new float2(0.0f, 0.0f);
                         line.Direction = math.normalize(new float2(-relativePosition2.y, relativePosition2.x));
@@ -132,7 +132,7 @@ namespace DotsNav.LocalAvoidance
                 {
                     /* Collision with obstacle segment. */
                     line.Point = new float2(0.0f, 0.0f);
-                    line.Direction = -obstacle1.Direction;
+                    line.Direction = -obstacle1->Direction;
                     lines[lineCount++] = line;
 
                     continue;
@@ -152,7 +152,7 @@ namespace DotsNav.LocalAvoidance
                  * Obstacle viewed obliquely so that left vertex
                  * defines velocity obstacle.
                  */
-                    if (!obstacle1.Convex)
+                    if (!obstacle1->Convex)
                     {
                         /* Ignore obstacle. */
                         continue;
@@ -170,7 +170,7 @@ namespace DotsNav.LocalAvoidance
                  * Obstacle viewed obliquely so that
                  * right vertex defines velocity obstacle.
                  */
-                    if (!obstacle2.Convex)
+                    if (!obstacle2->Convex)
                     {
                         /* Ignore obstacle. */
                         continue;
@@ -185,7 +185,7 @@ namespace DotsNav.LocalAvoidance
                 else
                 {
                     /* Usual situation. */
-                    if (obstacle1.Convex)
+                    if (obstacle1->Convex)
                     {
                         var leg1 = math.sqrt(distSq1 - radiusSq);
                         leftLegDirection = new float2(relativePosition1.x * leg1 - relativePosition1.y * radius, relativePosition1.x * radius + relativePosition1.y * leg1) / distSq1;
@@ -193,10 +193,10 @@ namespace DotsNav.LocalAvoidance
                     else
                     {
                         /* Left vertex non-convex; left leg extends cut-off line. */
-                        leftLegDirection = -obstacle1.Direction;
+                        leftLegDirection = -obstacle1->Direction;
                     }
 
-                    if (obstacle2.Convex)
+                    if (obstacle2->Convex)
                     {
                         var leg2 = math.sqrt(distSq2 - radiusSq);
                         rightLegDirection = new float2(relativePosition2.x * leg2 + relativePosition2.y * radius, -relativePosition2.x * radius + relativePosition2.y * leg2) / distSq2;
@@ -204,38 +204,38 @@ namespace DotsNav.LocalAvoidance
                     else
                     {
                         /* Right vertex non-convex; right leg extends cut-off line. */
-                        rightLegDirection = obstacle1.Direction;
+                        rightLegDirection = obstacle1->Direction;
                     }
                 }
 
                 /*
-             * Legs can never point into neighboring edge when convex
-             * vertex, take cutoff-line of neighboring edge instead. If
-             * velocity projected on "foreign" leg, no constraint is added.
-             */
+                 * Legs can never point into neighboring edge when convex
+                 * vertex, take cutoff-line of neighboring edge instead. If
+                 * velocity projected on "foreign" leg, no constraint is added.
+                 */
 
-                var leftNeighbor = allObstacles[obstacle1.Previous];
+                var leftNeighbor = obstacle1->Previous;
 
                 var isLeftLegForeign = false;
                 var isRightLegForeign = false;
 
-                if (obstacle1.Convex && math.determinant(new float2x2(leftLegDirection, -leftNeighbor.Direction)) >= 0.0f)
+                if (obstacle1->Convex && math.determinant(new float2x2(leftLegDirection, -leftNeighbor->Direction)) >= 0.0f)
                 {
                     /* Left leg points into obstacle. */
-                    leftLegDirection = -leftNeighbor.Direction;
+                    leftLegDirection = -leftNeighbor->Direction;
                     isLeftLegForeign = true;
                 }
 
-                if (obstacle2.Convex && math.determinant(new float2x2(rightLegDirection, obstacle2.Direction)) <= 0.0f)
+                if (obstacle2->Convex && math.determinant(new float2x2(rightLegDirection, obstacle2->Direction)) <= 0.0f)
                 {
                     /* Right leg points into obstacle. */
-                    rightLegDirection = obstacle2.Direction;
+                    rightLegDirection = obstacle2->Direction;
                     isRightLegForeign = true;
                 }
 
                 /* Compute cut-off centers. */
-                var leftCutOff = invTimeHorizonObst * (obstacle1.Point - position);
-                var rightCutOff = invTimeHorizonObst * (obstacle2.Point - position);
+                var leftCutOff = invTimeHorizonObst * (obstacle1->Point - position);
+                var rightCutOff = invTimeHorizonObst * (obstacle2->Point - position);
                 var cutOffVector = rightCutOff - leftCutOff;
 
                 /* Project current velocity on velocity obstacle. */
@@ -279,7 +279,7 @@ namespace DotsNav.LocalAvoidance
                 if (distSqCutoff <= distSqLeft && distSqCutoff <= distSqRight)
                 {
                     /* Project on cut-off line. */
-                    line.Direction = -obstacle1.Direction;
+                    line.Direction = -obstacle1->Direction;
                     line.Point = leftCutOff + radius * invTimeHorizonObst * new float2(-line.Direction.y, line.Direction.x);
                     lines[lineCount++] = line;
 
@@ -385,7 +385,7 @@ namespace DotsNav.LocalAvoidance
             return lineCount;
         }
 
-        static bool LinearProgram1(NativeSlice<Line> lines, int lineNo, float radius, float2 optVelocity, bool directionOpt, ref float2 result)
+        static bool LinearProgram1(NativeArray<Line> lines, int lineNo, float radius, float2 optVelocity, bool directionOpt, ref float2 result)
         {
             var dotProduct = math.dot(lines[lineNo].Point, lines[lineNo].Direction);
             var discriminant = Math.Square(dotProduct) + Math.Square(radius) - math.lengthsq(lines[lineNo].Point);
@@ -452,7 +452,7 @@ namespace DotsNav.LocalAvoidance
             return true;
         }
 
-        static int LinearProgram2(NativeSlice<Line> lines, float radius, float2 optVelocity, bool directionOpt, out float2 result, int lineCount)
+        static int LinearProgram2(NativeArray<Line> lines, float radius, float2 optVelocity, bool directionOpt, out float2 result, int lineCount)
         {
             if (directionOpt)
             {
@@ -496,7 +496,7 @@ namespace DotsNav.LocalAvoidance
             return lineCount;
         }
 
-        static void LinearProgram3(NativeSlice<Line> lines, int numObstLines, int beginLine, float radius, ref float2 result, NativeSlice<Line> projLines, int orcaLines)
+        static void LinearProgram3(NativeArray<Line> lines, int numObstLines, int beginLine, float radius, ref float2 result, NativeArray<Line> projLines, int orcaLines)
         {
             var distance = 0.0f;
 

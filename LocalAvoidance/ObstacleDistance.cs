@@ -2,12 +2,12 @@
 
 namespace DotsNav.LocalAvoidance
 {
-    struct ObstacleDistance : IBufferElementData
+    unsafe struct ObstacleDistance : IBufferElementData
     {
         public float Dist;
-        public int Obstacle;
+        public Obstacle* Obstacle;
 
-        public ObstacleDistance(float dist, int obstacle)
+        public ObstacleDistance(float dist, Obstacle* obstacle)
         {
             Dist = dist;
             Obstacle = obstacle;

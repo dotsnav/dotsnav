@@ -27,7 +27,7 @@ namespace DotsNav.Navmesh
             var capacity = 1.3334f * buckets;
             var initialBlocks = (int) math.ceil(capacity / blockSize);
             _nodes = new BlockPool<QuadTreeNode>(blockSize, initialBlocks, allocator);
-            _root = _nodes.Set(new QuadTreeNode(0, size / 2, GetChunk(), null));
+            _root = _nodes.GetElementPointer(new QuadTreeNode(0, size / 2, GetChunk(), null));
         }
 
         Vertex** GetChunk()
@@ -121,10 +121,10 @@ namespace DotsNav.Navmesh
             {
                 var hs = node->HalfSize / 2;
                 var o = node->Origin;
-                node->BL = _nodes.Set(new QuadTreeNode(o - hs, hs, node->Data, node));
-                node->TL = _nodes.Set(new QuadTreeNode(o + new float2(-hs, hs), hs, GetChunk(), node));
-                node->BR = _nodes.Set(new QuadTreeNode(o + new float2(hs, -hs), hs, GetChunk(), node));
-                node->TR = _nodes.Set(new QuadTreeNode(o + hs, hs, GetChunk(), node));
+                node->BL = _nodes.GetElementPointer(new QuadTreeNode(o - hs, hs, node->Data, node));
+                node->TL = _nodes.GetElementPointer(new QuadTreeNode(o + new float2(-hs, hs), hs, GetChunk(), node));
+                node->BR = _nodes.GetElementPointer(new QuadTreeNode(o + new float2(hs, -hs), hs, GetChunk(), node));
+                node->TR = _nodes.GetElementPointer(new QuadTreeNode(o + hs, hs, GetChunk(), node));
                 node->Count = 0;
 
                 for (int i = 0; i < _bucketSize; i++)
