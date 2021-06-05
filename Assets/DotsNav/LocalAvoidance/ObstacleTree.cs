@@ -1,4 +1,6 @@
-﻿using DotsNav.BVH;
+﻿using System;
+using System.Numerics;
+using DotsNav.BVH;
 using DotsNav.Collections;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -7,7 +9,7 @@ using Unity.Mathematics;
 
 namespace DotsNav.LocalAvoidance
 {
-    unsafe struct ObstacleTree
+    unsafe struct ObstacleTree : IEquatable<ObstacleTree>
     {
         struct Control
         {
@@ -47,19 +49,19 @@ namespace DotsNav.LocalAvoidance
             _control = null;
         }
 
-        public void InsertObstacle(Entity key, NativeArray<float2> vertices)
+        public void InsertObstacle(Entity key, float4x4 ltw, float2* vertices, int amount)
         {
-            Assert.IsTrue(vertices.Length > 1);
+            Assert.IsTrue(amount > 1);
             Assert.IsTrue(key != Entity.Null);
             Assert.IsTrue(!Map.ContainsKey(key));
 
             Obstacle* first = default;
             Obstacle* previous = default;
 
-            for (var i = 0; i < vertices.Length; ++i)
+            for (var i = 0; i < amount; ++i)
             {
                 var obstacle = ObstaclePool.GetElementPointer();
-                obstacle->Point = vertices[i];
+                obstacle->Point = Math.Mul2D(ltw, vertices[i]);
 
                 if (i == 0)
                 {
@@ -73,18 +75,18 @@ namespace DotsNav.LocalAvoidance
                     obstacle->Id = Tree.Insert(aabb, (IntPtr) previous);
                 }
 
-                if (i == vertices.Length - 1)
+                if (i == amount - 1)
                 {
                     obstacle->Next = first;
                     obstacle->Next->Previous = obstacle;
                 }
 
-                obstacle->Direction = math.normalize(vertices[i == vertices.Length - 1 ? 0 : i + 1] - vertices[i]);
+                obstacle->Direction = math.normalize(vertices[i == amount - 1 ? 0 : i + 1] - vertices[i]);
 
-                if (vertices.Length == 2)
+                if (amount == 2)
                     obstacle->Convex = true;
                 else
-                    obstacle->Convex = LeftOf(vertices[i == 0 ? vertices.Length - 1 : i - 1], vertices[i], vertices[i == vertices.Length - 1 ? 0 : i + 1]) >= 0;
+                    obstacle->Convex = LeftOf(vertices[i == 0 ? amount - 1 : i - 1], vertices[i], vertices[i == amount - 1 ? 0 : i + 1]) >= 0;
 
                 previous = obstacle;
             }
@@ -111,5 +113,9 @@ namespace DotsNav.LocalAvoidance
         {
             Tree.Query(collector, aabb);
         }
+
+        public bool Equals(ObstacleTree other) => _control == other._control;
+
+        public override int GetHashCode() => _control == null ? 0 : ((ulong) _control).GetHashCode();
     }
 }

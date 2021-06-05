@@ -404,5 +404,6 @@ namespace DotsNav
             q = cross * invLength;
         }
 
+        public static float2 Mul2D(float4x4 a, float2 b) => a.c0.xz * b.x + a.c2.xz * b.y + a.c3.xz;
     }
 }

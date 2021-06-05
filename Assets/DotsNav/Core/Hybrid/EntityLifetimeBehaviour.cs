@@ -1,3 +1,4 @@
+using DotsNav.Data;
 using Unity.Entities;
 using UnityEngine;
 

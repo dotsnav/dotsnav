@@ -89,12 +89,11 @@ namespace DotsNav.Navmesh.Systems
                 {
                     ref var vertices = ref blob.BlobRef.Value.Vertices;
                     for (int i = 0; i < vertices.Length; i++)
-                        vertexBuffer.Add(Mul2D(ltw.Value, vertices[i]));
+                        vertexBuffer.Add(Math.Mul2D(ltw.Value, vertices[i]));
                     buffer.AddComponent(entityInQueryIndex, entity, new ObstacleSystemStateComponent());
                 })
                 .Schedule();
 
-            float2 Mul2D(float4x4 a, float2 b) => a.c0.xz * b.x + a.c2.xz * b.y + a.c3.xz;
 
             Entities
                 .WithBurst()
@@ -102,7 +101,7 @@ namespace DotsNav.Navmesh.Systems
                 .ForEach((Entity entity, int entityInQueryIndex, ObstacleComponent data, DynamicBuffer<VertexElement> vertices, LocalToWorld ltw) =>
                 {
                     for (int i = 0; i < vertices.Length; i++)
-                        vertexBuffer.Add(Mul2D(ltw.Value, vertices[i]));
+                        vertexBuffer.Add(Math.Mul2D(ltw.Value, vertices[i]));
                     amounts.Add(vertices.Length);
                     entities.Add(entity);
                     buffer.AddComponent(entityInQueryIndex, entity, new ObstacleSystemStateComponent());
