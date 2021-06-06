@@ -13,7 +13,7 @@ namespace DotsNav.LocalAvoidance.Hybrid
             Entities.ForEach((DotsNavLocalAvoidanceObstacle localAvoidance) =>
             {
                 var entity = GetPrimaryEntity(localAvoidance);
-                DstEntityManager.AddComponentData(entity, new ObstacleTreeElementComponent{Tree = GetPrimaryEntity(localAvoidance.LocalAvoidance)});
+                DstEntityManager.AddComponentData(entity, new ObstacleTreeElementComponent{Tree = localAvoidance.LocalAvoidance.Entity});
             });
         }
     }
