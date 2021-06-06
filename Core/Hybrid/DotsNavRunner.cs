@@ -3,7 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace DotsNav.Navmesh.Hybrid
+namespace DotsNav.Hybrid
 {
     public class DotsNavRunner : MonoBehaviour
     {
@@ -28,7 +28,7 @@ namespace DotsNav.Navmesh.Hybrid
         /// </summary>
         public void ProcessModifications()
         {
-            Assert.IsTrue(Mode == UpdateMode.Manual, $"Manually updating navmesh requires UpdateMode to be Manual");
+            Assert.IsTrue(Mode == UpdateMode.Manual, $"Manually updating DotsNav requires UpdateMode to be Manual");
             ProcessModificationsInternal();
         }
 
