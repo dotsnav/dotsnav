@@ -1,5 +1,4 @@
 using DotsNav;
-using DotsNav.Data;
 using DotsNav.LocalAvoidance.Data;
 using DotsNav.LocalAvoidance.Hybrid;
 using DotsNav.Navmesh.Hybrid;
@@ -8,14 +7,16 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class RVOCircleTest : MonoBehaviour
 {
     public int AgentAmount;
     public float SpawnRadius;
     public RVOAgent Prefab;
-    public DotsNavDynamicTree DynamicTree;
-    public DotsNavObstacleTree Tree;
+    public DotsNavAgentTree AgentTree;
+    [FormerlySerializedAs("Tree")]
+    public DotsNavObstacleTree ObstacleTree;
 
     void Start()
     {
@@ -23,8 +24,8 @@ public class RVOCircleTest : MonoBehaviour
         {
             var prefab = Instantiate(Prefab);
             var c = prefab.GetComponent<DotsNavLocalAvoidance>();
-            c.ObstacleTree = Tree;
-            c.DynamicTree = DynamicTree;
+            c.ObstacleTree = ObstacleTree;
+            c.AgentTree = AgentTree;
             var pos = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
             prefab.transform.position = pos.ToXxY();
         }
@@ -42,12 +43,22 @@ class DirectionSystem : SystemBase
 {
     protected override void OnUpdate()
     {
+        var dt = Time.fixedDeltaTime;
+
         Entities
             .WithBurst()
-            .ForEach((Translation translation, TargetComponent target, ref DirectionComponent direction) =>
+            .ForEach((Translation translation, TargetComponent target, ref AgentComponent agent) =>
             {
                 var toTarget = target.Value - translation.Value.xz;
-                direction.Value = math.all(toTarget == 0) ? 0 : math.normalize(toTarget);
+                var length = math.length(toTarget);
+                float2 pref;
+
+                if (length >= agent.MaxSpeed * dt)
+                    pref = toTarget / length * agent.MaxSpeed;
+                else
+                    pref = toTarget;
+
+                agent.PrefVelocity = pref;
             })
             .ScheduleParallel();
     }
@@ -75,8 +86,6 @@ class TargetSystem : SystemBase
 {
     protected override void OnUpdate()
     {
-        var dt = Time.DeltaTime;
-
         Entities
             .WithoutBurst()
             .WithAll<AgentComponent>()

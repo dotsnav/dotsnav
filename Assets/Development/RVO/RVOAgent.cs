@@ -6,7 +6,6 @@ using UnityEngine;
 public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
 {
     [SerializeField] float Radius;
-    [SerializeField] float PrefSpeed;
     [SerializeField] float MaxSpeed;
     [SerializeField] int MaxNeighbours;
     [SerializeField] float NeighbourDist;
@@ -17,7 +16,6 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
     {
         dstManager.AddComponentData(entity, new AgentComponent
         {
-            PrefSpeed = PrefSpeed,
             NeighbourDist = NeighbourDist,
             TimeHorizon = TimeHorizon,
             MaxSpeed = MaxSpeed,
@@ -26,7 +24,6 @@ public class RVOAgent : MonoBehaviour, IConvertGameObjectToEntity
         });
 
         dstManager.AddComponentData(entity, new RadiusComponent(Radius));
-        dstManager.AddComponent<DirectionComponent>(entity);
         dstManager.AddComponent<VelocityObstacleComponent>(entity);
     }
 }

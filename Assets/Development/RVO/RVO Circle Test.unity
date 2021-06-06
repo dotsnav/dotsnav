@@ -155,7 +155,7 @@ MonoBehaviour:
   AgentAmount: 100
   SpawnRadius: 40
   Prefab: {fileID: 2587778520116910071, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
-  DynamicTree: {fileID: 569515795}
+  AgentTree: {fileID: 569515795}
   Tree: {fileID: 1474278017}
 --- !u!4 &398962336
 Transform:
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 569515795}
   - component: {fileID: 569515797}
   m_Layer: 0
-  m_Name: DynamicTree
+  m_Name: AgentTree
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -213,7 +213,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &569515797
 MonoBehaviour:
@@ -651,7 +651,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1474278019
 MonoBehaviour:
