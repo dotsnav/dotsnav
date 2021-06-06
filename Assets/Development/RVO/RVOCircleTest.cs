@@ -47,7 +47,7 @@ class DirectionSystem : SystemBase
             {
                 var toTarget = target.Value - translation.Value.xz;
                 var length = math.length(toTarget);
-                const float preferredSpeed = 6;
+                const float preferredSpeed = 8;
                 if (length >= preferredSpeed * dt)
                     preferredVelocity.Value = toTarget / length * preferredSpeed;
                 else if (length >= -1e3f)
