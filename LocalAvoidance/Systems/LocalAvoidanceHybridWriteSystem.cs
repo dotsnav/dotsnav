@@ -12,9 +12,9 @@ namespace DotsNav.LocalAvoidance.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((AgentComponent agentComponent, DotsNavLocalAvoidanceAgent monoAgent) =>
+                .ForEach((VelocityComponent velocity, DotsNavLocalAvoidanceAgent monoAgent) =>
                 {
-                    monoAgent.Velocity = agentComponent.Velocity;
+                    monoAgent.Velocity = velocity.Value;
                 })
                 .Run();
         }

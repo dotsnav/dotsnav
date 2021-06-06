@@ -39,21 +39,20 @@ namespace DotsNav.LocalAvoidance
     {
         const float Epsilon = 0.00001f;
 
-        public static float2 CalculateNewVelocity(AgentComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
-                                                  NativeList<ObstacleDistance> obstacleNeighbours, float invTimeStep)
+        public static float2 CalculateNewVelocity(LocalAvoidanceSettings agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
+                                                  NativeList<ObstacleDistance> obstacleNeighbours, float invTimeStep, float2 prefVelocity, float2 velocity, float maxSpeed)
         {
-            var prefVelocity = agent.PrefVelocity;
             Assert.IsTrue(prefVelocity.IsNumber());
             if (!prefVelocity.IsNumber() || math.all(prefVelocity == 0))
                 return 0;
 
             var orcaLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
             var projLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
-            var lineCount = CreateOrcaLines(pos, radius, agent.Velocity, neighbours, orcaLines, 1 / agent.TimeHorizon,
+            var lineCount = CreateOrcaLines(pos, radius, velocity, neighbours, orcaLines, 1 / agent.TimeHorizon,
                 out var numObstLines, 1 / agent.TimeHorizonObst, obstacleNeighbours, invTimeStep);
-            var lineFail = LinearProgram2(orcaLines, agent.MaxSpeed, prefVelocity, false, out var newVelocity, lineCount);
+            var lineFail = LinearProgram2(orcaLines, maxSpeed, prefVelocity, false, out var newVelocity, lineCount);
             if (lineFail < lineCount)
-                LinearProgram3(orcaLines, numObstLines, lineFail, agent.MaxSpeed, ref newVelocity, projLines, lineCount);
+                LinearProgram3(orcaLines, numObstLines, lineFail, maxSpeed, ref newVelocity, projLines, lineCount);
             return newVelocity;
         }
 
