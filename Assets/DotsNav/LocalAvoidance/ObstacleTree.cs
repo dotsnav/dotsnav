@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using DotsNav.BVH;
 using DotsNav.Collections;
 using Unity.Collections;
@@ -123,5 +125,36 @@ namespace DotsNav.LocalAvoidance
         public bool Equals(ObstacleTree other) => _control == other._control;
 
         public override int GetHashCode() => _control == null ? 0 : ((ulong) _control).GetHashCode();
+
+
+        public Enumerator GetEnumerator(Allocator allocator)
+        {
+            return new Enumerator(Tree.GetEnumerator(allocator));
+        }
+
+        public struct Enumerator
+        {
+            public Obstacle Current { get; private set; }
+            Tree<IntPtr>.Enumerator _enumerator;
+
+            public Enumerator(Tree<IntPtr>.Enumerator enumerator)
+            {
+                _enumerator = enumerator;
+                Current = default;
+            }
+
+            public bool MoveNext()
+            {
+                var b = _enumerator.MoveNext();
+                var ptr = (Obstacle*) _enumerator.Current;
+                Current = ptr == null ? default : *ptr;
+                return b;
+            }
+
+            public void Dispose()
+            {
+                _enumerator.Dispose();
+            }
+        }
     }
 }

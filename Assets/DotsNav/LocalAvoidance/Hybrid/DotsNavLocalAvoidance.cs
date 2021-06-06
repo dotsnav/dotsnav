@@ -1,7 +1,9 @@
 ﻿using DotsNav.Data;
 using DotsNav.Hybrid;
 using DotsNav.LocalAvoidance.Data;
+using DotsNav.LocalAvoidance.Systems;
 using DotsNav.Navmesh.Hybrid;
+using UnityEngine;
 
 namespace DotsNav.LocalAvoidance.Hybrid
 {
@@ -9,18 +11,22 @@ namespace DotsNav.LocalAvoidance.Hybrid
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavLocalAvoidance obstacleTree) =>
+            Entities.ForEach((DotsNavLocalAvoidance localAvoidance) =>
             {
-                var entity = GetPrimaryEntity(obstacleTree);
-                obstacleTree.Entity = entity;
-                obstacleTree.World = DstEntityManager.World;
+                var entity = GetPrimaryEntity(localAvoidance);
+                localAvoidance.Entity = entity;
+                localAvoidance.World = DstEntityManager.World;
                 DstEntityManager.AddComponentData(entity, new ObstacleTreeComponent());
                 DstEntityManager.AddComponentData(entity, new DynamicTreeComponent());
+                if (localAvoidance.DrawObstacleTree)
+                    DstEntityManager.AddComponentData(entity, new DrawComponent {Color = localAvoidance.Color});
             });
         }
     }
 
     public class DotsNavLocalAvoidance : EntityLifetimeBehaviour
     {
+        public bool DrawObstacleTree;
+        public Color Color;
     }
 }
