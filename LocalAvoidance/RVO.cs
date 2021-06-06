@@ -35,7 +35,7 @@ using Unity.Mathematics;
 
 namespace DotsNav.LocalAvoidance
 {
-    unsafe static class RVO
+    static unsafe class RVO
     {
         const float Epsilon = 0.00001f;
 
@@ -73,9 +73,9 @@ namespace DotsNav.LocalAvoidance
                 var relativePosition2 = obstacle2->Point - position;
 
                 /*
-             * Check if velocity obstacle of obstacle is already taken care
-             * of by previously constructed obstacle ORCA lines.
-             */
+                 * Check if velocity obstacle of obstacle is already taken care
+                 * of by previously constructed obstacle ORCA lines.
+                 */
                 var alreadyCovered = false;
 
                 for (var j = 0; j < lineCount; ++j)
@@ -120,9 +120,9 @@ namespace DotsNav.LocalAvoidance
                 else if (s > 1.0f && distSq2 <= radiusSq)
                 {
                     /*
-                 * Collision with right vertex. Ignore if non-convex or if
-                 * it will be taken care of by neighboring obstacle.
-                 */
+                     * Collision with right vertex. Ignore if non-convex or if
+                     * it will be taken care of by neighboring obstacle.
+                     */
                     if (obstacle2->Convex && math.determinant(new float2x2(relativePosition2, obstacle2->Direction)) >= 0.0f)
                     {
                         line.Point = new float2(0.0f, 0.0f);
@@ -143,19 +143,19 @@ namespace DotsNav.LocalAvoidance
                 }
 
                 /*
-             * No collision. Compute legs. When obliquely viewed, both legs
-             * can come from a single vertex. Legs extend cut-off line when
-             * non-convex vertex.
-             */
+                 * No collision. Compute legs. When obliquely viewed, both legs
+                 * can come from a single vertex. Legs extend cut-off line when
+                 * non-convex vertex.
+                 */
 
                 float2 leftLegDirection, rightLegDirection;
 
                 if (s < 0.0f && distSqLine <= radiusSq)
                 {
                     /*
-                 * Obstacle viewed obliquely so that left vertex
-                 * defines velocity obstacle.
-                 */
+                     * Obstacle viewed obliquely so that left vertex
+                     * defines velocity obstacle.
+                     */
                     if (!obstacle1->Convex)
                     {
                         /* Ignore obstacle. */
@@ -171,9 +171,9 @@ namespace DotsNav.LocalAvoidance
                 else if (s > 1.0f && distSqLine <= radiusSq)
                 {
                     /*
-                 * Obstacle viewed obliquely so that
-                 * right vertex defines velocity obstacle.
-                 */
+                     * Obstacle viewed obliquely so that
+                     * right vertex defines velocity obstacle.
+                     */
                     if (!obstacle2->Convex)
                     {
                         /* Ignore obstacle. */
@@ -273,9 +273,9 @@ namespace DotsNav.LocalAvoidance
                 }
 
                 /*
-             * Project on left leg, right leg, or cut-off line, whichever is
-             * closest to velocity.
-             */
+                 * Project on left leg, right leg, or cut-off line, whichever is
+                 * closest to velocity.
+                 */
                 var distSqCutoff = (t < 0.0f || t > 1.0f || obstacle1 == obstacle2) ? float.PositiveInfinity : math.lengthsq(velocity - (leftCutOff + t * cutOffVector));
                 var distSqLeft = tLeft < 0.0f ? float.PositiveInfinity : math.lengthsq(velocity - (leftCutOff + tLeft * leftLegDirection));
                 var distSqRight = tRight < 0.0f ? float.PositiveInfinity : math.lengthsq(velocity - (rightCutOff + tRight * rightLegDirection));
@@ -461,9 +461,9 @@ namespace DotsNav.LocalAvoidance
             if (directionOpt)
             {
                 /*
-             * Optimize direction. Note that the optimization velocity is of
-             * unit length in this case.
-             */
+                 * Optimize direction. Note that the optimization velocity is of
+                 * unit length in this case.
+                 */
                 result = optVelocity * radius;
             }
             else
@@ -543,11 +543,11 @@ namespace DotsNav.LocalAvoidance
                     if (LinearProgram2(projLines, radius, new float2(-lines[i].Direction.y, lines[i].Direction.x), true, out result, lineCount) < lineCount)
                     {
                         /*
-                     * This should in principle not happen. The result is by
-                     * definition already in the feasible region of this
-                     * linear program. If it fails, it is due to small
-                     * floating point error, and the current result is kept.
-                     */
+                         * This should in principle not happen. The result is by
+                         * definition already in the feasible region of this
+                         * linear program. If it fails, it is due to small
+                         * floating point error, and the current result is kept.
+                         */
                         result = tempResult;
                     }
 

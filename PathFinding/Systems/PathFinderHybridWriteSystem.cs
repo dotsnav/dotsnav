@@ -12,7 +12,7 @@ namespace DotsNav.PathFinding.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((PathQueryComponent query, Hybrid.DotsNavAgent agent, DynamicBuffer<PathSegmentElement> segments, DirectionComponent direction) =>
+                .ForEach((PathQueryComponent query, Hybrid.DotsNavPathFindingAgent agent, DynamicBuffer<PathSegmentElement> segments, DirectionComponent direction) =>
                 {
                     if (query.Version > agent.Version)
                     {

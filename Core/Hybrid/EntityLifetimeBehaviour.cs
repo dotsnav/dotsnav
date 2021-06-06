@@ -2,7 +2,7 @@ using DotsNav.Data;
 using Unity.Entities;
 using UnityEngine;
 
-namespace DotsNav.Navmesh.Hybrid
+namespace DotsNav.Hybrid
 {
     /// <summary>
     /// Base class for MonoBehaviours controlling an entity's lifetime

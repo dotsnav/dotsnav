@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace DotsNav.PathFinding.Editor
 {
-    [CustomEditor(typeof(DotsNavAgent), editorForChildClasses: true)]
+    [CustomEditor(typeof(DotsNavPathFindingAgent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     class AgentEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             GUI.enabled = false;
-            GUILayout.Label($"State: {((DotsNavAgent)target).State}");
+            GUILayout.Label($"State: {((DotsNavPathFindingAgent)target).State}");
             GUI.enabled = true;
             DrawDefaultInspector();
         }
