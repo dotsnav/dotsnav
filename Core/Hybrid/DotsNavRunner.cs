@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 
 namespace DotsNav.Navmesh.Hybrid
 {
-    public class DotsNavUpdateMode : MonoBehaviour
+    public class DotsNavRunner : MonoBehaviour
     {
         /// <summary>
         /// Determines when queued updates should be processed. When using manual also set // todo
