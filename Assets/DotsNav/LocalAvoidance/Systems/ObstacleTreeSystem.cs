@@ -1,5 +1,6 @@
 ﻿using System;
 using DotsNav.Collections;
+using DotsNav.LocalAvoidance.Data;
 using DotsNav.Navmesh.Data;
 using DotsNav.Systems;
 using Unity.Burst;

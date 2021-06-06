@@ -1,5 +1,6 @@
 ﻿using DotsNav.Data;
 using DotsNav.Hybrid;
+using DotsNav.LocalAvoidance.Data;
 using DotsNav.Navmesh.Hybrid;
 
 namespace DotsNav.LocalAvoidance.Hybrid
