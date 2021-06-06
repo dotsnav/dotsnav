@@ -1,7 +1,8 @@
-﻿using DotsNav.Data;
+﻿using System;
+using DotsNav.Data;
 using DotsNav.Hybrid;
 using DotsNav.LocalAvoidance.Data;
-using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -44,5 +45,7 @@ namespace DotsNav.LocalAvoidance.Hybrid
         public float NeighbourDist;
         public float TimeHorizon;
         public float TimeHorizonObst;
+        [NonSerialized]
+        public float2 Velocity;
     }
 }

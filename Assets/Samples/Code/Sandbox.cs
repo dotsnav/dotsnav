@@ -12,6 +12,7 @@ using UnityEngine.SceneManagement;
 
 class Sandbox : MonoBehaviour
 {
+    public DotsNavUpdateMode UpdateMode;
     public DotsNavNavmesh Navmesh;
     public float AgentSizeZoomSpeed;
     public float MinAgentSize;
@@ -69,7 +70,7 @@ class Sandbox : MonoBehaviour
         _agent.FindPath(_start.position.xz(), _goal.position.xz());
 
         // Manually trigger navmesh and pathfinder update to ensure the visuals line up
-        Navmesh.ProcessModifications();
+        UpdateMode.ProcessModifications();
 
         // A ray cast, make sure to dispose of the RayCastResult returned from
         // Navmesh.CastSegment or Navmesh.CastRay

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
-using DotsNav.Systems;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
@@ -36,15 +35,9 @@ namespace DotsNav.Navmesh.Hybrid
                     ConstrainedColor = navmesh.ConstrainedColor,
                     UnconstrainedColor = navmesh.UnconstrainedColor
                 });
-
             });
         }
     }
-
-    /// <summary>
-    /// Determines when queued updates should be processed
-    /// </summary>
-    public enum UpdateMode { Update, FixedUpdate, Manual }
 
     /// <summary>
     /// Creates a navmesh on startup and can then be used to insert and destroy obstacles. Destroying this object triggers
@@ -57,11 +50,6 @@ namespace DotsNav.Navmesh.Hybrid
         /// Changing this value after initialization has no effect
         /// </summary>
         public Vector2 Size = new Vector2(50, 50);
-
-        /// <summary>
-        /// Determines when queued updates should be processed. When using manual also set // todo
-        /// </summary>
-        public UpdateMode UpdateMode;
 
         /// <summary>
         /// Determines the size of initial allocations. Changing this value after initialization has no effect
@@ -85,8 +73,6 @@ namespace DotsNav.Navmesh.Hybrid
         public Color ConstrainedColor = Color.red;
         public Color UnconstrainedColor = Color.white;
 
-        DotsNavSystemGroup _dotsNavSystemGroup;
-
         static bool _created;
 
         /// <summary>
@@ -107,14 +93,6 @@ namespace DotsNav.Navmesh.Hybrid
             _created = true;
 
             base.Awake();
-
-            if (Injected)
-            {
-                var world = World.All[0];
-                _dotsNavSystemGroup = world.GetOrCreateSystem<DotsNavSystemGroup>();
-                world.GetOrCreateSystem<FixedStepSimulationSystemGroup>().RemoveSystemFromUpdateList(_dotsNavSystemGroup);
-                DotsNavSystemGroup.EcbSource = world.GetOrCreateSystem<EndDotsNavEntityCommandBufferSystem>();
-            }
         }
 
         protected override void OnDestroy()
@@ -123,31 +101,6 @@ namespace DotsNav.Navmesh.Hybrid
             _created = false;
         }
 
-        /// <summary>
-        /// Call to trigger the insertion and removal of obstacles and path finder update
-        /// </summary>
-        public void ProcessModifications()
-        {
-            Assert.IsTrue(UpdateMode == UpdateMode.Manual, $"Manually updating navmesh requires UpdateMode to be Manual");
-            ProcessModificationsInternal();
-        }
-
-        void Update()
-        {
-            if (UpdateMode == UpdateMode.Update)
-                ProcessModificationsInternal();
-        }
-
-        void FixedUpdate()
-        {
-            if (UpdateMode == UpdateMode.FixedUpdate)
-                ProcessModificationsInternal();
-        }
-
-        void ProcessModificationsInternal()
-        {
-            _dotsNavSystemGroup.Update();
-        }
 
         void OnValidate()
         {

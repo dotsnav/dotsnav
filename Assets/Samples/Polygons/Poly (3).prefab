@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1771279733476136599}
   - component: {fileID: -1053839482970509961}
   - component: {fileID: -4607084208493866512}
+  - component: {fileID: 6627504534147746844}
   m_Layer: 0
   m_Name: Poly (3)
   m_TagString: Untagged
@@ -46,19 +47,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Close: 1
   Vertices:
-  - x: -0.2042656
-    y: 0.35282326
-  - x: 1.0213284
-    y: -2.246922
-  - x: 1.0213284
-    y: -0.46423912
-  - x: 1.5227075
-    y: 2.1540732
-  - x: -0.5756576
-    y: 2.246922
-  - x: -1.5227075
-    y: 0.6685071
-  Draw: 0
+  - {x: -0.2042656, y: 0.35282326}
+  - {x: 1.0213284, y: -2.246922}
+  - {x: 1.0213284, y: -0.46423912}
+  - {x: 1.5227075, y: 2.1540732}
+  - {x: -0.5756576, y: 2.246922}
+  - {x: -1.5227075, y: 0.6685071}
+  DrawGizmos: 1
 --- !u!114 &-4607084208493866512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,3 +67,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConversionMode: 1
+--- !u!114 &6627504534147746844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3455473692896058399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75b63d2f25a64b718e133d144aef27f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LocalAvoidance: {fileID: 0}

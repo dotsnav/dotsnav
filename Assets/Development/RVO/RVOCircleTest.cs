@@ -1,7 +1,7 @@
 using DotsNav;
 using DotsNav.LocalAvoidance.Data;
 using DotsNav.LocalAvoidance.Hybrid;
-using DotsNav.Navmesh.Hybrid;
+using DotsNav.LocalAvoidance.Systems;
 using DotsNav.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -34,8 +34,8 @@ struct TargetComponent : IComponentData
     public float2 Value;
 }
 
-[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-[UpdateBefore(typeof(DotsNavSystemGroup))]
+[UpdateInGroup(typeof(DotsNavSystemGroup))]
+[UpdateBefore(typeof(RVOSystem))]
 class DirectionSystem : SystemBase
 {
     protected override void OnUpdate()
@@ -61,8 +61,8 @@ class DirectionSystem : SystemBase
     }
 }
 
-[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-[UpdateAfter(typeof(DotsNavSystemGroup))]
+[UpdateInGroup(typeof(DotsNavSystemGroup))]
+[UpdateAfter(typeof(RVOSystem))]
 class MoveSystem : SystemBase
 {
     protected override void OnUpdate()
@@ -70,12 +70,12 @@ class MoveSystem : SystemBase
         var dt = Time.DeltaTime;
 
         Entities
-            .WithBurst()
-            .ForEach((AgentComponent agent, ref Translation translation) =>
+            .WithoutBurst()
+            .ForEach((AgentComponent agent, DotsNavLocalAvoidanceAgent monoAgent) =>
             {
-                translation.Value += (agent.Velocity * dt).ToXxY();
+                monoAgent.transform.position += (Vector3) (agent.Velocity * dt).ToXxY();
             })
-            .ScheduleParallel();
+            .Run();
     }
 }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 class HybridTest : MonoBehaviour
 {
+    public DotsNavUpdateMode UpdateMode;
     public DotsNavNavmesh Navmesh;
     public DotsNavPathFindingAgent Agent;
     ObstacleReference _id;
@@ -11,7 +12,7 @@ class HybridTest : MonoBehaviour
 
     void Update()
     {
-        Navmesh.ProcessModifications();
+        UpdateMode.ProcessModifications();
     }
 
     void OnGUI()
