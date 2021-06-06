@@ -1,6 +1,7 @@
-﻿using Unity.Mathematics;
+﻿using DotsNav.LocalAvoidance.Data;
+using Unity.Mathematics;
 
-namespace DotsNav.LocalAvoidance.Data
+namespace DotsNav.LocalAvoidance
 {
     struct VelocityObstacle
     {

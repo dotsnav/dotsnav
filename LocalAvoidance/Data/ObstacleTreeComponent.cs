@@ -1,6 +1,6 @@
 ﻿using Unity.Entities;
 
-namespace DotsNav.LocalAvoidance
+namespace DotsNav.LocalAvoidance.Data
 {
     struct ObstacleTreeComponent : IComponentData
     {
