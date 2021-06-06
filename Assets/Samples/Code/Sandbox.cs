@@ -4,6 +4,7 @@ using System.Linq;
 using DotsNav;
 using DotsNav.CollisionDetection.Hybrid;
 using DotsNav.Drawing;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Mathematics;
