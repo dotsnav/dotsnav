@@ -80,7 +80,6 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// DebugDisplay draws circle sectors at corners when drawing this agent's path
         /// </summary>
-        [FormerlySerializedAs("Delimit")]
         public bool DrawCorners;
 
         /// <summary>

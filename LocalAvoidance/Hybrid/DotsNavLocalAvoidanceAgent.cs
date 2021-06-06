@@ -37,7 +37,6 @@ namespace DotsNav.LocalAvoidance.Hybrid
     [RequireComponent(typeof(DotsNavAgent))]
     public class DotsNavLocalAvoidanceAgent : MonoBehaviour
     {
-        [FormerlySerializedAs("AgentTree")]
         public DotsNavLocalAvoidance LocalAvoidance;
         public float Radius;
         public float MaxSpeed;
