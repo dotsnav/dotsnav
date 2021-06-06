@@ -1,6 +1,5 @@
 ﻿using System;
 using DotsNav.Collections;
-using DotsNav.Data;
 using DotsNav.Navmesh.Data;
 using DotsNav.Systems;
 using Unity.Burst;
@@ -9,7 +8,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DotsNav.LocalAvoidance.Systems
 {

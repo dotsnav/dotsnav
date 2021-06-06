@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Numerics;
 using DotsNav.BVH;
 using DotsNav.Collections;
 using Unity.Collections;

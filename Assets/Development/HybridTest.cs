@@ -5,9 +5,9 @@ using UnityEngine;
 class HybridTest : MonoBehaviour
 {
     public DotsNavNavmesh Navmesh;
-    public DotsNavAgent Agent;
+    public DotsNavPathFindingAgent Agent;
     ObstacleReference _id;
-    public DotsNavObstacle ObstaclePrefab;
+    public DotsNavNavMeshObstacle ObstaclePrefab;
 
     void Update()
     {

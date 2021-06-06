@@ -1,9 +1,11 @@
-﻿using Unity.Entities;
+﻿using DotsNav.Hybrid;
+using Unity.Entities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace DotsNav.LocalAvoidance.Hybrid
 {
-    [UpdateAfter(typeof(ObstacleTreeConversionSystem))]
+    [UpdateAfter(typeof(LocalAvoidanceConversionSystem))]
     class LocalAvoidanceObstacleConversionSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
@@ -11,13 +13,16 @@ namespace DotsNav.LocalAvoidance.Hybrid
             Entities.ForEach((DotsNavLocalAvoidanceObstacle localAvoidance) =>
             {
                 var entity = GetPrimaryEntity(localAvoidance);
-                DstEntityManager.AddComponentData(entity, new ObstacleTreeElementComponent{Tree = GetPrimaryEntity(localAvoidance.ObstacleTree)});
+                DstEntityManager.AddComponentData(entity, new ObstacleTreeElementComponent{Tree = GetPrimaryEntity(localAvoidance.LocalAvoidance)});
             });
         }
     }
 
+    [RequireComponent(typeof(DotsNavObstacle))]
     public class DotsNavLocalAvoidanceObstacle : MonoBehaviour
     {
-        public DotsNavObstacleTree ObstacleTree;
+        [FormerlySerializedAs("AgentTree")]
+        [FormerlySerializedAs("ObstacleTree")]
+        public DotsNavLocalAvoidance LocalAvoidance;
     }
 }

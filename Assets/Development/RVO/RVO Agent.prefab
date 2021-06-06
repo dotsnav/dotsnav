@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1478449553652949204}
   - component: {fileID: 1478449553652949203}
   - component: {fileID: 1478449553652949202}
-  - component: {fileID: 2587778520116910071}
-  - component: {fileID: 5392746294729389067}
+  - component: {fileID: 673527040873305054}
+  - component: {fileID: 5843786958838245045}
   - component: {fileID: 6714639268391541046}
   m_Layer: 0
   m_Name: RVO Agent
@@ -84,7 +84,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &2587778520116910071
+--- !u!114 &673527040873305054
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,17 +93,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1478449553652949201}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3ae0d404e27b61742a4caf030a30b18e, type: 3}
+  m_Script: {fileID: 11500000, guid: 409a61fe23d14649849f381f7f21c304, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Radius: 0.5
-  PrefSpeed: 5
-  MaxSpeed: 10
-  MaxNeighbours: 10
-  NeighbourDist: 10
-  TimeHorizon: 3
-  TimeHorizonObst: 3
---- !u!114 &5392746294729389067
+--- !u!114 &5843786958838245045
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -115,7 +108,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22a8dbb25b1346fdbeffe1c33d7dd07c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObstacleTree: {fileID: 0}
+  LocalAvoidance: {fileID: 0}
+  Radius: 0.5
+  MaxSpeed: 10
+  MaxNeighbours: 10
+  NeighbourDist: 10
+  TimeHorizon: 3
+  TimeHorizonObst: 3
 --- !u!114 &6714639268391541046
 MonoBehaviour:
   m_ObjectHideFlags: 0

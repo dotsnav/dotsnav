@@ -1,4 +1,5 @@
 using System.Linq;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Editor;
 using Unity.Entities;
@@ -9,15 +10,13 @@ using UnityEngine;
 namespace DotsNav.Navmesh.Hybrid
 {
     [UpdateAfter(typeof(NavmeshConversionSystem))]
-    class ObstacleConversionSystem : GameObjectConversionSystem
+    class NavMeshObstacleConversionSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavObstacle obstacle) =>
+            Entities.ForEach((DotsNavNavMeshObstacle obstacle) =>
             {
                 var entity = GetPrimaryEntity(obstacle);
-                obstacle.Entity = entity;
-                obstacle.World = DstEntityManager.World;
                 DstEntityManager.AddComponentData(entity, new ObstacleComponent());
                 var values = DstEntityManager.AddBuffer<VertexElement>(entity);
 
@@ -33,7 +32,8 @@ namespace DotsNav.Navmesh.Hybrid
     /// <summary>
     /// Create to triggers insertion of a navmesh obstacle. Destroy to trigger removal of a navmesh obstacle.
     /// </summary>
-    public class DotsNavObstacle : EntityLifetimeBehaviour
+    [RequireComponent(typeof(DotsNavObstacle))]
+    public class DotsNavNavMeshObstacle : MonoBehaviour
     {
         [SerializeField]
         bool Close = true;

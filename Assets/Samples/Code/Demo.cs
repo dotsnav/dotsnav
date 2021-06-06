@@ -21,14 +21,14 @@ class Demo : MonoBehaviour
     public float AgentMinRadius;
     public float AgentRadiusRange;
     public float SpawnRectHeight;
-    public DotsNavAgent AgentPrefab;
+    public DotsNavPathFindingAgent AgentPrefab;
 
     [Header("Obstacles")]
     public int ObstacleAmount;
     public float ObstacleMinScale;
     public float ObstacleScaleRange;
     public float PlacementDelay;
-    public DotsNavObstacle[] ObstaclePrefabs;
+    public DotsNavNavMeshObstacle[] ObstaclePrefabs;
 
     [Header("UI")]
     public RectTransform Help;
@@ -42,8 +42,8 @@ class Demo : MonoBehaviour
 
     readonly Dictionary<ObstacleReference, List<Vector2>> _obstacles = new Dictionary<ObstacleReference, List<Vector2>>();
     readonly List<Vector2> _added = new List<Vector2>();
-    readonly List<DotsNavAgent> _found = new List<DotsNavAgent>();
-    DotsNavAgent[] _agents;
+    readonly List<DotsNavPathFindingAgent> _found = new List<DotsNavPathFindingAgent>();
+    DotsNavPathFindingAgent[] _agents;
     int[] _versions;
     float _lastPlacement;
     bool _paused;
@@ -56,8 +56,8 @@ class Demo : MonoBehaviour
     List<Vector2> _removed;
     LineDrawer _lineDrawer;
 
-    DotsNavAgent _highlight;
-    DotsNavAgent Highlight
+    DotsNavPathFindingAgent _highlight;
+    DotsNavPathFindingAgent Highlight
     {
         get => _highlight;
         set
@@ -86,7 +86,7 @@ class Demo : MonoBehaviour
         _size = Navmesh.Size;
         FindObjectOfType<CameraController>().Initialize(_size);
         _r = new Random((uint) DateTime.Now.Ticks);
-        _agents = new DotsNavAgent[AgentAmount];
+        _agents = new DotsNavPathFindingAgent[AgentAmount];
         _versions = new int[AgentAmount];
         _previousSpeed = SpeedSlider.value;
 
@@ -204,9 +204,9 @@ class Demo : MonoBehaviour
 
         var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         var over = Physics.Raycast(ray.origin, ray.direction * 10, out var hit);
-        DotsNavAgent highlight = null;
+        DotsNavPathFindingAgent highlight = null;
         if (over)
-            highlight = hit.transform.parent.GetComponentInChildren<DotsNavAgent>();
+            highlight = hit.transform.parent.GetComponentInChildren<DotsNavPathFindingAgent>();
 
         var mouseDown = Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject();
 

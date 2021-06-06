@@ -4,7 +4,7 @@
 //
 // class ClosestPointTest : MonoBehaviour
 // {
-//     public DotsNavAgent Agent;
+//     public DotsNavPathFindingAgent Agent;
 //
 //     public void Update()
 //     {

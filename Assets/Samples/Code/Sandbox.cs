@@ -17,7 +17,7 @@ class Sandbox : MonoBehaviour
     public float MinAgentSize;
     public float MaxAgentSize;
     public RectTransform Help;
-    public DotsNavObstacle[] Prefabs;
+    public DotsNavNavMeshObstacle[] Prefabs;
     public float PrefabMinSize = .1f;
     public float PrefabMaxSize = 3f;
     public float PrefabSizeSpeed = 1;
@@ -36,7 +36,7 @@ class Sandbox : MonoBehaviour
     float _prefabRotation;
     Camera _camera;
     Vector2 _previousMouse;
-    DotsNavAgent _agent;
+    DotsNavPathFindingAgent _agent;
     Transform _start;
     Transform _goal;
     LineDrawer _lineDrawer;
@@ -49,7 +49,7 @@ class Sandbox : MonoBehaviour
         _lineDrawer = GetComponent<LineDrawer>();
         _camera = Camera.main;
         Help.gameObject.SetActive(!Application.isEditor);
-        _agent = FindObjectOfType<DotsNavAgent>();
+        _agent = FindObjectOfType<DotsNavPathFindingAgent>();
         var tr = _agent.transform;
         _start = tr.Find("Start");
         _goal = tr.Find("Goal");

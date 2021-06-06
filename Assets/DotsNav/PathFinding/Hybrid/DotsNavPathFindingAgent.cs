@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using DotsNav.Data;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Data;
 using Unity.Mathematics;
@@ -13,11 +14,9 @@ namespace DotsNav.PathFinding.Hybrid
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavAgent agent) =>
+            Entities.ForEach((DotsNavPathFindingAgent agent) =>
             {
                 var entity = GetPrimaryEntity(agent);
-                agent.World = DstEntityManager.World;
-                agent.Entity = entity;
                 Assert.IsTrue(agent.Radius > 0, "Radius must be larger than 0");
 
                 DstEntityManager.AddComponentData(entity, new PathQueryComponent {State = PathQueryState.Inactive});
@@ -33,7 +32,8 @@ namespace DotsNav.PathFinding.Hybrid
     /// <summary>
     /// Triggers path queries and provides access to their results
     /// </summary>
-    public class DotsNavAgent : EntityLifetimeBehaviour
+    [RequireComponent(typeof(DotsNavAgent))]
+    public class DotsNavPathFindingAgent : MonoBehaviour
     {
         /// <summary>
         /// The radius used when finding paths. Call FindPath to trigger calculating a new path

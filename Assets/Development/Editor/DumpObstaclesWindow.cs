@@ -23,7 +23,7 @@ class DumpObstaclesWindow : EditorWindow
 
             var agentgo = new GameObject("Agent");
             var a = agentgo.transform;
-            var agent = agentgo.AddComponent<DotsNavAgent>();
+            var agent = agentgo.AddComponent<DotsNavPathFindingAgent>();
             agent.DrawCorners = true;
             agent.DrawGizmos = false;
             agentgo.AddComponent<ConvertToEntity>().ConversionMode = ConvertToEntity.Mode.ConvertAndInjectGameObject;
@@ -47,7 +47,7 @@ class DumpObstaclesWindow : EditorWindow
                 var go = new GameObject("Obstacle");
                 go.AddComponent<ConvertToEntity>().ConversionMode = ConvertToEntity.Mode.ConvertAndInjectGameObject;
                 go.transform.parent = root;
-                var o = go.AddComponent<DotsNavObstacle>();
+                var o = go.AddComponent<DotsNavNavMeshObstacle>();
                 o.Vertices = obstacle.ToArray();
             }
 

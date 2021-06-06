@@ -16,7 +16,7 @@ class StressTest : MonoBehaviour
     public int Seed;
     public float ScaleOffset;
     public DotsNavNavmesh Navmesh;
-    public DotsNavObstacle[] Prefabs;
+    public DotsNavNavMeshObstacle[] Prefabs;
     public Text Output;
     public Text Output1;
     public RectTransform Help;

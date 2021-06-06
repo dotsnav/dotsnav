@@ -14,7 +14,7 @@ class LoadTest : MonoBehaviour
 {
     public Vector2 Size;
     public int Amount;
-    public DotsNavObstacle[] Prefabs;
+    public DotsNavNavMeshObstacle[] Prefabs;
     public int Seed;
     public DotsNavNavmesh NavmeshPrefab;
     public float ScaleOffset;

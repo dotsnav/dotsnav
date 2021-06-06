@@ -17,7 +17,7 @@ class SandboxDev : MonoBehaviour
     public float MinAgentSize;
     public float MaxAgentSize;
     public RectTransform Help;
-    public DotsNavObstacle[] Prefabs;
+    public DotsNavNavMeshObstacle[] Prefabs;
     public float PrefabMinSize = .1f;
     public float PrefabMaxSize = 3f;
     public float PrefabSizeSpeed = 1;
@@ -37,7 +37,7 @@ class SandboxDev : MonoBehaviour
     float _prefabRotation;
     Camera _camera;
     Vector2 _previousMouse;
-    DotsNavAgent _agent;
+    DotsNavPathFindingAgent _agent;
     Transform _start;
     Transform _goal;
     LineDrawer _lineDrawer;
@@ -46,7 +46,7 @@ class SandboxDev : MonoBehaviour
 
     void Awake()
     {
-        foreach (var obstacle in FindObjectsOfType<DotsNavObstacle>())
+        foreach (var obstacle in FindObjectsOfType<DotsNavNavMeshObstacle>())
         {
             var l  = new List<Vector2>();
             for (int i = 0; i < obstacle.Vertices.Length; i++)
@@ -61,7 +61,7 @@ class SandboxDev : MonoBehaviour
         _lineDrawer = GetComponent<LineDrawer>();
         _camera = Camera.main;
         Help.gameObject.SetActive(!Application.isEditor);
-        _agent = FindObjectOfType<DotsNavAgent>();
+        _agent = FindObjectOfType<DotsNavPathFindingAgent>();
 
         if (Reverse)
         {
@@ -140,7 +140,7 @@ class SandboxDev : MonoBehaviour
             var w = UnityEditor.EditorWindow.GetWindow<DumpObstaclesWindow>();
             w.ToDump = _toDump;
 
-            var agent = FindObjectOfType<DotsNavAgent>().transform;
+            var agent = FindObjectOfType<DotsNavPathFindingAgent>().transform;
             var s = agent.Find("Start").transform;
             w.Start = s.position.xz();
             w.Goal = agent.Find("Goal").transform.position.xz();

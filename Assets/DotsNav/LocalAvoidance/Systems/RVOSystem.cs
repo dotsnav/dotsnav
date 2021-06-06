@@ -1,25 +1,28 @@
 ﻿using DotsNav.BVH;
 using DotsNav.Data;
 using DotsNav.LocalAvoidance.Data;
+using DotsNav.LocalAvoidance.Systems;
 using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DotsNav.LocalAvoidance
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(DynamicTreeSystem))]
+    [UpdateAfter(typeof(ObstacleTreeSystem))]
     class RVOSystem : SystemBase
     {
-        DynamicTreeSystem _treeSystem;
+        DynamicTreeSystem _dynamicTreeSystem;
+        ObstacleTreeSystem _obstacleTreeSystem;
 
         protected override void OnCreate()
         {
-            _treeSystem = World.GetOrCreateSystem<DynamicTreeSystem>();
+            _dynamicTreeSystem = World.GetOrCreateSystem<DynamicTreeSystem>();
+            _obstacleTreeSystem = World.GetOrCreateSystem<ObstacleTreeSystem>();
         }
 
         protected override void OnUpdate()
@@ -36,7 +39,7 @@ namespace DotsNav.LocalAvoidance
                 })
                 .ScheduleParallel();
 
-            Dependency = JobHandle.CombineDependencies(Dependency, _treeSystem.OutputDependecy);
+            Dependency = JobHandle.CombineDependencies(Dependency, _dynamicTreeSystem.OutputDependecy, _obstacleTreeSystem.OutputDependecy);
             var velocityObstacleLookup = GetComponentDataFromEntity<VelocityObstacleComponent>(true);
             var obstacleTreeLookup = GetComponentDataFromEntity<ObstacleTreeComponent>(true);
 

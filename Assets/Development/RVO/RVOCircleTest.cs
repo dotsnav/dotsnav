@@ -13,19 +13,16 @@ public class RVOCircleTest : MonoBehaviour
 {
     public int AgentAmount;
     public float SpawnRadius;
-    public RVOAgent Prefab;
-    public DotsNavAgentTree AgentTree;
-    [FormerlySerializedAs("Tree")]
-    public DotsNavObstacleTree ObstacleTree;
+    public DotsNavLocalAvoidanceAgent Prefab;
+    [FormerlySerializedAs("AgentTree")]
+    public DotsNavLocalAvoidance LocalAvoidance;
 
     void Start()
     {
         for (int i = 0; i < AgentAmount; i++)
         {
             var prefab = Instantiate(Prefab);
-            var c = prefab.GetComponent<DotsNavLocalAvoidance>();
-            c.ObstacleTree = ObstacleTree;
-            c.AgentTree = AgentTree;
+            prefab.GetComponent<DotsNavLocalAvoidanceAgent>().LocalAvoidance = LocalAvoidance;
             var pos = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
             prefab.transform.position = pos.ToXxY();
         }

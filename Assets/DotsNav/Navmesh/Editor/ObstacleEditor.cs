@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DotsNav.Navmesh.Editor
 {
-    [CustomEditor(typeof(DotsNavObstacle), editorForChildClasses: true)]
+    [CustomEditor(typeof(DotsNavNavMeshObstacle), editorForChildClasses: true)]
     class ObstacleEditor : UnityEditor.Editor
     {
         const int Width = 50;
@@ -32,7 +32,7 @@ namespace DotsNav.Navmesh.Editor
                 _initialized = true;
             }
 
-            var obstacle = (DotsNavObstacle)target;
+            var obstacle = (DotsNavNavMeshObstacle)target;
             var scale = obstacle.Scale;
             var rot = obstacle.Rotation;
             var offset = obstacle.Offset;

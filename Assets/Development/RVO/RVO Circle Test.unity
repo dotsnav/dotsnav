@@ -154,9 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AgentAmount: 100
   SpawnRadius: 40
-  Prefab: {fileID: 2587778520116910071, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
-  AgentTree: {fileID: 569515795}
-  Tree: {fileID: 1474278017}
+  Prefab: {fileID: 5843786958838245045, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
+  LocalAvoidance: {fileID: 1474278017}
 --- !u!4 &398962336
 Transform:
   m_ObjectHideFlags: 0
@@ -171,63 +170,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &569515794
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 569515796}
-  - component: {fileID: 569515795}
-  - component: {fileID: 569515797}
-  m_Layer: 0
-  m_Name: AgentTree
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &569515795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 569515794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 90b7c3a093324c009f17f7d7eb3cadeb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &569515796
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 569515794}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &569515797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 569515794}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea7d7495833204790ba1d3a8755397f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ConversionMode: 1
 --- !u!1 &677413992
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,7 +279,6 @@ GameObject:
   - component: {fileID: 1279428108}
   - component: {fileID: 1279428107}
   - component: {fileID: 1279428106}
-  - component: {fileID: 1279428105}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -345,19 +286,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!135 &1279428105
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1279428104}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &1279428106
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -419,7 +347,7 @@ Transform:
   m_LocalScale: {x: 5.6091, y: 5.6091, z: 5.6091}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1282798311
 GameObject:
@@ -621,7 +549,7 @@ GameObject:
   - component: {fileID: 1474278017}
   - component: {fileID: 1474278019}
   m_Layer: 0
-  m_Name: ObstacleTree
+  m_Name: LocalAvoidance
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -651,7 +579,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1474278019
 MonoBehaviour:
@@ -702,6 +630,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5069399647278656283}
+  - component: {fileID: 6134962123093386548}
   - component: {fileID: 8545022960895619147}
   - component: {fileID: 6134962123093386547}
   - component: {fileID: 5276444796451923051}
@@ -724,7 +653,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b63d2f25a64b718e133d144aef27f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObstacleTree: {fileID: 1474278017}
+  LocalAvoidance: {fileID: 1474278017}
+--- !u!114 &6134962123093386548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6134962123093386546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26dd154e4d9d4cb3836670d05a3d3735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &8545022960895619147
 MonoBehaviour:
   m_ObjectHideFlags: 0
