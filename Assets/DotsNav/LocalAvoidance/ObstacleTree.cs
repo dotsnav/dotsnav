@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace DotsNav.LocalAvoidance
 {
@@ -53,41 +54,48 @@ namespace DotsNav.LocalAvoidance
             Assert.IsTrue(amount > 1);
             Assert.IsTrue(key != Entity.Null);
             Assert.IsTrue(!Map.ContainsKey(key));
+            Assert.IsTrue(math.all(vertices[0] == vertices[amount - 1]));
 
             Obstacle* first = default;
             Obstacle* previous = default;
 
-            for (var i = 0; i < amount; ++i)
+            var prevPos = Math.Mul2D(ltw, vertices[0]);
+            var prevPos2 = Math.Mul2D(ltw, vertices[amount - 2]);
+            for (var i = 0; i < amount - 1; ++i)
             {
                 var obstacle = ObstaclePool.GetElementPointer();
-                obstacle->Point = Math.Mul2D(ltw, vertices[i]);
-
-                if (i == 0)
-                {
-                    first = obstacle;
-                }
-                else
-                {
-                    obstacle->Previous = previous;
-                    obstacle->Previous->Next = obstacle;
-                    var aabb = AABB.FromOpposingCorners(previous->Point, obstacle->Point);
-                    obstacle->Id = Tree.Insert(aabb, (IntPtr) previous);
-                }
-
-                if (i == amount - 1)
-                {
-                    obstacle->Next = first;
-                    obstacle->Next->Previous = obstacle;
-                }
-
-                obstacle->Direction = math.normalize(vertices[i == amount - 1 ? 0 : i + 1] - vertices[i]);
+                obstacle->Point = prevPos;
+                var pos = Math.Mul2D(ltw, vertices[i + 1]);
+                var aabb = AABB.FromOpposingCorners(prevPos, pos);
+                obstacle->Id = Tree.Insert(aabb, (IntPtr) obstacle);
+                obstacle->Direction = math.normalize(pos - prevPos);
 
                 if (amount == 2)
                     obstacle->Convex = true;
                 else
-                    obstacle->Convex = LeftOf(vertices[i == 0 ? amount - 1 : i - 1], vertices[i], vertices[i == amount - 1 ? 0 : i + 1]) >= 0;
+                    obstacle->Convex = LeftOf(prevPos2, prevPos, pos) >= 0;
 
-                previous = obstacle;
+                prevPos2 = prevPos;
+                prevPos = pos;
+
+                if (i == 0)
+                {
+                    first = obstacle;
+                    previous = obstacle;
+                }
+                else if (i < amount - 2)
+                {
+                    obstacle->Previous = previous;
+                    previous->Next = obstacle;
+                    previous = obstacle;
+                }
+                else
+                {
+                    obstacle->Previous = previous;
+                    previous->Next = obstacle;
+                    first->Previous = obstacle;
+                    obstacle->Next = first;
+                }
             }
 
             Map.Add(key, (IntPtr) first);
@@ -103,6 +111,7 @@ namespace DotsNav.LocalAvoidance
             var current = first;
             do
             {
+                Debug.Log($"removing {current->Id}");
                 Tree.Remove(current->Id);
                 current = current->Next;
             } while (current != first);
