@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 
 class Sandbox : MonoBehaviour
 {
-    public DotsNavUpdateMode UpdateMode;
+    public DotsNavRunner UpdateMode;
     public DotsNavNavmesh Navmesh;
     public float AgentSizeZoomSpeed;
     public float MinAgentSize;

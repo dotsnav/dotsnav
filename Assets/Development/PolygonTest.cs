@@ -23,7 +23,7 @@ unsafe class PolygonTest : MonoBehaviour
     public bool Remove;
     public bool BurstRemove = true;
     public bool BurstSafetyChecks = true;
-    public DotsNavUpdateMode UpdateMode;
+    public DotsNavRunner UpdateMode;
     public DotsNavNavmesh Navmesh;
     int _i;
     List<Entity> _ids;
