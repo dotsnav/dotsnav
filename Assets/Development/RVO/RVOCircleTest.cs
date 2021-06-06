@@ -70,9 +70,9 @@ class MoveSystem : SystemBase
 
         Entities
             .WithoutBurst()
-            .ForEach((AgentComponent agent, DotsNavLocalAvoidanceAgent monoAgent) =>
+            .ForEach((DotsNavLocalAvoidanceAgent agent) =>
             {
-                monoAgent.transform.position += (Vector3) (agent.Velocity * dt).ToXxY();
+                agent.transform.position += (Vector3) (agent.Velocity * dt).ToXxY();
             })
             .Run();
     }
