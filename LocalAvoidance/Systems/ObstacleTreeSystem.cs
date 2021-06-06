@@ -9,6 +9,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace DotsNav.LocalAvoidance.Systems
 {
@@ -212,6 +213,7 @@ namespace DotsNav.LocalAvoidance.Systems
                         case TreeOperationType.Destroy:
                         {
                             tree.RemoveObstacle(op.Obstacle);
+                            Ecb.RemoveComponent<ElementSystemStateComponent>(index, op.Obstacle);
                             break;
                         }
                         default:
