@@ -25,7 +25,6 @@ using DotsNav.Collections;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
-using Debug = UnityEngine.Debug;
 
 namespace DotsNav.BVH
 {
@@ -143,7 +142,7 @@ namespace DotsNav.BVH
 
         public void Query<TC>(TC callback, AABB aabb) where TC : IQueryResultCollector<T>
         {
-            var stack = new Stack<int>(256, Allocator.Temp);
+            var stack = new Collections.Stack<int>(256, Allocator.Temp);
             stack.Push(_root);
 
             while (stack.Count > 0)
@@ -196,7 +195,7 @@ namespace DotsNav.BVH
                 segmentAABB.UpperBound = math.max(p1, t);
             }
 
-            var stack = new Stack<int>(256, Allocator.Temp);
+            var stack = new Collections.Stack<int>(256, Allocator.Temp);
             stack.Push(_root);
 
             while (stack.Count > 0)
@@ -860,11 +859,10 @@ namespace DotsNav.BVH
             Validate();
         }
 
-        struct Node
+        internal struct Node
         {
             internal bool IsLeaf => Child1 == NullNode;
 
-            // Enlarged AABB
             internal AABB AABB;
 
             internal T UserData;
@@ -883,6 +881,52 @@ namespace DotsNav.BVH
             internal int Height;
 
             internal bool Moved;
+        }
+
+        public Enumerator GetEnumerator(Allocator allocator)
+        {
+            return new Enumerator(_root, _nodes, allocator);
+        }
+
+        public struct Enumerator
+        {
+            public T Current;
+            readonly Node* _nodes;
+            readonly Stack<Node> _stack;
+
+            internal Enumerator(int root, Node* nodes, Allocator allocator)
+            {
+                _nodes = nodes;
+                Current = default;
+                _stack = new Stack<Node>(16, allocator);
+                if (root != NullNode)
+                    _stack.Push(_nodes[root]);
+            }
+
+            public bool MoveNext()
+            {
+                while (_stack.Count > 0)
+                {
+                    var node = _stack.Pop();
+
+                    if (node.IsLeaf)
+                    {
+                        Current = node.UserData;
+                        return true;
+                    }
+
+                    _stack.Push(_nodes[node.Child1]);
+                    if (node.Child2 != NullNode)
+                        _stack.Push(_nodes[node.Child2]);
+                }
+
+                return false;
+            }
+
+            public void Dispose()
+            {
+                _stack.Dispose();
+            }
         }
     }
 }
