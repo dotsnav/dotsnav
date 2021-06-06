@@ -1,0 +1,82 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4259633120777254760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4259633120777254761}
+  - component: {fileID: 4259633120777254774}
+  m_Layer: 0
+  m_Name: logo obstacle (6)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4259633120777254761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4259633120777254760}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4259633120777254774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4259633120777254760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce853caf004f4726b62fefe38d7b0177, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Close: 1
+  Vertices:
+  - x: 0.6066157
+    y: -0.16874738
+  - x: 0.60063183
+    y: -0.17606105
+  - x: 0.51138204
+    y: -0.17584808
+  - x: 0.506063
+    y: -0.16848148
+  - x: 0.506063
+    y: 0.10345511
+  - x: 0.47516623
+    y: 0.13531268
+  - x: 0.3523623
+    y: 0.13531268
+  - x: 0.28458646
+    y: 0.11647074
+  - x: 0.28458646
+    y: -0.16876347
+  - x: 0.27727276
+    y: -0.17596652
+  - x: 0.18817858
+    y: -0.17596652
+  - x: 0.1815822
+    y: -0.16865279
+  - x: 0.1815822
+    y: 0.14849575
+  - x: 0.18756616
+    y: 0.15936337
+  - x: 0.31768203
+    y: 0.1987291
+  - x: 0.5408074
+    y: 0.19878978
+  - x: 0.6066157
+    y: 0.13581268
+  DrawGizmos: 1
