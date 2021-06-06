@@ -14,7 +14,6 @@ public class RVOCircleTest : MonoBehaviour
     public int AgentAmount;
     public float SpawnRadius;
     public DotsNavLocalAvoidanceAgent Prefab;
-    [FormerlySerializedAs("AgentTree")]
     public DotsNavLocalAvoidance LocalAvoidance;
 
     void Start()

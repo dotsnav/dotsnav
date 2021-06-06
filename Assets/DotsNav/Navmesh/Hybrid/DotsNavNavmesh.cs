@@ -67,7 +67,6 @@ namespace DotsNav.Navmesh.Hybrid
         /// </summary>
         public float CollinearMargin = 1e-6f;
 
-        [FormerlySerializedAs("DebugDrawMode")]
         [Header("Debug")]
         public DrawMode DrawMode = DrawMode.Constrained;
         public Color ConstrainedColor = Color.red;

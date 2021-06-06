@@ -10,7 +10,6 @@ namespace DotsNav.Hybrid
         /// <summary>
         /// Determines when queued updates should be processed. When using manual also set // todo
         /// </summary>
-        [FormerlySerializedAs("UpdateMode")]
         public UpdateMode Mode;
 
         DotsNavSystemGroup _dotsNavSystemGroup;

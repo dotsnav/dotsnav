@@ -21,8 +21,6 @@ namespace DotsNav.LocalAvoidance.Hybrid
     [RequireComponent(typeof(DotsNavObstacle))]
     public class DotsNavLocalAvoidanceObstacle : MonoBehaviour
     {
-        [FormerlySerializedAs("AgentTree")]
-        [FormerlySerializedAs("ObstacleTree")]
         public DotsNavLocalAvoidance LocalAvoidance;
     }
 }
