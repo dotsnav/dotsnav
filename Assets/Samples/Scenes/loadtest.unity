@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -308,6 +308,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!1 &1161068624
@@ -620,11 +621,11 @@ MonoBehaviour:
   Size: {x: 467, y: 300}
   Amount: 5000
   Prefabs:
-  - {fileID: 8545022961146995738, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
-  - {fileID: 9062149480867419660, guid: fcfc399ac4bf3394a9c98cde9fc5d900, type: 3}
-  - {fileID: -1053839482970509961, guid: 34896f3dc417f3b4591b62703a1176d5, type: 3}
-  - {fileID: 917669263903628565, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
-  - {fileID: 3549586395011376469, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
+  - {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+  - {fileID: 1820771732411347270, guid: fcfc399ac4bf3394a9c98cde9fc5d900, type: 3}
+  - {fileID: 214842689570426929, guid: 34896f3dc417f3b4591b62703a1176d5, type: 3}
+  - {fileID: 5547837765248228189, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
+  - {fileID: 6915082999526884430, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
   Seed: 1
   NavmeshPrefab: {fileID: 4979978658142159214, guid: d806152bef81aab44b2e323d82562494, type: 3}
   ScaleOffset: 0.2
@@ -900,6 +901,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+  m_PresetInfoIsWorld: 0
 --- !u!1 &8887295453427190891
 GameObject:
   m_ObjectHideFlags: 0

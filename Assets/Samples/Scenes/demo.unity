@@ -1522,11 +1522,11 @@ MonoBehaviour:
   ObstacleScaleRange: 0.29
   PlacementDelay: 1
   ObstaclePrefabs:
-  - {fileID: 8545022961146995738, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
-  - {fileID: 9062149480867419660, guid: fcfc399ac4bf3394a9c98cde9fc5d900, type: 3}
-  - {fileID: -1053839482970509961, guid: 34896f3dc417f3b4591b62703a1176d5, type: 3}
-  - {fileID: 917669263903628565, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
-  - {fileID: 3549586395011376469, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
+  - {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+  - {fileID: 1820771732411347270, guid: fcfc399ac4bf3394a9c98cde9fc5d900, type: 3}
+  - {fileID: 214842689570426929, guid: 34896f3dc417f3b4591b62703a1176d5, type: 3}
+  - {fileID: 5547837765248228189, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
+  - {fileID: 6915082999526884430, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
   Help: {fileID: 2103250097}
   SpeedSlider: {fileID: 1380616635}
   RemovedObstacleColor: {r: 0.87843144, g: 0.039215688, b: 0, a: 1}
