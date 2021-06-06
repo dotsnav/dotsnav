@@ -1,4 +1,3 @@
-using DotsNav.Data;
 using Unity.Entities;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ namespace DotsNav.Hybrid
         public Entity Entity;
         public World World;
 
-        protected bool Injected;
+        bool _injected;
 
         protected virtual void Awake()
         {
@@ -25,12 +24,12 @@ namespace DotsNav.Hybrid
                 Debug.LogError($"No Convert to Entity attached to {GetType().Name} or one of its parents", gameObject);
                 return;
             }
-            Injected = c.ConversionMode == ConvertToEntity.Mode.ConvertAndInjectGameObject;
+            _injected = c.ConversionMode == ConvertToEntity.Mode.ConvertAndInjectGameObject;
         }
 
         protected virtual void OnDestroy()
         {
-            if (Injected && World != null && World.IsCreated && World.EntityManager.Exists(Entity))
+            if (_injected && World != null && World.IsCreated && World.EntityManager.Exists(Entity))
                 World.EntityManager.DestroyEntity(Entity);
         }
     }
