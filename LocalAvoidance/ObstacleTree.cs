@@ -5,7 +5,6 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace DotsNav.LocalAvoidance
 {
@@ -111,7 +110,6 @@ namespace DotsNav.LocalAvoidance
             var current = first;
             do
             {
-                Debug.Log($"removing {current->Id}");
                 Tree.Remove(current->Id);
                 current = current->Next;
             } while (current != first);
