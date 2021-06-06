@@ -10,10 +10,11 @@ using DotsNav.PathFinding.Hybrid;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 class Sandbox : MonoBehaviour
 {
-    public DotsNavRunner UpdateMode;
+    public DotsNavRunner Runner;
     public DotsNavNavmesh Navmesh;
     public float AgentSizeZoomSpeed;
     public float MinAgentSize;
@@ -71,7 +72,7 @@ class Sandbox : MonoBehaviour
         _agent.FindPath(_start.position.xz(), _goal.position.xz());
 
         // Manually trigger navmesh and pathfinder update to ensure the visuals line up
-        UpdateMode.ProcessModifications();
+        Runner.ProcessModifications();
 
         // A ray cast, make sure to dispose of the RayCastResult returned from
         // Navmesh.CastSegment or Navmesh.CastRay

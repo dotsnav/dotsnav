@@ -24,7 +24,7 @@ unsafe class PolygonTest : MonoBehaviour
     public bool Remove;
     public bool BurstRemove = true;
     public bool BurstSafetyChecks = true;
-    public DotsNavRunner UpdateMode;
+    public DotsNavRunner Runner;
     public DotsNavNavmesh Navmesh;
     int _i;
     List<Entity> _ids;
@@ -208,7 +208,7 @@ unsafe class PolygonTest : MonoBehaviour
 
     void Update()
     {
-        UpdateMode.ProcessModifications();
+        Runner.ProcessModifications();
         if (!_runTest)
             RunTest();
 
