@@ -28,9 +28,8 @@ namespace DotsNav.LocalAvoidance
 
             Entities
                 .WithBurst()
-                .ForEach((Translation translation, DirectionComponent direction, RadiusComponent radius, ref AgentComponent agent, ref VelocityObstacleComponent obstacle) =>
+                .ForEach((Translation translation, RadiusComponent radius, ref AgentComponent agent, ref VelocityObstacleComponent obstacle) =>
                 {
-                    agent.PrefVelocity = direction.Value * agent.PrefSpeed;
                     obstacle.Position = translation.Value.xz;
                     obstacle.Velocity = agent.Velocity;
                     obstacle.Radius = radius;

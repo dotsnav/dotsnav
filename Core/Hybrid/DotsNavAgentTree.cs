@@ -6,7 +6,7 @@ namespace DotsNav.Navmesh.Hybrid
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavDynamicTree obstacleTree) =>
+            Entities.ForEach((DotsNavAgentTree obstacleTree) =>
             {
                 var entity = GetPrimaryEntity(obstacleTree);
                 obstacleTree.Entity = entity;
@@ -16,7 +16,7 @@ namespace DotsNav.Navmesh.Hybrid
         }
     }
 
-    public class DotsNavDynamicTree : EntityLifetimeBehaviour
+    public class DotsNavAgentTree : EntityLifetimeBehaviour
     {
     }
 }

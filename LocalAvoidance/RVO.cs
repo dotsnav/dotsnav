@@ -42,12 +42,16 @@ namespace DotsNav.LocalAvoidance
         public static float2 CalculateNewVelocity(AgentComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
                                                   NativeList<ObstacleDistance> obstacleNeighbours, float invTimeStep)
         {
-            Assert.IsTrue(agent.PrefVelocity.IsNumber());
+            var prefVelocity = agent.PrefVelocity;
+            Assert.IsTrue(prefVelocity.IsNumber());
+            if (!prefVelocity.IsNumber() || math.all(prefVelocity == 0))
+                return 0;
+
             var orcaLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
             var projLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
             var lineCount = CreateOrcaLines(pos, radius, agent.Velocity, neighbours, orcaLines, 1 / agent.TimeHorizon,
                 out var numObstLines, 1 / agent.TimeHorizonObst, obstacleNeighbours, invTimeStep);
-            var lineFail = LinearProgram2(orcaLines, agent.MaxSpeed, agent.PrefVelocity, false, out var newVelocity, lineCount);
+            var lineFail = LinearProgram2(orcaLines, agent.MaxSpeed, prefVelocity, false, out var newVelocity, lineCount);
             if (lineFail < lineCount)
                 LinearProgram3(orcaLines, numObstLines, lineFail, agent.MaxSpeed, ref newVelocity, projLines, lineCount);
             return newVelocity;

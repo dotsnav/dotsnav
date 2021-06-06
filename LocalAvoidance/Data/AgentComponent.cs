@@ -6,7 +6,6 @@ namespace DotsNav.LocalAvoidance.Data
     public struct AgentComponent : IComponentData
     {
         public float2 PrefVelocity;
-        public float PrefSpeed;
         public float NeighbourDist;
         public float TimeHorizon;
         public float MaxSpeed;
