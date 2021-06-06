@@ -2,7 +2,7 @@
 
 namespace DotsNav.LocalAvoidance.Data
 {
-    struct ObstacleTreeComponent : IComponentData
+    public struct ObstacleTreeComponent : IComponentData
     {
         internal ObstacleTree TreeRef;
     }
