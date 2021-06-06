@@ -19,17 +19,19 @@ namespace DotsNav.LocalAvoidance.Hybrid
                 DstEntityManager.AddComponentData(entity, new DynamicTreeElementComponent {Tree = tree});
                 DstEntityManager.AddComponentData(entity, new ObstacleTreeAgentComponent {Tree = tree});
 
-                DstEntityManager.AddComponentData(entity, new AgentComponent
+                DstEntityManager.AddComponentData(entity, new LocalAvoidanceSettings
                 {
                     NeighbourDist = agent.NeighbourDist,
                     TimeHorizon = agent.TimeHorizon,
-                    MaxSpeed = agent.MaxSpeed,
                     TimeHorizonObst = agent.TimeHorizonObst,
                     MaxNeighbours = agent.MaxNeighbours,
                 });
 
                 DstEntityManager.AddComponentData(entity, new RadiusComponent(agent.Radius));
+                DstEntityManager.AddComponentData(entity, new MaxSpeedComponent {Value = agent.MaxSpeed});
                 DstEntityManager.AddComponent<VelocityObstacleComponent>(entity);
+                DstEntityManager.AddComponent<PreferredVelocityComponent>(entity);
+                DstEntityManager.AddComponent<VelocityComponent>(entity);
             });
         }
     }

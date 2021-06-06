@@ -3,13 +3,10 @@ using Unity.Mathematics;
 
 namespace DotsNav.LocalAvoidance.Data
 {
-    public struct AgentComponent : IComponentData
+    public struct LocalAvoidanceSettings : IComponentData
     {
-        public float2 PrefVelocity;
         public float NeighbourDist;
         public float TimeHorizon;
-        public float MaxSpeed;
-        public float2 Velocity;
         public float TimeHorizonObst;
         public int MaxNeighbours;
     }

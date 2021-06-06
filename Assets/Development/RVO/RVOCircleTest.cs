@@ -43,18 +43,17 @@ class DirectionSystem : SystemBase
 
         Entities
             .WithBurst()
-            .ForEach((Translation translation, TargetComponent target, ref AgentComponent agent) =>
+            .ForEach((Translation translation, TargetComponent target, LocalAvoidanceSettings agent, ref PreferredVelocityComponent preferredVelocity) =>
             {
                 var toTarget = target.Value - translation.Value.xz;
                 var length = math.length(toTarget);
-                float2 pref;
-
-                if (length >= agent.MaxSpeed * dt)
-                    pref = toTarget / length * agent.MaxSpeed;
+                const float preferredSpeed = 6;
+                if (length >= preferredSpeed * dt)
+                    preferredVelocity.Value = toTarget / length * preferredSpeed;
+                else if (length >= -1e3f)
+                    preferredVelocity.Value = toTarget;
                 else
-                    pref = toTarget;
-
-                agent.PrefVelocity = pref;
+                    preferredVelocity.Value = 0;
             })
             .ScheduleParallel();
     }
@@ -84,7 +83,7 @@ class TargetSystem : SystemBase
     {
         Entities
             .WithoutBurst()
-            .WithAll<AgentComponent>()
+            .WithAll<LocalAvoidanceSettings>()
             .WithNone<TargetComponent>()
             .WithStructuralChanges()
             .ForEach((Entity entity, Translation translation) =>

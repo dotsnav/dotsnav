@@ -14,11 +14,12 @@ namespace DotsNav.LocalAvoidance.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((DotsNavLocalAvoidanceAgent monoAgent, ref Translation translation, ref AgentComponent agentComponent, ref RadiusComponent radius) =>
+                .ForEach((DotsNavLocalAvoidanceAgent monoAgent, ref Translation translation, ref LocalAvoidanceSettings agentComponent,
+                          ref RadiusComponent radius, ref MaxSpeedComponent maxSpeed) =>
                 {
                     translation.Value = monoAgent.transform.position;
                     radius.Value = monoAgent.Radius;
-                    agentComponent.MaxSpeed = monoAgent.MaxSpeed;
+                    maxSpeed.Value = monoAgent.MaxSpeed;
                     agentComponent.MaxNeighbours = monoAgent.MaxNeighbours;
                     agentComponent.NeighbourDist = monoAgent.NeighbourDist;
                     agentComponent.TimeHorizon = monoAgent.TimeHorizon;
