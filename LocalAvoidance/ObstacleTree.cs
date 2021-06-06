@@ -34,6 +34,7 @@ namespace DotsNav.LocalAvoidance
         ref BlockPool<Obstacle> ObstaclePool => ref _control->ObstaclePool;
 
         public bool IsCreated => _control != null;
+        public int Count => Tree.Count;
 
         public ObstacleTree(Allocator allocator)
         {

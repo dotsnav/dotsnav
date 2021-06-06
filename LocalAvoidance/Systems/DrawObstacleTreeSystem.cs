@@ -21,9 +21,10 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .ForEach((ObstacleTreeComponent tree, DrawComponent color) =>
                 {
+                    var lines = new Lines(tree.TreeRef.Count);
                     var e = tree.TreeRef.GetEnumerator(Allocator.Temp);
                     while (e.MoveNext())
-                        Drawing.Line.Draw(e.Current.Point.ToXxY(), e.Current.Next->Point.ToXxY(), color.Color);
+                        lines.Draw(e.Current.Point.ToXxY(), e.Current.Next->Point.ToXxY(), color.Color);
                 })
                 .Schedule();
 

@@ -40,10 +40,10 @@ namespace DotsNav.BVH
 
         int _freeList;
 
-        int _insertionCount;
         internal readonly Allocator Allocator;
 
         public bool IsCreated => _nodes != null;
+        public int Count { get; private set; }
 
         public Tree(Allocator allocator)
         {
@@ -66,7 +66,7 @@ namespace DotsNav.BVH
             _nodes[_nodeCapacity - 1].Height = -1;
             _freeList = 0;
 
-            _insertionCount = 0;
+            Count = 0;
         }
 
         public void Dispose()
@@ -86,7 +86,7 @@ namespace DotsNav.BVH
             _nodes[id].Moved = true;
 
             InsertLeaf(id);
-
+            ++Count;
             return id;
         }
 
@@ -97,6 +97,7 @@ namespace DotsNav.BVH
 
             RemoveLeaf(id);
             FreeNode(id);
+            --Count;
         }
 
         internal void Move(int id, AABB aabb)
@@ -319,8 +320,6 @@ namespace DotsNav.BVH
 
         void InsertLeaf(int leaf)
         {
-            ++_insertionCount;
-
             if (_root == NullNode)
             {
                 _root = leaf;
