@@ -9,7 +9,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DotsNav.LocalAvoidance.Systems
 {
@@ -21,20 +20,17 @@ namespace DotsNav.LocalAvoidance.Systems
         NativeList<ObstacleTree> _trees;
         EntityQuery _insertQuery;
         EntityQuery _destroyQuery;
-        NativeArray<JobHandle> _dependencies;
 
         protected override void OnCreate()
         {
             _operations = new NativeMultiHashMap<ObstacleTree, TreeOperation>(64, Allocator.Persistent);
             _trees = new NativeList<ObstacleTree>(Allocator.Persistent);
-            _dependencies = new NativeArray<JobHandle>(3, Allocator.Persistent);
         }
 
         protected override void OnDestroy()
         {
             _operations.Dispose();
             _trees.Dispose();
-            _dependencies.Dispose();
             Entities.WithBurst().ForEach((TreeSystemStateComponent c) => c.Tree.Dispose()).Run();
         }
 
@@ -43,31 +39,29 @@ namespace DotsNav.LocalAvoidance.Systems
         {
             var ecbSource = DotsNavSystemGroup.EcbSource;
 
-            var parallelBuffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
-            _dependencies[0] =
-                Entities
-                    .WithName("Allocate_Tree")
-                    .WithBurst()
-                    .WithNone<TreeSystemStateComponent>()
-                    .ForEach((Entity entity, int entityInQueryIndex, ref ObstacleTreeComponent tree) =>
-                    {
-                        tree.TreeRef = new ObstacleTree(Allocator.Persistent);
-                        parallelBuffer.AddComponent(entityInQueryIndex, entity, new TreeSystemStateComponent {Tree = tree.TreeRef});
-                    })
-                    .ScheduleParallel(Dependency);
+            var b0 = ecbSource.CreateCommandBuffer().AsParallelWriter();
+            Entities
+                .WithName("Allocate_Tree")
+                .WithBurst()
+                .WithNone<TreeSystemStateComponent>()
+                .ForEach((Entity entity, int entityInQueryIndex, ref ObstacleTreeComponent tree) =>
+                {
+                    tree.TreeRef = new ObstacleTree(Allocator.Persistent);
+                    b0.AddComponent(entityInQueryIndex, entity, new TreeSystemStateComponent {Tree = tree.TreeRef});
+                })
+                .ScheduleParallel();
 
-            parallelBuffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
-            _dependencies[1] =
-                Entities
-                    .WithName("Dispose_Tree")
-                    .WithBurst()
-                    .WithNone<ObstacleTreeComponent>()
-                    .ForEach((Entity entity, int entityInQueryIndex, TreeSystemStateComponent state) =>
-                    {
-                        state.Tree.Dispose();
-                        parallelBuffer.RemoveComponent<TreeSystemStateComponent>(entityInQueryIndex, entity);
-                    })
-                    .ScheduleParallel(Dependency);
+            var b1 = ecbSource.CreateCommandBuffer().AsParallelWriter();
+            Entities
+                .WithName("Dispose_Tree")
+                .WithBurst()
+                .WithNone<ObstacleTreeComponent>()
+                .ForEach((Entity entity, int entityInQueryIndex, TreeSystemStateComponent state) =>
+                {
+                    state.Tree.Dispose();
+                    b1.RemoveComponent<TreeSystemStateComponent>(entityInQueryIndex, entity);
+                })
+                .ScheduleParallel();
 
             var treeLookup = GetComponentDataFromEntity<ObstacleTreeComponent>(true);
 
@@ -78,81 +72,69 @@ namespace DotsNav.LocalAvoidance.Systems
             operations.Clear();
             var operationsWriter = operations.AsParallelWriter();
 
-            _dependencies[0] =
-                Entities
-                    .WithBurst()
-                    .WithNone<ElementSystemStateComponent>()
-                    .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
-                    .WithReadOnly(treeLookup)
-                    .WithStoreEntityQueryInField(ref _insertQuery)
-                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
-                    .ForEach((Entity entity, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
-                    {
-                        var tree = treeLookup[element.Tree].TreeRef;
-                        operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
-                    })
-                    .ScheduleParallel(_dependencies[0]);
+            Entities
+                .WithBurst()
+                .WithNone<ElementSystemStateComponent>()
+                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery)
+                .ForEach((Entity entity, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                })
+                .ScheduleParallel();
 
-              _dependencies[0] =
-                Entities
-                    .WithBurst()
-                    .WithNone<ElementSystemStateComponent>()
-                    .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
-                    .WithReadOnly(treeLookup)
-                    .WithStoreEntityQueryInField(ref _insertQuery)
-                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
-                    .ForEach((Entity entity, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
-                    {
-                        var tree = treeLookup[element.Tree].TreeRef;
-                        ref var v = ref vertices.BlobRef.Value.Vertices;
-                        operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, float4x4.identity, (float2*) v.GetUnsafePtr(), v.Length));
-                    })
-                    .ScheduleParallel(_dependencies[0]);
+            Entities
+                .WithBurst()
+                .WithNone<ElementSystemStateComponent>()
+                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery)
+                .ForEach((Entity entity, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    ref var v = ref vertices.BlobRef.Value.Vertices;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, float4x4.identity, (float2*) v.GetUnsafePtr(), v.Length));
+                })
+                .ScheduleParallel();
 
-                _dependencies[0] =
-                Entities
-                    .WithBurst()
-                    .WithNone<ElementSystemStateComponent>()
-                    .WithReadOnly(treeLookup)
-                    .WithStoreEntityQueryInField(ref _insertQuery)
-                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
-                    .ForEach((Entity entity, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
-                    {
-                        var tree = treeLookup[element.Tree].TreeRef;
-                        operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, ltw.Value, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
-                    })
-                    .ScheduleParallel(_dependencies[0]);
+            Entities
+                .WithBurst()
+                .WithNone<ElementSystemStateComponent>()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery)
+                .ForEach((Entity entity, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, ltw.Value, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                })
+                .ScheduleParallel();
 
-              _dependencies[0] =
-                Entities
-                    .WithBurst()
-                    .WithNone<ElementSystemStateComponent>()
-                    .WithReadOnly(treeLookup)
-                    .WithStoreEntityQueryInField(ref _insertQuery)
-                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
-                    .ForEach((Entity entity, LocalToWorld ltw, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
-                    {
-                        var tree = treeLookup[element.Tree].TreeRef;
-                        ref var v = ref vertices.BlobRef.Value.Vertices;
-                        operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
-                    })
-                    .ScheduleParallel(_dependencies[0]);
+            Entities
+                .WithBurst()
+                .WithNone<ElementSystemStateComponent>()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery)
+                .ForEach((Entity entity, LocalToWorld ltw, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    ref var v = ref vertices.BlobRef.Value.Vertices;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
+                })
+                .ScheduleParallel();
 
 
-            _dependencies[0] =
-                Entities
-                    .WithName("Destroy")
-                    .WithBurst()
-                    .WithNone<ObstacleTreeElementComponent>()
-                    .WithStoreEntityQueryInField(ref _destroyQuery)
-                    .WithNativeDisableContainerSafetyRestriction(operationsWriter) // todo fix properly
-                    .ForEach((Entity entity, ElementSystemStateComponent state) =>
-                    {
-                        operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, entity));
-                    })
-                    .ScheduleParallel(_dependencies[0]);
-
-            Dependency = JobHandle.CombineDependencies(_dependencies);
+            Entities
+                .WithName("Destroy")
+                .WithBurst()
+                .WithNone<ObstacleTreeElementComponent>()
+                .WithStoreEntityQueryInField(ref _destroyQuery)
+                .ForEach((Entity entity, ElementSystemStateComponent state) =>
+                {
+                    operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, entity));
+                })
+                .ScheduleParallel();
 
             var trees = _trees;
             var set = new HashSet<ObstacleTree>(1024, Allocator.TempJob);
