@@ -38,7 +38,7 @@ namespace DotsNav.Navmesh
         PtrStack<Vertex> _open;
         UnsafeList<IntPtr> _vlist;
         UnsafeList<IntPtr> _elist;
-        Stack<UnsafeList> _creps;
+        Stack<UnsafeList<Entity>> _creps;
         internal HashSet<int> DestroyedTriangles;
         Deque<IntPtr> _refinementQueue;
 
@@ -76,9 +76,9 @@ namespace DotsNav.Navmesh
             _open = new PtrStack<Vertex>(64, Allocator.Persistent);
             _vlist = new UnsafeList<IntPtr>(64, Allocator.Persistent);
             _elist = new UnsafeList<IntPtr>(64, Allocator.Persistent);
-            _creps = new Stack<UnsafeList>(2*component.ExpectedVerts, Allocator.Persistent);
+            _creps = new Stack<UnsafeList<Entity>>(2*component.ExpectedVerts, Allocator.Persistent);
             for (int i = 0; i < 2 * component.ExpectedVerts; i++)
-                _creps.Push(new UnsafeList(UnsafeUtility.SizeOf<int>(), UnsafeUtility.AlignOf<int>(), CrepMinCapacity, Allocator.Persistent));
+                _creps.Push(new UnsafeList<Entity>(CrepMinCapacity, Allocator.Persistent));
             DestroyedTriangles = new HashSet<int>(64, Allocator.Persistent);
             _refinementQueue = new Deque<IntPtr>(24, Allocator.Persistent);
 
