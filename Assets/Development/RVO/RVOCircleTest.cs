@@ -42,7 +42,7 @@ class DirectionSystem : SystemBase
 
         Entities
             .WithBurst()
-            .ForEach((Translation translation, TargetComponent target, LocalAvoidanceSettings agent, ref PreferredVelocityComponent preferredVelocity) =>
+            .ForEach((Translation translation, TargetComponent target, SettingsComponent agent, ref PreferredVelocityComponent preferredVelocity) =>
             {
                 var toTarget = target.Value - translation.Value.xz;
                 var length = math.length(toTarget);
@@ -82,7 +82,7 @@ class TargetSystem : SystemBase
     {
         Entities
             .WithoutBurst()
-            .WithAll<LocalAvoidanceSettings>()
+            .WithAll<SettingsComponent>()
             .WithNone<TargetComponent>()
             .WithStructuralChanges()
             .ForEach((Entity entity, Translation translation) =>

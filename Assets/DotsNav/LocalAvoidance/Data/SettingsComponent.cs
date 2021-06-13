@@ -2,7 +2,7 @@
 
 namespace DotsNav.LocalAvoidance.Data
 {
-    public struct LocalAvoidanceSettings : IComponentData
+    public struct SettingsComponent : IComponentData
     {
         public float NeighbourDist;
         public float TimeHorizon;
