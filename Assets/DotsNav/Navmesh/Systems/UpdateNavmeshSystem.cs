@@ -172,5 +172,9 @@ namespace DotsNav.Navmesh.Systems
 
             ecbSource.AddJobHandleForProducer(Dependency);
         }
+
+        struct ObstacleSystemStateComponent : ISystemStateComponentData
+        {
+        }
     }
 }
