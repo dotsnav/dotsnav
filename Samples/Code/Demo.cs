@@ -149,8 +149,6 @@ class Demo : MonoBehaviour
         var scale = ObstacleMinScale + _r.NextFloat() * ObstacleScaleRange;
         var rot = _r.NextFloat(2 * math.PI);
         var vertices = obstacle.Vertices.Select(f => DemoMath.Rotate(scale * f, rot)).ToList();
-        if (obstacle.Closed)
-            vertices.Add(vertices[0]);
 
         var min = new float2(float.MaxValue);
         var max = new float2(float.MinValue);

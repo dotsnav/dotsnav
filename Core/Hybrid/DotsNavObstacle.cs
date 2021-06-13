@@ -22,14 +22,6 @@ namespace DotsNav.Hybrid
 
     public class DotsNavObstacle : EntityLifetimeBehaviour
     {
-        [SerializeField]
-        bool Close = true;
-
-        /// <summary>
-        /// Indicates wether this obstacle should be closed by duplicating the first vertex as the last vertex
-        /// </summary>
-        public bool Closed => Close && Vertices.Length > 2;
-
         /// <summary>
         /// The vertices of this obstacle in object space
         /// </summary>
@@ -70,8 +62,6 @@ namespace DotsNav.Hybrid
             var offset = Offset;
             for (int i = 0; i < Vertices.Length - 1; i++)
                 Handles.DrawLine(GetVertex(i, scale, rot, offset).ToXxY(), GetVertex(i + 1, scale, rot, offset).ToXxY());
-            if (Closed)
-                Handles.DrawLine(GetVertex(Vertices.Length - 1, scale, rot, offset).ToXxY(), GetVertex(0, scale, rot, offset).ToXxY());
             Handles.color = t;
         }
 

@@ -172,8 +172,6 @@ namespace DotsNav.Navmesh.Editor
             Handles.color = DotsNavPrefs.EditColor;
             for (int i = 0; i < obstacle.Vertices.Length - 1; i++)
                 Handles.DrawLine(GetPos(i), GetPos(i + 1));
-            if (obstacle.Closed)
-                Handles.DrawLine(GetPos(obstacle.Vertices.Length - 1), GetPos(0));
             Handles.color = t;
 
             float3 GetPos(int i) => obstacle.GetVertex(i, scale, rot, offset).ToXxY();
