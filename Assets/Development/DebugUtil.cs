@@ -1,3 +1,4 @@
+using DotsNav.PathFinding;
 using Unity.Mathematics;
 using UnityEngine;
 

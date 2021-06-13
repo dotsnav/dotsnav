@@ -1,6 +1,7 @@
 ﻿using Unity.Mathematics;
 using UnityEngine;
 using DotsNav;
+using DotsNav.PathFinding;
 using DotsNav.Predicates;
 
 [ExecuteInEditMode]
