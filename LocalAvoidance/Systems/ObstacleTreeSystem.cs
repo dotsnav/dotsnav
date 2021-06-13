@@ -18,7 +18,14 @@ namespace DotsNav.LocalAvoidance.Systems
         public JobHandle OutputDependecy;
         NativeMultiHashMap<ObstacleTree, TreeOperation> _operations;
         NativeList<ObstacleTree> _trees;
-        EntityQuery _insertQuery;
+        EntityQuery _insertQuery0;
+        EntityQuery _insertQuery1;
+        EntityQuery _insertQuery2;
+        EntityQuery _insertQuery3;
+        EntityQuery _insertQuery4;
+        EntityQuery _insertQuery5;
+        EntityQuery _insertQuery6;
+        EntityQuery _insertQuery7;
         EntityQuery _destroyQuery;
 
         protected override void OnCreate()
@@ -66,18 +73,28 @@ namespace DotsNav.LocalAvoidance.Systems
             var treeLookup = GetComponentDataFromEntity<ObstacleTreeComponent>(true);
 
             var operations = _operations;
-            var minCapacity = _insertQuery.CalculateEntityCount() + _destroyQuery.CalculateEntityCount();
+            var minCapacity = _insertQuery0.CalculateEntityCount() +
+                              _insertQuery1.CalculateEntityCount() +
+                              _insertQuery2.CalculateEntityCount() +
+                              _insertQuery3.CalculateEntityCount() +
+                              _insertQuery4.CalculateEntityCount() +
+                              _insertQuery5.CalculateEntityCount() +
+                              _insertQuery6.CalculateEntityCount() +
+                              _insertQuery7.CalculateEntityCount() +
+                              _destroyQuery.CalculateEntityCount();
             if (operations.Capacity < minCapacity)
                 operations.Capacity = minCapacity;
             operations.Clear();
             var operationsWriter = operations.AsParallelWriter();
 
+
+            // Without LocalToWorld
             Entities
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
                 .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
                 .WithReadOnly(treeLookup)
-                .WithStoreEntityQueryInField(ref _insertQuery)
+                .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
@@ -90,7 +107,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithNone<ElementSystemStateComponent>()
                 .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
                 .WithReadOnly(treeLookup)
-                .WithStoreEntityQueryInField(ref _insertQuery)
+                .WithStoreEntityQueryInField(ref _insertQuery1)
                 .ForEach((Entity entity, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
@@ -101,9 +118,36 @@ namespace DotsNav.LocalAvoidance.Systems
 
             Entities
                 .WithBurst()
+                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery2)
+                .ForEach((DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                })
+                .ScheduleParallel();
+
+            Entities
+                .WithBurst()
+                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery3)
+                .ForEach((ObstacleBlobComponent blob, ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    ref var v = ref blob.BlobRef.Value.Vertices;
+                    ref var a = ref blob.BlobRef.Value.Amounts;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                })
+                .ScheduleParallel();
+
+            // With LocalToWorld
+            Entities
+                .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
-                .WithStoreEntityQueryInField(ref _insertQuery)
+                .WithStoreEntityQueryInField(ref _insertQuery4)
                 .ForEach((Entity entity, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
@@ -115,12 +159,36 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
-                .WithStoreEntityQueryInField(ref _insertQuery)
+                .WithStoreEntityQueryInField(ref _insertQuery5)
                 .ForEach((Entity entity, LocalToWorld ltw, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
                     ref var v = ref vertices.BlobRef.Value.Vertices;
                     operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
+                })
+                .ScheduleParallel();
+
+            Entities
+                .WithBurst()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery6)
+                .ForEach((LocalToWorld ltw, DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                })
+                .ScheduleParallel();
+
+            Entities
+                .WithBurst()
+                .WithReadOnly(treeLookup)
+                .WithStoreEntityQueryInField(ref _insertQuery7)
+                .ForEach((LocalToWorld ltw, ObstacleBlobComponent blob, ObstacleTreeElementComponent element) =>
+                {
+                    var tree = treeLookup[element.Tree].TreeRef;
+                    ref var v = ref blob.BlobRef.Value.Vertices;
+                    ref var a = ref blob.BlobRef.Value.Amounts;
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -192,6 +260,17 @@ namespace DotsNav.LocalAvoidance.Systems
                             Ecb.AddComponent(index, op.Obstacle, state);
                             break;
                         }
+                        case TreeOperationType.BulkInsert:
+                        {
+                            var offset = 0;
+                            for (int i = 0; i < op.Amount; i++)
+                            {
+                                var amount = op.Amounts[i];
+                                tree.InsertObstacle(op.Obstacle, op.Ltw, op.Vertices + offset, amount);
+                                offset += amount;
+                            }
+                            break;
+                        }
                         case TreeOperationType.Destroy:
                         {
                             tree.RemoveObstacle(op.Obstacle);
@@ -209,8 +288,9 @@ namespace DotsNav.LocalAvoidance.Systems
         {
             public readonly TreeOperationType Type;
             public readonly Entity Obstacle;
-            public readonly float4x4 Ltw; // todo refactor
+            public readonly float4x4 Ltw;
             public readonly float2* Vertices;
+            public readonly int* Amounts;
             public readonly int Amount;
 
             /// <summary>
@@ -223,6 +303,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 Ltw = ltw;
                 Vertices = vertices;
                 Amount = amount;
+                Amounts = default;
             }
 
             /// <summary>
@@ -235,12 +316,24 @@ namespace DotsNav.LocalAvoidance.Systems
                 Ltw = default;
                 Vertices = default;
                 Amount = default;
+                Amounts = default;
+            }
+
+            public TreeOperation(TreeOperationType type, float4x4 ltw, float2* verts, int* amounts, int length)
+            {
+                Type = type;
+                Obstacle = default;
+                Ltw = ltw;
+                Vertices = verts;
+                Amount = length;
+                Amounts = amounts;
             }
         }
 
         enum TreeOperationType
         {
             Insert,
+            BulkInsert,
             Destroy
         }
 
