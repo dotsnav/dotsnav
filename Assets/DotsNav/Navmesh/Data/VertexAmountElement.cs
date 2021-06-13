@@ -6,7 +6,7 @@ namespace DotsNav.Navmesh.Data
     /// Add DynamicBuffer&lt;VertexAmountElement&gt; in addition to DynamicBuffer&lt;VertexElement&gt; to queue bulk insertion of permanent obstacles
     /// </summary>
     [InternalBufferCapacity(0)]
-    struct VertexAmountElement : IBufferElementData
+    public struct VertexAmountElement : IBufferElementData
     {
         public readonly int Value;
 
