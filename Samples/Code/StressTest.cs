@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DotsNav;
 using DotsNav.Drawing;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using Unity.Mathematics;
 using UnityEngine;
@@ -16,7 +17,7 @@ class StressTest : MonoBehaviour
     public int Seed;
     public float ScaleOffset;
     public DotsNavNavmesh Navmesh;
-    public DotsNavNavMeshObstacle[] Prefabs;
+    public DotsNavObstacle[] Prefabs;
     public Text Output;
     public Text Output1;
     public RectTransform Help;

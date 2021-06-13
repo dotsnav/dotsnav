@@ -1,13 +1,13 @@
 #if UNITY_EDITOR
 using System.Linq;
-using DotsNav.Navmesh.Hybrid;
+using DotsNav.Hybrid;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
 namespace DotsNav.Navmesh.Editor
 {
-    [CustomEditor(typeof(DotsNavNavMeshObstacle), editorForChildClasses: true)]
+    [CustomEditor(typeof(DotsNavObstacle), editorForChildClasses: true)]
     class ObstacleEditor : UnityEditor.Editor
     {
         const int Width = 50;
@@ -32,7 +32,7 @@ namespace DotsNav.Navmesh.Editor
                 _initialized = true;
             }
 
-            var obstacle = (DotsNavNavMeshObstacle)target;
+            var obstacle = (DotsNavObstacle)target;
             var scale = obstacle.Scale;
             var rot = obstacle.Rotation;
             var offset = obstacle.Offset;

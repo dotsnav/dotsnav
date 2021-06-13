@@ -1,4 +1,5 @@
 ﻿using DotsNav.Hybrid;
+using DotsNav.Navmesh.Hybrid;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Serialization;
