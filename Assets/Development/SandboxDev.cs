@@ -7,6 +7,7 @@ using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
+using DotsNav.Samples.Code;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
