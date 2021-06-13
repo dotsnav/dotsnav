@@ -40,7 +40,7 @@ namespace DotsNav.Collections
             get
             {
                 Assert.IsTrue(i >= 0 && i < Length);
-                return _list->Read<T>(i);
+                return UnsafeUtility.ReadArrayElement<T>(Ptr, i);
             }
             set
             {
@@ -84,7 +84,7 @@ namespace DotsNav.Collections
         public T TakeLast()
         {
             Assert.IsTrue(_list->Length > 0);
-            return _list->Read<T>(--_list->Length);
+            return UnsafeUtility.ReadArrayElement<T>(Ptr, --_list->Length);
         }
 
         public void AddRange(NativeArray<T> r)

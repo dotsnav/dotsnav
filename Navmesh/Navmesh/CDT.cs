@@ -382,15 +382,14 @@ namespace DotsNav.Navmesh
             return result;
         }
 
-        UnsafeList GetCrep(UnsafeList source)
+        UnsafeList<Entity> GetCrep(UnsafeList<Entity> source)
         {
             var l = GetCrep();
-            for (int i = 0; i < source.Length; i++)
-                l.Add(source.Read<Entity>(i));
+            l.AddRange(source);
             return l;
         }
 
-        UnsafeList GetCrep() => _creps.Count > 0 ? _creps.Pop() : new UnsafeList(UnsafeUtility.SizeOf<Entity>(), UnsafeUtility.AlignOf<Entity>(), CrepMinCapacity, Allocator.Persistent);
+        UnsafeList<Entity> GetCrep() => _creps.Count > 0 ? _creps.Pop() : new UnsafeList<Entity>(CrepMinCapacity, Allocator.Persistent);
 
         Vertex* InsertPointInFace(float2 p, Edge* edge)
         {
@@ -733,7 +732,7 @@ namespace DotsNav.Navmesh
             C.TryAdd((IntPtr) connection);
         }
 
-        void Connect(Vertex* a, Vertex* b, UnsafeList crep)
+        void Connect(Vertex* a, Vertex* b, UnsafeList<Entity> crep)
         {
             var connection = GetConnection(a, b);
             if (connection == null)
@@ -979,7 +978,7 @@ namespace DotsNav.Navmesh
             InsertSegmentNoConstraints(a, b, crep);
         }
 
-        void InsertSegmentNoConstraints(Vertex* a, Vertex* b, UnsafeList crep)
+        void InsertSegmentNoConstraints(Vertex* a, Vertex* b, UnsafeList<Entity> crep)
         {
             var c = GetConnection(a, b);
 

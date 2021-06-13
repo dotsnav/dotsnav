@@ -1,6 +1,5 @@
 using System;
 using DotsNav.Collections;
-using Unity.Collections;
 
 namespace DotsNav
 {
@@ -38,20 +37,6 @@ namespace DotsNav
             else
             {
                 list.Add(list.Last());
-                for (int i = list.Length - 2; i > index; i--)
-                    list[i] = list[i - 1];
-                list[index] = t;
-            }
-        }
-
-        public static void Insert<T>(this NativeList<T> list, int index, T t) where T : unmanaged
-        {
-            Assert.IsTrue(index <= list.Length);
-            if (index == list.Length)
-                list.Add(t);
-            else
-            {
-                list.Add(list[list.Length - 1]);
                 for (int i = list.Length - 2; i > index; i--)
                     list[i] = list[i - 1];
                 list[index] = t;
