@@ -39,7 +39,7 @@ namespace DotsNav.LocalAvoidance
     {
         const float Epsilon = 0.00001f;
 
-        public static float2 CalculateNewVelocity(LocalAvoidanceSettings agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
+        public static float2 CalculateNewVelocity(SettingsComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
                                                   NativeList<ObstacleDistance> obstacleNeighbours, float invTimeStep, float2 prefVelocity, float2 velocity, float maxSpeed)
         {
             Assert.IsTrue(prefVelocity.IsNumber());

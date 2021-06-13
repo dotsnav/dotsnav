@@ -47,7 +47,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithReadOnly(velocityObstacleLookup)
                 .WithReadOnly(obstacleTreeLookup)
                 .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, ObstacleTreeAgentComponent obstacleTree,
-                          LocalAvoidanceSettings agent, PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
+                          SettingsComponent agent, PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
                     var pos = translation.Value.xz;
                     var neighbours = GetNeighbours(agent, agentTree, pos, velocityObstacleLookup);
@@ -64,7 +64,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithNone<ObstacleTreeAgentComponent>()
                 .WithReadOnly(velocityObstacleLookup)
-                .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, LocalAvoidanceSettings agent,
+                .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, SettingsComponent agent,
                           PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
                     var pos = translation.Value.xz;
@@ -75,7 +75,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .ScheduleParallel();
         }
 
-        static NativeList<VelocityObstacle> GetNeighbours(LocalAvoidanceSettings agent, DynamicTreeElementComponent agentTree, float2 pos, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
+        static NativeList<VelocityObstacle> GetNeighbours(SettingsComponent agent, DynamicTreeElementComponent agentTree, float2 pos, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
         {
             var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
             var ext = agent.NeighbourDist / 2;
