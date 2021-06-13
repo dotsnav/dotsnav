@@ -777,7 +777,7 @@ namespace DotsNav.Navmesh
 
         static readonly FixedString128 PointOutsideNavmeshMessage = "Trying to add a point outside the navmesh";
 
-        void Insert(float2* points, int start, int amount, Entity cid)
+        void Insert(float2* points, int start, int amount, Entity cid, float4x4 ltw)
         {
             Vertex* lastVert = null;
             var end = start + amount;
@@ -785,7 +785,7 @@ namespace DotsNav.Navmesh
 
             for (var i = start; i < end; i++)
             {
-                var c = points[i];
+                var c = Math.Mul2D(ltw, points[i]);
                 Assert.IsTrue(_verticesSeq.Length < 5 || Contains(c), PointOutsideNavmeshMessage);
                 var vert = InsertPoint(c);
                 Assert.IsTrue(vert != null);

@@ -113,7 +113,7 @@ namespace DotsNav.Navmesh.Hybrid
         {
             var em = World.All[0].EntityManager;
             var obstacle = em.CreateEntity();
-            em.AddComponentData(obstacle, new ObstacleComponent());
+            em.AddComponentData(obstacle, new NavmeshObstacleComponent());
             var input = em.AddBuffer<VertexElement>(obstacle);
             foreach (float2 vertex in vertices)
                 input.Add(vertex);
@@ -182,7 +182,7 @@ namespace DotsNav.Navmesh.Hybrid
             var em = World.All[0].EntityManager;
             var obstacle = em.CreateEntity();
             em.AddComponentData(obstacle, new LocalToWorld {Value = float4x4.TRS(position.ToXxY(), quaternion.RotateY(math.radians(rotationDegrees)), ((float2)scale).xxy)});
-            em.AddComponentData(obstacle, new ObstacleComponent());
+            em.AddComponentData(obstacle, new NavmeshObstacleComponent());
             var input = em.AddBuffer<VertexElement>(obstacle);
             foreach (float2 vertex in vertices)
                 input.Add(vertex);
@@ -201,7 +201,7 @@ namespace DotsNav.Navmesh.Hybrid
         /// Returns the native navmesh which exposes the triangulation. This structure is invalidated each update and
         /// the latest version should be obtained each cycle
         /// </summary>
-        public Navmesh GetNativeNavmesh() => World.All[0].EntityManager.GetComponentData<Navmesh>(Entity);
+        public unsafe Navmesh GetNativeNavmesh() => *World.All[0].EntityManager.GetComponentData<NavmeshComponent>(Entity).Navmesh;
 
         void OnDrawGizmos()
         {

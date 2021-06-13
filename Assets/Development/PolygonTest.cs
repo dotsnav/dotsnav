@@ -115,8 +115,8 @@ unsafe class PolygonTest : MonoBehaviour
         for (int i = 0; i < Amount; i++)
             _entities.Add(em.CreateEntity());
 
-        var navmeshes = new NativeArray<Navmesh>(1, Allocator.TempJob);
-        navmeshes[0] = em.GetComponentData<Navmesh>(Navmesh.Entity);
+        var navmeshes = new NativeArray<NavmeshComponent>(1, Allocator.TempJob);
+        navmeshes[0] = em.GetComponentData<NavmeshComponent>(Navmesh.Entity);
         var toRemove = new NativeQueue<Entity>(Allocator.TempJob);
 
         new InsertValidateJob
@@ -145,7 +145,7 @@ unsafe class PolygonTest : MonoBehaviour
     void Warmup()
     {
         var em = World.All[0].EntityManager;
-        var navmeshes = new NativeArray<Navmesh>(1, Allocator.TempJob);
+        var navmeshes = new NativeArray<NavmeshComponent>(1, Allocator.TempJob);
         var l = new NativeList<float2>(Allocator.TempJob);
         var a = new NativeList<int>(Allocator.TempJob);
         var e = new NativeList<Entity>(Allocator.TempJob);
@@ -182,9 +182,9 @@ unsafe class PolygonTest : MonoBehaviour
     void RunRemove()
     {
         BurstCompiler.Options.EnableBurstCompilation = BurstRemove;
-        var navmeshes = new NativeArray<Navmesh>(1, Allocator.TempJob);
+        var navmeshes = new NativeArray<NavmeshComponent>(1, Allocator.TempJob);
         var em = World.All[0].EntityManager;
-        navmeshes[0] = em.GetComponentData<Navmesh>(Navmesh.Entity);
+        navmeshes[0] = em.GetComponentData<NavmeshComponent>(Navmesh.Entity);
         var toRemove = new NativeQueue<Entity>(Allocator.TempJob);
 
         new RemoveValidateJob
@@ -219,7 +219,7 @@ unsafe class PolygonTest : MonoBehaviour
         if (Track)
         {
             var em = World.All[0].EntityManager;
-            var edges = em.GetComponentData<Navmesh>(Navmesh.Entity).GetEdgeEnumerator();
+            var edges = em.GetComponentData<NavmeshComponent>(Navmesh.Entity).Navmesh->GetEdgeEnumerator();
                 while (edges.MoveNext())
                     foreach (var c in edges.Current->Constraints)
                         ids.Add(c);

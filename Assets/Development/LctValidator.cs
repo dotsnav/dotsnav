@@ -28,7 +28,7 @@ unsafe struct LctValidator
         public bool Clearance;
     }
 
-    public LctValidator(ref Navmesh navmesh, Allocator allocator)
+    public LctValidator(Navmesh* navmesh, Allocator allocator)
     {
         _triangles = new HashSet<int>(1024, allocator);
         _removedTriangles = new NativeList<int>(1024, allocator);
@@ -37,32 +37,32 @@ unsafe struct LctValidator
         _unconstrained = new NativeList<IntPtr>(allocator);
         _clearanceCalculated = new NativeArray<int>(1, allocator);
         _previousTriangles = default;
-        InitTriangles(ref navmesh);
+        InitTriangles(navmesh);
     }
 
-    public void Validate(ref Navmesh navmesh, Profile profile)
+    public void Validate(Navmesh* navmesh, Profile profile)
     {
         if (profile.CDT)
-            IsCdt(ref navmesh);
+            IsCdt(navmesh);
         if (profile.LCT)
-            TestDisturbances(ref navmesh);
+            TestDisturbances(navmesh);
         if (profile.Triangles)
-            TestTriangleIds(ref navmesh);
+            TestTriangleIds(navmesh);
         if (profile.Clearance)
-            _clearanceCalculated[0] += TestLocalClearance(ref navmesh);
+            _clearanceCalculated[0] += TestLocalClearance(navmesh);
     }
 
-    void TestDisturbances(ref Navmesh lct)
+    void TestDisturbances(Navmesh* lct)
     {
         _disturbances.Clear();
 
-        var e = lct.GetEdgeEnumerator(true);
+        var e = lct->GetEdgeEnumerator(true);
         while (e.MoveNext())
         {
             if (e.Current->Constrained)
                 continue;
 
-            lct.CheckEdgeForDisturbances(e.Current, _disturbances);
+            lct->CheckEdgeForDisturbances(e.Current, _disturbances);
 
             for (int j = 0; j < _disturbances.Length; j++)
             {
@@ -76,11 +76,11 @@ unsafe struct LctValidator
         }
     }
 
-    int TestLocalClearance(ref Navmesh lct)
+    int TestLocalClearance(Navmesh* lct)
     {
         var clearanceCalculated = 0;
 
-        var e = lct.GetEdgeEnumerator(true);
+        var e = lct->GetEdgeEnumerator(true);
         while (e.MoveNext())
         {
             if (e.Current->Constrained)
@@ -90,7 +90,7 @@ unsafe struct LctValidator
             var b = edge->Org->Point;
             var c = edge->Dest->Point;
 
-            if (!Math.Contains(b, lct.Min, lct.Max) || !Math.Contains(c, lct.Min, lct.Max))
+            if (!Math.Contains(b, lct->Min, lct->Max) || !Math.Contains(c, lct->Min, lct->Max))
                 continue;
 
             var entrance = edge->ONext;
@@ -155,7 +155,7 @@ unsafe struct LctValidator
         return Navmesh.TryGetConstraint(clearance, corner, edge);
     }
 
-    void TestTriangleIds(ref Navmesh lct)
+    void TestTriangleIds(Navmesh* lct)
     {
         if (_previousTriangles.IsCreated)
             _previousTriangles.Dispose();
@@ -165,10 +165,10 @@ unsafe struct LctValidator
         _closed.Clear();
         _removedTriangles.Clear();
 
-        var e = lct.GetEdgeEnumerator(true);
+        var e = lct->GetEdgeEnumerator(true);
         while (e.MoveNext())
         {
-            if (!Math.Contains(e.Current->Org->Point, lct.Min, lct.Max))
+            if (!Math.Contains(e.Current->Org->Point, lct->Min, lct->Max))
                 continue;
 
             if (_closed.Contains((IntPtr) e.Current))
@@ -204,7 +204,7 @@ unsafe struct LctValidator
         }
 
         var destroyed = new HashSet<int>(64, Allocator.Temp);
-        var enumerator = lct.DestroyedTriangles.GetEnumerator();
+        var enumerator = lct->DestroyedTriangles.GetEnumerator();
         while (enumerator.MoveNext())
             destroyed.TryAdd(enumerator.Current);
 
@@ -231,12 +231,12 @@ unsafe struct LctValidator
         destroyed.Dispose();
     }
 
-    void InitTriangles(ref Navmesh lct)
+    void InitTriangles(Navmesh* lct)
     {
-        var e = lct.GetEdgeEnumerator(true);
+        var e = lct->GetEdgeEnumerator(true);
         while (e.MoveNext())
         {
-            if (!Math.Contains(e.Current->Org->Point, lct.Min, lct.Max))
+            if (!Math.Contains(e.Current->Org->Point, lct->Min, lct->Max))
                 continue;
 
             _triangles.TryAdd(e.Current->TriangleId);
@@ -246,9 +246,9 @@ unsafe struct LctValidator
         }
     }
 
-    void IsCdt(ref Navmesh lct, int constraint = -1, int vertex = -1)
+    void IsCdt(Navmesh* lct, int constraint = -1, int vertex = -1)
     {
-        var e = lct.GetEdgeEnumerator(true);
+        var e = lct->GetEdgeEnumerator(true);
         while (e.MoveNext())
         {
             if (e.Current->Constrained)
@@ -256,7 +256,7 @@ unsafe struct LctValidator
 
             var o = e.Current->Org->Point;
             var d = e.Current->Dest->Point;
-            if (Math.Contains(o, lct.Min, lct.Max) && Math.Contains(d, lct.Min, lct.Max))
+            if (Math.Contains(o, lct->Min, lct->Max) && Math.Contains(d, lct->Min, lct->Max))
             {
                 var on = e.Current->ONext->Dest->Point;
                 var dn = e.Current->DNext->Org->Point;
