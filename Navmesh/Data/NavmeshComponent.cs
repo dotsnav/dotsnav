@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 
@@ -6,7 +7,7 @@ namespace DotsNav.Navmesh.Data
     /// <summary>
     /// Create to trigger creation of a navmesh. Destroy to trigger destruction of a navmesh.
     /// </summary>
-    public struct NavmeshComponent : IComponentData
+    public unsafe struct NavmeshComponent : IComponentData, IEquatable<NavmeshComponent>
     {
         /// <summary>
         /// Size of the navmesh to be created. The navmesh will be centered around the origin
@@ -34,6 +35,12 @@ namespace DotsNav.Navmesh.Data
             ExpectedVerts = expectedVerts;
             MergePointsDistance = mergePointsDistance;
             CollinearMargin = collinearMargin;
+            Navmesh = default;
         }
+
+        // todo make non public
+        public Navmesh* Navmesh;
+
+        public bool Equals(NavmeshComponent other) => Navmesh == other.Navmesh;
     }
 }

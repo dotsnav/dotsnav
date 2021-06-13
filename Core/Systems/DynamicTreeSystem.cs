@@ -126,7 +126,7 @@ namespace DotsNav.Systems
                 .ScheduleParallel();
 
             var trees = _trees;
-            var set = new HashSet<DynamicTree<Entity>>(1024, Allocator.TempJob);
+            var set = new HashSet<DynamicTree<Entity>>(32, Allocator.TempJob);
 
             Job
                 .WithBurst()

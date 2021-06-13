@@ -1,6 +1,8 @@
+using System;
 using DotsNav.Collections;
 using DotsNav.Data;
 using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Systems;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
@@ -9,9 +11,9 @@ using Unity.Mathematics;
 namespace DotsNav.Navmesh
 {
     /// <summary>
-    /// Provides access to edges and vertices in the triangulation. This component is created and destroyed automatically, see NavmeshData
+    /// Provides access to edges and vertices in the triangulation
     /// </summary>
-    public unsafe partial struct Navmesh : ISystemStateComponentData
+    public unsafe partial struct Navmesh
     {
         const int CrepMinCapacity = 4; // todo what's a good number, shrink when reusing?
 
@@ -52,7 +54,7 @@ namespace DotsNav.Navmesh
         internal bool IsEmpty => Vertices == 8;
         internal bool IsInitialized => Vertices > 0;
 
-        internal void Allocate(NavmeshComponent component)
+        internal Navmesh(NavmeshComponent component)
         {
             Assert.IsTrue(math.all(component.Size > 0));
             Assert.IsTrue(component.ExpectedVerts > 0);
@@ -81,6 +83,10 @@ namespace DotsNav.Navmesh
                 _creps.Push(new UnsafeList<Entity>(CrepMinCapacity, Allocator.Persistent));
             DestroyedTriangles = new HashSet<int>(64, Allocator.Persistent);
             _refinementQueue = new Deque<IntPtr>(24, Allocator.Persistent);
+
+            _mark = default;
+            _edgeId = default;
+            _triangleId = default;
 
             BuildBoundingBoxes();
         }
@@ -113,7 +119,7 @@ namespace DotsNav.Navmesh
             Connect(right, bottom);
 
             var bounds = stackalloc float2[] {Min, new float2(Max.x, Min.y), Max, new float2(Min.x, Max.y), Min};
-            Insert(bounds, 0, 5, Entity.Null);
+            Insert(bounds, 0, 5, Entity.Null, float4x4.identity);
         }
 
         internal void Dispose()
@@ -145,121 +151,61 @@ namespace DotsNav.Navmesh
 
         public bool Contains(float2 p) => Math.Contains(p, Min, Max);
 
-        internal void Load(NativeList<float2> vertices, NativeList<int> amounts, NativeList<Entity> entities, DynamicBuffer<DestroyedTriangleElement> destroyed, BufferFromEntity<VertexElement> vertexInputLookup, BufferFromEntity<VertexAmountElement> vertexAmountLookup, NativeArray<Entity> bufferEntities, ComponentDataFromEntity<ObstacleBlobComponent> bulkBlobs, NativeArray<Entity> blobEntities)
+        // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
+        internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Operation>
         {
             DestroyedTriangles.Clear();
-
-            if (vertices.Length == 0 && bufferEntities.Length == 0)
-                return;
-
-            {
-                var start = 0;
-                var ptr = (float2*) vertices.GetUnsafeReadOnlyPtr();
-                for (int i = 0; i < amounts.Length; i++)
-                {
-                    var amount = amounts[i];
-                    Insert(ptr, start, amount, entities[i]);
-                    start += amount;
-                }
-            }
-
-            for (int i = 0; i < bufferEntities.Length; i++)
-            {
-                var e = bufferEntities[i];
-                var verts = vertexInputLookup[e];
-                var amountsBuffer = vertexAmountLookup[e];
-
-                var start = 0;
-                var ptr = (float2*) verts.GetUnsafeReadOnlyPtr();
-                for (int j = 0; j < amountsBuffer.Length; j++)
-                {
-                    var amount = amountsBuffer[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                }
-            }
-
-            for (int i = 0; i < blobEntities.Length; i++)
-            {
-                var e = blobEntities[i];
-                ref var blob = ref bulkBlobs[e].BlobRef.Value;
-                var ptr = (float2*) blob.Vertices.GetUnsafePtr();
-                var start = 0;
-                for (int j = 0; j < blob.Amounts.Length; j++)
-                {
-                    var amount = blob.Amounts[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                }
-            }
-
+            Insert(enumerator);
             GlobalRefine(destroyed);
         }
 
-        internal void Update(NativeList<float2> vertices, NativeList<int> amounts, NativeList<Entity> entities, NativeQueue<Entity> toRemove, DynamicBuffer<DestroyedTriangleElement> destroyed, BufferFromEntity<VertexElement> vertexInputLookup, BufferFromEntity<VertexAmountElement> vertexAmountLookup, NativeArray<Entity> bufferEntities, ComponentDataFromEntity<ObstacleBlobComponent> bulkBlobs, NativeArray<Entity> blobEntities)
+        // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
+        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Operation>
         {
             DestroyedTriangles.Clear();
 
-            if (vertices.Length == 0 && toRemove.Count == 0)
-                return;
-
             V.Clear();
 
-            if (toRemove.Count > 0)
+            var removed = false;
+            while (removals.MoveNext())
             {
-                while (toRemove.TryDequeue(out var r))
-                    RemoveConstraint(r);
-
-                RemoveRefinements();
+                RemoveConstraint(removals.Current);
+                removed = true;
             }
+            if (removed)
+                RemoveRefinements();
 
             C.Clear();
-
-            {
-                var start = 0;
-                var ptr = (float2*) vertices.GetUnsafeReadOnlyPtr();
-                for (int i = 0; i < amounts.Length; i++)
-                {
-                    var amount = amounts[i];
-                    Insert(ptr, start, amount, entities[i]);
-                    start += amount;
-                    SearchDisturbances();
-                }
-            }
-
-            for (int i = 0; i < bufferEntities.Length; i++)
-            {
-                var e = bufferEntities[i];
-                var verts = vertexInputLookup[e];
-                var amountsBuffer = vertexAmountLookup[e];
-
-                var start = 0;
-                var ptr = (float2*) verts.GetUnsafeReadOnlyPtr();
-                for (int j = 0; j < amountsBuffer.Length; j++)
-                {
-                    var amount = amountsBuffer[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                    SearchDisturbances();
-                }
-            }
-
-            for (int i = 0; i < blobEntities.Length; i++)
-            {
-                var e = blobEntities[i];
-                ref var blob = ref bulkBlobs[e].BlobRef.Value;
-                var ptr = (float2*) blob.Vertices.GetUnsafePtr();
-                var start = 0;
-                for (int j = 0; j < blob.Amounts.Length; j++)
-                {
-                    var amount = blob.Amounts[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                    SearchDisturbances();
-                }
-            }
-
+            Insert(enumerator);
             LocalRefinement(destroyed);
+        }
+
+        // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
+        void Insert<T>(T enumerator) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Operation>
+        {
+            while (enumerator.MoveNext())
+            {
+                var op = enumerator.Current;
+                switch (op.Type)
+                {
+                    case UpdateNavmeshSystem.OperationType.Insert:
+                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, op.Ltw);
+                        SearchDisturbances();
+                        break;
+                    case UpdateNavmeshSystem.OperationType.BulkInsert:
+                        var start = 0;
+                        for (int i = 0; i < op.Amount; i++)
+                        {
+                            var amount = op.Amounts[i];
+                            Insert(op.Vertices, start, amount, Entity.Null, op.Ltw);
+                            start += amount;
+                            SearchDisturbances();
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
 
         /// <summary>

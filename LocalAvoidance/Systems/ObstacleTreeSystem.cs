@@ -41,7 +41,6 @@ namespace DotsNav.LocalAvoidance.Systems
             Entities.WithBurst().ForEach((TreeSystemStateComponent c) => c.Tree.Dispose()).Run();
         }
 
-        // todo support obstacle blobs
         protected override void OnUpdate()
         {
             var ecbSource = DotsNavSystemGroup.EcbSource;
@@ -205,7 +204,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .ScheduleParallel();
 
             var trees = _trees;
-            var set = new HashSet<ObstacleTree>(1024, Allocator.TempJob);
+            var set = new HashSet<ObstacleTree>(32, Allocator.TempJob);
 
             Job
                 .WithBurst()

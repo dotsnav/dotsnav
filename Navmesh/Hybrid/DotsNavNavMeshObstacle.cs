@@ -15,7 +15,7 @@ namespace DotsNav.Navmesh.Hybrid
             Entities.ForEach((DotsNavNavMeshObstacle obstacle) =>
             {
                 var entity = GetPrimaryEntity(obstacle);
-                DstEntityManager.AddComponentData(entity, new ObstacleComponent());
+                DstEntityManager.AddComponentData(entity, new NavmeshObstacleComponent{Navmesh = GetPrimaryEntity(obstacle.Navmesh)});
                 var values = DstEntityManager.AddBuffer<VertexElement>(entity);
                 var o = obstacle.transform.GetComponent<DotsNavObstacle>();
 
@@ -31,5 +31,6 @@ namespace DotsNav.Navmesh.Hybrid
     [RequireComponent(typeof(DotsNavObstacle))]
     public class DotsNavNavMeshObstacle : MonoBehaviour
     {
+        public DotsNavNavmesh Navmesh;
     }
 }

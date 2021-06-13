@@ -26,10 +26,10 @@ namespace DotsNav.Navmesh.Systems
             Entities
                 .WithBurst()
                 .WithAll<NavmeshComponent>()
-                .ForEach((Navmesh navmesh) =>
+                .ForEach((NavmeshComponent navmesh) =>
                 {
-                    var enumerator = navmesh.GetEdgeEnumerator();
-                    var lines = new NativeList<Line>(navmesh.Vertices * 3, Allocator.Temp);
+                    var enumerator = navmesh.Navmesh->GetEdgeEnumerator();
+                    var lines = new NativeList<Line>(navmesh.Navmesh->Vertices * 3, Allocator.Temp);
                     while (enumerator.MoveNext())
                     {
                         var edge = enumerator.Current;

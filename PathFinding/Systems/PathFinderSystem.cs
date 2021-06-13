@@ -21,7 +21,6 @@ namespace DotsNav.PathFinding.Systems
 
         protected override void OnCreate()
         {
-            RequireSingletonForUpdate<Navmesh.Navmesh>();
             RequireSingletonForUpdate<PathFinderComponent>();
             RequireSingletonForUpdate<PathFinderSystemStateComponent>();
             _buffer = new NativeList<Entity>(Allocator.Persistent);
@@ -38,7 +37,6 @@ namespace DotsNav.PathFinding.Systems
         {
             var data = GetSingleton<PathFinderComponent>();
             var resources = GetSingleton<PathFinderSystemStateComponent>();
-            var navmesh = GetSingleton<Navmesh.Navmesh>();
             var navmeshEntity = GetSingletonEntity<NavmeshComponent>();
             var destroyed = GetBufferFromEntity<DestroyedTriangleElement>(true);
             var buffer = _buffer;
@@ -78,12 +76,12 @@ namespace DotsNav.PathFinding.Systems
             Dependency = new FindPathJob
                 {
                     Agents = buffer.AsDeferredJobArray(),
+                    Navmeshes = GetComponentDataFromEntity<NavmeshComponent>(),
                     Queries = GetComponentDataFromEntity<PathQueryComponent>(),
                     Radii = GetComponentDataFromEntity<RadiusComponent>(),
                     PathSegments = GetBufferFromEntity<PathSegmentElement>(),
                     TriangleIds = GetBufferFromEntity<TriangleElement>(),
                     PathFinder = resources,
-                    Navmesh = navmesh
                 }
                 .Schedule(buffer, 1, Dependency);
         }
@@ -107,9 +105,9 @@ namespace DotsNav.PathFinding.Systems
             [NativeSetThreadIndex]
             int _threadId;
 
-            public Navmesh.Navmesh Navmesh;
+            public ComponentDataFromEntity<NavmeshComponent> Navmeshes;
 
-            public void Execute(int index)
+            public unsafe void Execute(int index)
             {
                 if (_threadId <= 0 || _threadId > PathFinder.Instances.Length)
                 {
@@ -125,7 +123,7 @@ namespace DotsNav.PathFinding.Systems
                 ids.Clear();
                 var instanceIndex = _threadId - 1;
                 var instance = PathFinder.Instances[instanceIndex];
-                query.State = instance.FindPath(query.From, query.To, Radii[agent], segments, ids, Navmesh, out _);
+                query.State = instance.FindPath(query.From, query.To, Radii[agent], segments, ids, *Navmeshes[agent].Navmesh, out _);
                 if (query.State == PathQueryState.PathFound)
                     ++query.Version;
                 Queries[agent] = query;
