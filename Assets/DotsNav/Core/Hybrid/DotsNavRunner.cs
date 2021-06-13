@@ -1,7 +1,6 @@
 ﻿using DotsNav.Systems;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DotsNav.Hybrid
 {

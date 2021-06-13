@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Navmesh.Data
+namespace DotsNav.Data
 {
     /// <summary>
     /// Add DynamicBuffer&lt;VertexAmountElement&gt; in addition to DynamicBuffer&lt;VertexElement&gt; to queue bulk insertion of permanent obstacles

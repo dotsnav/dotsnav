@@ -1,6 +1,5 @@
 ﻿using DotsNav.Drawing;
 using DotsNav.LocalAvoidance.Data;
-using DotsNav.Navmesh.Data;
 using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;

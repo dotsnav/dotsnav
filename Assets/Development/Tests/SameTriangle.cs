@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using DotsNav;
-using DotsNav.Navmesh.Hybrid;
 using DotsNav.Predicates;
 using Unity.Mathematics;
 using UnityEngine;

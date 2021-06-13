@@ -1,6 +1,5 @@
 using UnityEngine;
 using DotsNav;
-using DotsNav.Navmesh.Hybrid;
 
 [ExecuteInEditMode]
 class TangentsTest : MonoBehaviour

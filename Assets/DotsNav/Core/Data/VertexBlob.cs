@@ -1,14 +1,13 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav.Navmesh
+namespace DotsNav.Data
 {
     /// <summary>
-    /// Used for bulk obstacle insertion
+    /// Vertices in object space that can be shared between obstacles
     /// </summary>
-    public struct ObstacleBlob
+    public struct VertexBlob
     {
         public BlobArray<float2> Vertices;
-        public BlobArray<int> Amounts;
     }
 }

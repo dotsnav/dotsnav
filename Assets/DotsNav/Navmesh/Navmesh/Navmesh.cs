@@ -1,4 +1,5 @@
 using DotsNav.Collections;
+using DotsNav.Data;
 using DotsNav.Navmesh.Data;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;

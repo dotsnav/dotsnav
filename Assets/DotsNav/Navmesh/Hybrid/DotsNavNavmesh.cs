@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DotsNav.Data;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
@@ -8,7 +9,6 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DotsNav.Navmesh.Hybrid
 {
