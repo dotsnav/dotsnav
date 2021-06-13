@@ -1,6 +1,6 @@
 using System.Linq;
+using DotsNav.Editor;
 using DotsNav.Hybrid;
-using DotsNav.Navmesh.Editor;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;

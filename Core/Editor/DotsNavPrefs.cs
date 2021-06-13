@@ -4,7 +4,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.Navmesh.Editor
+namespace DotsNav.Editor
 {
     class DotsNavPrefs
     {

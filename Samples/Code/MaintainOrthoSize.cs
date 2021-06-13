@@ -1,18 +1,21 @@
 using UnityEngine;
 
-class MaintainOrthoSize : MonoBehaviour
+namespace DotsNav.Samples.Code
 {
-    float _size;
-    Vector3 _scale;
-
-    void Start()
+    class MaintainOrthoSize : MonoBehaviour
     {
-        _size = Camera.main.orthographicSize;
-        _scale = transform.localScale;
-    }
+        float _size;
+        Vector3 _scale;
 
-    void Update()
-    {
-        transform.localScale = _scale * (Camera.main.orthographicSize / _size);
+        void Start()
+        {
+            _size = Camera.main.orthographicSize;
+            _scale = transform.localScale;
+        }
+
+        void Update()
+        {
+            transform.localScale = _scale * (Camera.main.orthographicSize / _size);
+        }
     }
 }
