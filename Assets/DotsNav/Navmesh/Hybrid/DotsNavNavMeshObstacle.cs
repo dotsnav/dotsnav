@@ -20,9 +20,6 @@ namespace DotsNav.Navmesh.Hybrid
 
                 for (int i = 0; i < o.Vertices.Length; i++)
                     values.Add((float2)o.Vertices[i]);
-
-                if (o.Closed)
-                    values.Add((float2)o.Vertices[0]);
             });
         }
     }
