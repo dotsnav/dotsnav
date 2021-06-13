@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5465035285611252623}
-  - component: {fileID: 1956749582852478721}
   - component: {fileID: 6915082999526884430}
+  - component: {fileID: 2320352044584952568}
   - component: {fileID: 1625055711500922496}
   - component: {fileID: 3266074384779086409}
   m_Layer: 0
@@ -34,18 +34,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1956749582852478721
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2915652574604176886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26dd154e4d9d4cb3836670d05a3d3735, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &6915082999526884430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,6 +54,18 @@ MonoBehaviour:
   - {x: 0.69499993, y: 1.7580309}
   - {x: -0.885, y: -1.4919696}
   DrawGizmos: 1
+--- !u!114 &2320352044584952568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2915652574604176886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25c0800e6ddd4d958937eec645a74a88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1625055711500922496
 MonoBehaviour:
   m_ObjectHideFlags: 0

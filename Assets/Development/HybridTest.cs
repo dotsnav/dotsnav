@@ -9,7 +9,7 @@ class HybridTest : MonoBehaviour
     public DotsNavNavmesh Navmesh;
     public DotsNavPathFindingAgent Agent;
     ObstacleReference _id;
-    public DotsNavNavMeshObstacle ObstaclePrefab;
+    public DotsNavObstacle ObstaclePrefab;
 
     void Update()
     {

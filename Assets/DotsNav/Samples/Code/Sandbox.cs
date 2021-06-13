@@ -20,7 +20,7 @@ class Sandbox : MonoBehaviour
     public float MinAgentSize;
     public float MaxAgentSize;
     public RectTransform Help;
-    public DotsNavNavMeshObstacle[] Prefabs;
+    public DotsNavObstacle[] Prefabs;
     public float PrefabMinSize = .1f;
     public float PrefabMaxSize = 3f;
     public float PrefabSizeSpeed = 1;

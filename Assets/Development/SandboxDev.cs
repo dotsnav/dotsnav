@@ -4,6 +4,7 @@ using System.Linq;
 using DotsNav;
 using DotsNav.CollisionDetection.Hybrid;
 using DotsNav.Drawing;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Mathematics;
@@ -17,7 +18,7 @@ class SandboxDev : MonoBehaviour
     public float MinAgentSize;
     public float MaxAgentSize;
     public RectTransform Help;
-    public DotsNavNavMeshObstacle[] Prefabs;
+    public DotsNavObstacle[] Prefabs;
     public float PrefabMinSize = .1f;
     public float PrefabMaxSize = 3f;
     public float PrefabSizeSpeed = 1;
@@ -46,7 +47,7 @@ class SandboxDev : MonoBehaviour
 
     void Awake()
     {
-        foreach (var obstacle in FindObjectsOfType<DotsNavNavMeshObstacle>())
+        foreach (var obstacle in FindObjectsOfType<DotsNavObstacle>())
         {
             var l  = new List<Vector2>();
             for (int i = 0; i < obstacle.Vertices.Length; i++)

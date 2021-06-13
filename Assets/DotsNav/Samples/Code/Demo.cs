@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DotsNav;
 using DotsNav.Drawing;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Mathematics;
@@ -28,7 +29,7 @@ class Demo : MonoBehaviour
     public float ObstacleMinScale;
     public float ObstacleScaleRange;
     public float PlacementDelay;
-    public DotsNavNavMeshObstacle[] ObstaclePrefabs;
+    public DotsNavObstacle[] ObstaclePrefabs;
 
     [Header("UI")]
     public RectTransform Help;

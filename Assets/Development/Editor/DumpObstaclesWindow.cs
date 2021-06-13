@@ -1,6 +1,7 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using DotsNav;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Entities;
@@ -47,7 +48,7 @@ class DumpObstaclesWindow : EditorWindow
                 var go = new GameObject("Obstacle");
                 go.AddComponent<ConvertToEntity>().ConversionMode = ConvertToEntity.Mode.ConvertAndInjectGameObject;
                 go.transform.parent = root;
-                var o = go.AddComponent<DotsNavNavMeshObstacle>();
+                var o = go.AddComponent<DotsNavObstacle>();
                 o.Vertices = obstacle.ToArray();
             }
 

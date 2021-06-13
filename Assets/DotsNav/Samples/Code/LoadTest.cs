@@ -1,5 +1,6 @@
 using DotsNav;
 using DotsNav.Drawing;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Hybrid;
 using Unity.Collections;
@@ -14,7 +15,7 @@ class LoadTest : MonoBehaviour
 {
     public Vector2 Size;
     public int Amount;
-    public DotsNavNavMeshObstacle[] Prefabs;
+    public DotsNavObstacle[] Prefabs;
     public int Seed;
     public DotsNavNavmesh NavmeshPrefab;
     public float ScaleOffset;

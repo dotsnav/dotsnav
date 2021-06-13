@@ -16,7 +16,7 @@ unsafe class PolygonTest : MonoBehaviour
 {
     public float Size;
     public int Amount;
-    public DotsNavNavMeshObstacle[] Prefabs;
+    public DotsNavObstacle[] Prefabs;
     public float ScaleOffset;
 
     public int Seed;
