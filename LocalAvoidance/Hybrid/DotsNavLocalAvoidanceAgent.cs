@@ -4,7 +4,6 @@ using DotsNav.Hybrid;
 using DotsNav.LocalAvoidance.Data;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DotsNav.LocalAvoidance.Hybrid
 {

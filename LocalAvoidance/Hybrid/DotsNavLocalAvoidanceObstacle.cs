@@ -1,9 +1,7 @@
 ﻿using DotsNav.Hybrid;
 using DotsNav.LocalAvoidance.Data;
-using DotsNav.Navmesh.Hybrid;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace DotsNav.LocalAvoidance.Hybrid
 {

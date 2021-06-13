@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Navmesh.Data
+namespace DotsNav.Data
 {
     /// <summary>
     /// Add in addition to ObstacleComponent to supply vertices through an VertexBlob

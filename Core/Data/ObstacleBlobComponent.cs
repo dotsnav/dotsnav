@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Navmesh.Data
+namespace DotsNav.Data
 {
     /// <summary>
     /// Add to trigger bulk obstacle insertion

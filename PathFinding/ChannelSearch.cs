@@ -9,8 +9,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using IntPtr = DotsNav.IntPtr;
-using Math = DotsNav.Math;
 
 namespace DotsNav.PathFinding
 {

@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Navmesh.Data
+namespace DotsNav.Data
 {
     /// <summary>
     /// Create to trigger insertion of an obstacle. Destroy to trigger removal of an obstacle.

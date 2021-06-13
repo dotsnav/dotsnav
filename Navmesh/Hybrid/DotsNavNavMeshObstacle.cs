@@ -1,4 +1,5 @@
-﻿using DotsNav.Hybrid;
+﻿using DotsNav.Data;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
 using Unity.Entities;
 using Unity.Mathematics;
