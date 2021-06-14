@@ -79,7 +79,7 @@ namespace DotsNav.Navmesh.Systems
             Entities
                 .WithBurst()
                 .WithNone<SystemStateComponent>()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, int entityInQueryIndex, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
@@ -91,7 +91,7 @@ namespace DotsNav.Navmesh.Systems
             Entities
                 .WithBurst()
                 .WithNone<SystemStateComponent>()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithStoreEntityQueryInField(ref _insertQuery1)
                 .ForEach((Entity entity, int entityInQueryIndex, VertexBlobComponent vertices, ref NavmeshObstacleComponent element) =>
                 {
@@ -104,7 +104,7 @@ namespace DotsNav.Navmesh.Systems
             // Bulk Insert Without LocalToWorld
             Entities
                 .WithBurst()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithStoreEntityQueryInField(ref _insertQuery2)
                 .ForEach((DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, NavmeshObstacleComponent element) =>
                 {
@@ -114,7 +114,7 @@ namespace DotsNav.Navmesh.Systems
 
             Entities
                 .WithBurst()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithStoreEntityQueryInField(ref _insertQuery3)
                 .ForEach((ObstacleBlobComponent blob, NavmeshObstacleComponent element) =>
                 {
