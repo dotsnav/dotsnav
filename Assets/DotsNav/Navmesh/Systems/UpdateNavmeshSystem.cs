@@ -1,4 +1,3 @@
-using System;
 using DotsNav.Collections;
 using DotsNav.Data;
 using DotsNav.Navmesh.Data;
@@ -20,9 +19,9 @@ namespace DotsNav.Navmesh.Systems
     public unsafe class UpdateNavmeshSystem : SystemBase
     {
         public JobHandle OutputDependecy;
-        NativeMultiHashMap<Entity, Operation> _operations;
+        NativeList<Entity> _navmeshes;
+        NativeMultiHashMap<Entity, Insertion> _insertions;
         NativeMultiHashMap<Entity, Entity> _removals;
-        NativeList<Entity> _trees;
         EntityQuery _insertQuery0;
         EntityQuery _insertQuery1;
         EntityQuery _insertQuery2;
@@ -35,23 +34,23 @@ namespace DotsNav.Navmesh.Systems
 
         protected override void OnCreate()
         {
-            _operations = new NativeMultiHashMap<Entity, Operation>(64, Allocator.Persistent);
+            _navmeshes = new NativeList<Entity>(Allocator.Persistent);
+            _insertions = new NativeMultiHashMap<Entity, Insertion>(64, Allocator.Persistent);
             _removals = new NativeMultiHashMap<Entity, Entity>(64, Allocator.Persistent);
-            _trees = new NativeList<Entity>(Allocator.Persistent);
         }
 
         protected override void OnDestroy()
         {
-            _operations.Dispose();
+            _navmeshes.Dispose();
+            _insertions.Dispose();
             _removals.Dispose();
-            _trees.Dispose();
         }
 
         protected override void OnUpdate()
         {
             var ecbSource = DotsNavSystemGroup.EcbSource;
 
-            var operations = _operations;
+            var insertions = _insertions;
             var minCapacity = _insertQuery0.CalculateEntityCount() +
                               _insertQuery1.CalculateEntityCount() +
                               _insertQuery2.CalculateEntityCount() +
@@ -60,10 +59,10 @@ namespace DotsNav.Navmesh.Systems
                               _insertQuery5.CalculateEntityCount() +
                               _insertQuery6.CalculateEntityCount() +
                               _insertQuery7.CalculateEntityCount();
-            if (operations.Capacity < minCapacity)
-                operations.Capacity = minCapacity;
-            operations.Clear();
-            var operationsWriter = operations.AsParallelWriter();
+            if (insertions.Capacity < minCapacity)
+                insertions.Capacity = minCapacity;
+            insertions.Clear();
+            var insertionsWriter = insertions.AsParallelWriter();
 
             var removals = _removals;
             minCapacity = _destroyQuery.CalculateEntityCount();
@@ -83,8 +82,8 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, int entityInQueryIndex, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.Insert, entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
-                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {TreeRef = element.Navmesh});
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
 
@@ -96,8 +95,8 @@ namespace DotsNav.Navmesh.Systems
                 .ForEach((Entity entity, int entityInQueryIndex, VertexBlobComponent vertices, ref NavmeshObstacleComponent element) =>
                 {
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.Insert, entity, float4x4.identity, (float2*) v.GetUnsafePtr(), v.Length));
-                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {TreeRef = element.Navmesh});
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, float4x4.identity, (float2*) v.GetUnsafePtr(), v.Length));
+                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
 
@@ -108,7 +107,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery2)
                 .ForEach((DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, NavmeshObstacleComponent element) =>
                 {
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -120,7 +119,7 @@ namespace DotsNav.Navmesh.Systems
                 {
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -131,8 +130,8 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery4)
                 .ForEach((Entity entity, int entityInQueryIndex, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.Insert, entity, ltw.Value, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
-                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {TreeRef = element.Navmesh});
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, ltw.Value, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
 
@@ -143,8 +142,8 @@ namespace DotsNav.Navmesh.Systems
                 .ForEach((Entity entity, int entityInQueryIndex, LocalToWorld ltw, VertexBlobComponent vertices, ref NavmeshObstacleComponent element) =>
                 {
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.Insert, entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
-                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {TreeRef = element.Navmesh});
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
+                    buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
 
@@ -154,7 +153,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery6)
                 .ForEach((LocalToWorld ltw, DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, NavmeshObstacleComponent element) =>
                 {
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -165,7 +164,7 @@ namespace DotsNav.Navmesh.Systems
                 {
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    operationsWriter.Add(element.Navmesh, new Operation(OperationType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -177,40 +176,42 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _destroyQuery)
                 .ForEach((Entity entity, int entityInQueryIndex, SystemStateComponent state) =>
                 {
-                    removalsWriter.Add(state.TreeRef, entity);
+                    removalsWriter.Add(state.Navmesh, entity);
                     buffer.RemoveComponent<SystemStateComponent>(entityInQueryIndex, entity);
                 })
                 .ScheduleParallel();
 
-            var trees = _trees;
+            var navmeshes = _navmeshes;
             var set = new HashSet<Entity>(32, Allocator.TempJob);
 
             Job
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    var enumerator = operations.GetKeyArray(Allocator.Temp);
-                    for (int i = 0; i < enumerator.Length; i++)
-                        set.TryAdd(enumerator[i]);
-                    enumerator = removals.GetKeyArray(Allocator.Temp);
-                    for (int i = 0; i < enumerator.Length; i++)
-                        set.TryAdd(enumerator[i]);
-                    trees.Clear();
-                    var e2 = set.GetEnumerator();
-                    while (e2.MoveNext())
-                        trees.Add(e2.Current);
+                    var ops = insertions.GetKeyArray(Allocator.Temp);
+                    for (int i = 0; i < ops.Length; i++)
+                        set.TryAdd(ops[i]);
+
+                    ops = removals.GetKeyArray(Allocator.Temp);
+                    for (int i = 0; i < ops.Length; i++)
+                        set.TryAdd(ops[i]);
+
+                    navmeshes.Clear();
+                    var keys = set.GetEnumerator();
+                    while (keys.MoveNext())
+                        navmeshes.Add(keys.Current);
                 })
                 .Schedule();
 
             Dependency = new TreeOperationJob
                 {
-                    Operations = operations,
+                    Operations = insertions,
                     Removals = removals,
-                    Keys = trees.AsDeferredJobArray(),
+                    Keys = navmeshes.AsDeferredJobArray(),
                     NavmeshLookup = GetComponentDataFromEntity<NavmeshComponent>(true),
                     DestroyedLookup = GetBufferFromEntity<DestroyedTriangleElement>(true)
                 }
-                .Schedule(trees, 1, Dependency);
+                .Schedule(navmeshes, 1, Dependency);
 
             ecbSource.AddJobHandleForProducer(Dependency);
             OutputDependecy = Dependency;
@@ -222,7 +223,7 @@ namespace DotsNav.Navmesh.Systems
             [ReadOnly]
             public NativeArray<Entity> Keys;
             [ReadOnly]
-            public NativeMultiHashMap<Entity, Operation> Operations;
+            public NativeMultiHashMap<Entity, Insertion> Operations;
             [ReadOnly]
             public ComponentDataFromEntity<NavmeshComponent> NavmeshLookup;
             [NativeDisableContainerSafetyRestriction]
@@ -233,20 +234,25 @@ namespace DotsNav.Navmesh.Systems
             public void Execute(int index)
             {
                 var entity = Keys[index];
-                var tree = NavmeshLookup[entity];
-                var enumerator = Operations.GetValuesForKey(entity);
-                var destroyed = DestroyedLookup[entity];
+                var navmesh = NavmeshLookup[entity];
+                var insertions = Operations.GetValuesForKey(entity);
+                var destroyedTriangles = DestroyedLookup[entity];
 
-                if (tree.Navmesh->IsEmpty)
-                    tree.Navmesh->Load(enumerator, destroyed);
+                if (navmesh.Navmesh->IsEmpty)
+                {
+                    navmesh.Navmesh->Load(insertions, destroyedTriangles);
+                }
                 else
-                    tree.Navmesh->Update(enumerator, Removals.GetValuesForKey(entity), destroyed);
+                {
+                    var removals = Removals.GetValuesForKey(entity);
+                    navmesh.Navmesh->Update(insertions, removals, destroyedTriangles);
+                }
             }
         }
 
-        internal readonly struct Operation
+        internal readonly struct Insertion
         {
-            public readonly OperationType Type;
+            public readonly InsertionType Type;
             public readonly Entity Obstacle;
             public readonly float4x4 Ltw;
             public readonly float2* Vertices;
@@ -256,7 +262,7 @@ namespace DotsNav.Navmesh.Systems
             /// <summary>
             /// Insert
             /// </summary>
-            public Operation(OperationType type, Entity obstacle, float4x4 ltw, float2* vertices, int amount)
+            public Insertion(InsertionType type, Entity obstacle, float4x4 ltw, float2* vertices, int amount)
             {
                 Type = type;
                 Obstacle = obstacle;
@@ -269,7 +275,7 @@ namespace DotsNav.Navmesh.Systems
             /// <summary>
             /// Bulk Insert
             /// </summary>
-            public Operation(OperationType type, float4x4 ltw, float2* verts, int* amounts, int length)
+            public Insertion(InsertionType type, float4x4 ltw, float2* verts, int* amounts, int length)
             {
                 Type = type;
                 Obstacle = default;
@@ -280,7 +286,7 @@ namespace DotsNav.Navmesh.Systems
             }
         }
 
-        internal enum OperationType
+        internal enum InsertionType
         {
             Insert,
             BulkInsert,
@@ -288,7 +294,7 @@ namespace DotsNav.Navmesh.Systems
 
         struct SystemStateComponent : ISystemStateComponentData
         {
-            public Entity TreeRef;
+            public Entity Navmesh;
         }
     }
 }

@@ -152,7 +152,7 @@ namespace DotsNav.Navmesh
         public bool Contains(float2 p) => Math.Contains(p, Min, Max);
 
         // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
-        internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Operation>
+        internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
         {
             DestroyedTriangles.Clear();
             Insert(enumerator);
@@ -160,7 +160,7 @@ namespace DotsNav.Navmesh
         }
 
         // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
-        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Operation>
+        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
         {
             DestroyedTriangles.Clear();
 
@@ -181,18 +181,18 @@ namespace DotsNav.Navmesh
         }
 
         // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
-        void Insert<T>(T enumerator) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Operation>
+        void Insert<T>(T enumerator) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
         {
             while (enumerator.MoveNext())
             {
                 var op = enumerator.Current;
                 switch (op.Type)
                 {
-                    case UpdateNavmeshSystem.OperationType.Insert:
+                    case UpdateNavmeshSystem.InsertionType.Insert:
                         Insert(op.Vertices, 0, op.Amount, op.Obstacle, op.Ltw);
                         SearchDisturbances();
                         break;
-                    case UpdateNavmeshSystem.OperationType.BulkInsert:
+                    case UpdateNavmeshSystem.InsertionType.BulkInsert:
                         var start = 0;
                         for (int i = 0; i < op.Amount; i++)
                         {
