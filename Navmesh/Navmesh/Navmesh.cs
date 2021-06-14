@@ -152,15 +152,15 @@ namespace DotsNav.Navmesh
         public bool Contains(float2 p) => Math.Contains(p, Min, Max);
 
         // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
-        internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
+        internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
         {
             DestroyedTriangles.Clear();
-            Insert(enumerator);
+            Insert(enumerator, ltwInv);
             GlobalRefine(destroyed);
         }
 
         // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
-        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, DynamicBuffer<DestroyedTriangleElement> destroyed) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
+        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, DynamicBuffer<DestroyedTriangleElement> destroyed, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
         {
             DestroyedTriangles.Clear();
 
@@ -176,20 +176,22 @@ namespace DotsNav.Navmesh
                 RemoveRefinements();
 
             C.Clear();
-            Insert(enumerator);
+            Insert(enumerator, ltwInv);
             LocalRefinement(destroyed);
         }
 
         // todo do not use UpdateNavmeshSystem.Operation and UpdateNavmeshSystem.OperationType
-        void Insert<T>(T enumerator) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
+        void Insert<T>(T enumerator, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<UpdateNavmeshSystem.Insertion>
         {
             while (enumerator.MoveNext())
             {
                 var op = enumerator.Current;
+                var ltw = math.mul(ltwInv, op.Ltw);
+                
                 switch (op.Type)
                 {
                     case UpdateNavmeshSystem.InsertionType.Insert:
-                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, op.Ltw);
+                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, ltw);
                         SearchDisturbances();
                         break;
                     case UpdateNavmeshSystem.InsertionType.BulkInsert:
@@ -197,7 +199,7 @@ namespace DotsNav.Navmesh
                         for (int i = 0; i < op.Amount; i++)
                         {
                             var amount = op.Amounts[i];
-                            Insert(op.Vertices, start, amount, Entity.Null, op.Ltw);
+                            Insert(op.Vertices, start, amount, Entity.Null, ltw);
                             start += amount;
                             SearchDisturbances();
                         }

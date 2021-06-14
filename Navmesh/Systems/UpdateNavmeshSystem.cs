@@ -209,6 +209,7 @@ namespace DotsNav.Navmesh.Systems
                     Removals = removals,
                     Keys = navmeshes.AsDeferredJobArray(),
                     NavmeshLookup = GetComponentDataFromEntity<NavmeshComponent>(true),
+                    LocalToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true),
                     DestroyedLookup = GetBufferFromEntity<DestroyedTriangleElement>(true)
                 }
                 .Schedule(navmeshes, 1, Dependency);
@@ -230,6 +231,8 @@ namespace DotsNav.Navmesh.Systems
             public BufferFromEntity<DestroyedTriangleElement> DestroyedLookup;
             [ReadOnly]
             public NativeMultiHashMap<Entity, Entity> Removals;
+            [ReadOnly]
+            public ComponentDataFromEntity<LocalToWorld> LocalToWorldLookup;
 
             public void Execute(int index)
             {
@@ -237,15 +240,16 @@ namespace DotsNav.Navmesh.Systems
                 var navmesh = NavmeshLookup[entity];
                 var insertions = Operations.GetValuesForKey(entity);
                 var destroyedTriangles = DestroyedLookup[entity];
+                var ltwInv = math.inverse(LocalToWorldLookup[entity].Value);
 
                 if (navmesh.Navmesh->IsEmpty)
                 {
-                    navmesh.Navmesh->Load(insertions, destroyedTriangles);
+                    navmesh.Navmesh->Load(insertions, destroyedTriangles, ltwInv);
                 }
                 else
                 {
                     var removals = Removals.GetValuesForKey(entity);
-                    navmesh.Navmesh->Update(insertions, removals, destroyedTriangles);
+                    navmesh.Navmesh->Update(insertions, removals, destroyedTriangles, ltwInv);
                 }
             }
         }
