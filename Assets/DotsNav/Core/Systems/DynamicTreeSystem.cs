@@ -36,7 +36,7 @@ namespace DotsNav.Systems
 
         protected override void OnUpdate()
         {
-            var ecbSource = DotsNavSystemGroup.EcbSource;
+            var ecbSource = World.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource;
 
             var b0 = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities

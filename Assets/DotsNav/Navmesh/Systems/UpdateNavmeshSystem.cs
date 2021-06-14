@@ -48,7 +48,7 @@ namespace DotsNav.Navmesh.Systems
 
         protected override void OnUpdate()
         {
-            var ecbSource = DotsNavSystemGroup.EcbSource;
+            var ecbSource = World.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource;
 
             var insertions = _insertions;
             var minCapacity = _insertQuery0.CalculateEntityCount() +
