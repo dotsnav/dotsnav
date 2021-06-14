@@ -48,9 +48,9 @@ class DirectionSystem : SystemBase
                 var length = math.length(toTarget);
                 const float preferredSpeed = 8;
                 if (length >= preferredSpeed * dt)
-                    preferredVelocity.Value = toTarget / length * preferredSpeed;
+                    preferredVelocity.Value = (toTarget / length * preferredSpeed).ToXxY();
                 else if (length >= -1e3f)
-                    preferredVelocity.Value = toTarget;
+                    preferredVelocity.Value = toTarget.ToXxY();
                 else
                     preferredVelocity.Value = 0;
             })
@@ -70,7 +70,7 @@ class MoveSystem : SystemBase
             .WithoutBurst()
             .ForEach((DotsNavLocalAvoidanceAgent agent) =>
             {
-                agent.transform.position += (Vector3) (agent.Velocity * dt).ToXxY();
+                agent.transform.position += (Vector3) (agent.Velocity * dt);
             })
             .Run();
     }

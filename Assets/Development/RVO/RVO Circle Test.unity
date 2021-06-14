@@ -137,10 +137,10 @@ PrefabInstance:
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
-      objectReference: {fileID: 1474278017}
+      objectReference: {fileID: 967347509}
     - target: {fileID: 5069399647027248970, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: m_RootOrder
-      value: 5
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5069399647027248970, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: m_LocalScale.x
@@ -233,7 +233,7 @@ MonoBehaviour:
   AgentAmount: 100
   SpawnRadius: 40
   Prefab: {fileID: 5843786958838245045, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
-  LocalAvoidance: {fileID: 1474278017}
+  LocalAvoidance: {fileID: 967347509}
 --- !u!4 &398962336
 Transform:
   m_ObjectHideFlags: 0
@@ -369,6 +369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 967347507}
   - component: {fileID: 967347506}
+  - component: {fileID: 967347509}
   - component: {fileID: 967347508}
   m_Layer: 0
   m_Name: Navmesh
@@ -393,7 +394,7 @@ MonoBehaviour:
   ExpectedVerts: 1000
   MergePointDistance: 0.001
   CollinearMargin: 0.000001
-  DrawMode: 1
+  DrawMode: 0
   ConstrainedColor: {r: 1, g: 0, b: 0, a: 1}
   UnconstrainedColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &967347507
@@ -423,6 +424,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ConversionMode: 1
+--- !u!114 &967347509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967347505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee74a84830264dba921d131bd2663b36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DrawObstacleTree: 1
+  Color: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &1127323325
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -437,10 +452,10 @@ PrefabInstance:
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
-      objectReference: {fileID: 1474278017}
+      objectReference: {fileID: 967347509}
     - target: {fileID: 5069399647027248970, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5069399647027248970, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: m_LocalScale.x
@@ -597,65 +612,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
---- !u!1 &1474278016
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1474278018}
-  - component: {fileID: 1474278017}
-  - component: {fileID: 1474278019}
-  m_Layer: 0
-  m_Name: LocalAvoidance
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1474278017
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474278016}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee74a84830264dba921d131bd2663b36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DrawObstacleTree: 0
-  Color: {r: 1, g: 0, b: 0, a: 1}
---- !u!4 &1474278018
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474278016}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1474278019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1474278016}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea7d7495833204790ba1d3a8755397f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ConversionMode: 1
 --- !u!1001 &2094508345
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -670,10 +626,10 @@ PrefabInstance:
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
-      objectReference: {fileID: 1474278017}
+      objectReference: {fileID: 967347509}
     - target: {fileID: 5069399647027248970, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 5069399647027248970, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: m_LocalScale.x

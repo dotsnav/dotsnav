@@ -46,6 +46,6 @@ namespace DotsNav.LocalAvoidance.Hybrid
         public float TimeHorizon;
         public float TimeHorizonObst;
         [NonSerialized]
-        public float2 Velocity;
+        public float3 Velocity;
     }
 }
