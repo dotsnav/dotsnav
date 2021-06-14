@@ -27,13 +27,16 @@ namespace DotsNav.LocalAvoidance.Systems
         protected override void OnUpdate()
         {
             var invTimeStep = 1 / Time.DeltaTime;
+            var localToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true);
 
             Entities
                 .WithBurst()
-                .ForEach((Translation translation, RadiusComponent radius, VelocityComponent velocity, ref VelocityObstacleComponent obstacle) =>
+                .WithReadOnly(localToWorldLookup)
+                .ForEach((Translation translation, RadiusComponent radius, VelocityComponent velocity, DynamicTreeElementComponent dynamicTree, ref VelocityObstacleComponent obstacle) =>
                 {
-                    obstacle.Position = translation.Value.xz;
-                    obstacle.Velocity = velocity.Value;
+                    var transform = math.inverse(localToWorldLookup[dynamicTree.Tree].Value);
+                    obstacle.Position = math.transform(transform, translation.Value).xz;
+                    obstacle.Velocity = math.rotate(transform, velocity.Value).xz;
                     obstacle.Radius = radius;
                 })
                 .ScheduleParallel();
@@ -46,17 +49,24 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithReadOnly(velocityObstacleLookup)
                 .WithReadOnly(obstacleTreeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, ObstacleTreeAgentComponent obstacleTree,
                           SettingsComponent agent, PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
-                    var pos = translation.Value.xz;
+                    Assert.IsTrue(agentTree.Tree == obstacleTree.Tree);
+                    var ltw = localToWorldLookup[agentTree.Tree].Value;
+                    var inv = math.inverse(ltw);
+                    var pos = math.transform(inv, translation.Value).xz;
                     var neighbours = GetNeighbours(agent, agentTree, pos, velocityObstacleLookup);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(16, Allocator.Temp);
                     var obstacleDist = agent.TimeHorizonObst * maxSpeed.Value + radius;
                     var ext = obstacleDist / 2;
                     var aabb = new AABB {LowerBound = pos - ext, UpperBound = pos + ext};
                     obstacleTreeLookup[obstacleTree.Tree].TreeRef.Query(new ObstacleCollector(pos, obstacleDist, obstacleNeighbours), aabb);
-                    velocity.Value = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value);
+                    var pref = math.rotate(inv, preferredVelocity.Value).xz;
+                    var current = math.rotate(inv, velocity.Value).xz;
+                    var newVelocity = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, pref, current, maxSpeed.Value);
+                    velocity.Value = math.rotate(ltw, newVelocity.ToXxY());
                 })
                 .ScheduleParallel();
 
@@ -64,13 +74,19 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithNone<ObstacleTreeAgentComponent>()
                 .WithReadOnly(velocityObstacleLookup)
+                .WithReadOnly(localToWorldLookup)
                 .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, SettingsComponent agent,
                           PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
-                    var pos = translation.Value.xz;
+                    var ltw = localToWorldLookup[agentTree.Tree].Value;
+                    var inv = math.inverse(ltw);
+                    var pos = math.transform(inv, translation.Value).xz;
                     var neighbours = GetNeighbours(agent, agentTree, pos, velocityObstacleLookup);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
-                    velocity.Value = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value);
+                    var pref = math.rotate(inv, preferredVelocity.Value).xz;
+                    var current = math.rotate(inv, velocity.Value).xz;
+                    var newVelocity = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, pref, current, maxSpeed.Value);
+                    velocity.Value = math.rotate(ltw, newVelocity.ToXxY());
                 })
                 .ScheduleParallel();
         }

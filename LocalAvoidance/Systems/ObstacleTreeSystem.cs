@@ -70,6 +70,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .ScheduleParallel();
 
             var treeLookup = GetComponentDataFromEntity<ObstacleTreeComponent>(true);
+            var localToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true);
 
             var operations = _operations;
             var minCapacity = _insertQuery0.CalculateEntityCount() +
@@ -91,53 +92,61 @@ namespace DotsNav.LocalAvoidance.Systems
             Entities
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                 })
                 .ScheduleParallel();
 
             Entities
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery1)
                 .ForEach((Entity entity, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
+                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, float4x4.identity, (float2*) v.GetUnsafePtr(), v.Length));
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) v.GetUnsafePtr(), v.Length));
                 })
                 .ScheduleParallel();
 
             Entities
                 .WithBurst()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery2)
                 .ForEach((DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
             Entities
                 .WithBurst()
-                .WithNone<Translation, Rotation, Scale>().WithNone<NonUniformScale, LocalToWorld>()
+                .WithNone<LocalToWorld>()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery3)
                 .ForEach((ObstacleBlobComponent blob, ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
+                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -146,11 +155,13 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery4)
                 .ForEach((Entity entity, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, ltw.Value, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                 })
                 .ScheduleParallel();
 
@@ -158,36 +169,42 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery5)
                 .ForEach((Entity entity, LocalToWorld ltw, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) v.GetUnsafePtr(), v.Length));
                 })
                 .ScheduleParallel();
 
             Entities
                 .WithBurst()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery6)
                 .ForEach((LocalToWorld ltw, DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
             Entities
                 .WithBurst()
                 .WithReadOnly(treeLookup)
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery7)
                 .ForEach((LocalToWorld ltw, ObstacleBlobComponent blob, ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
