@@ -12,7 +12,7 @@ namespace DotsNav.Systems
         /// <summary>
         /// The EntityCommandBufferSystem used by all DotsNav jobs, default is EndFixedStepSimulationEntityCommandBufferSystem
         /// </summary>
-        public static EntityCommandBufferSystem EcbSource;
+        public EntityCommandBufferSystem EcbSource;
 
         protected override void OnCreate()
         {
