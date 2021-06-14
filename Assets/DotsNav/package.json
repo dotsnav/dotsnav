@@ -1,7 +1,7 @@
 {
   "name": "com.bassmit.dotsnav",
   "displayName": "DotsNav",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "unity": "2020.3",
   "dependencies": {
     "com.unity.entities": "0.16.0-preview.21"
