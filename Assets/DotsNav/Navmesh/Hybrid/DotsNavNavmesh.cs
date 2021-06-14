@@ -112,7 +112,7 @@ namespace DotsNav.Hybrid
                 var world = World.All[0];
                 _dotsNavSystemGroup = world.GetOrCreateSystem<DotsNavSystemGroup>();
                 world.GetOrCreateSystem<FixedStepSimulationSystemGroup>().RemoveSystemFromUpdateList(_dotsNavSystemGroup);
-                DotsNavSystemGroup.EcbSource = world.GetOrCreateSystem<EndDotsNavEntityCommandBufferSystem>();
+                world.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystem<EndDotsNavEntityCommandBufferSystem>();
             }
         }
 
