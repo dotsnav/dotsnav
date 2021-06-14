@@ -72,34 +72,12 @@ namespace DotsNav.Navmesh.Hybrid
         public Color ConstrainedColor = Color.red;
         public Color UnconstrainedColor = Color.white;
 
-        static bool _created;
-
         /// <summary>
         /// The amount of vertices in the current triangulation
         /// </summary>
         public int Vertices { get; internal set; }
 
         public bool IsInitialized => Vertices >= 8;
-
-        protected override void Awake()
-        {
-            if (_created)
-            {
-                Debug.LogError("Only one navmesh is allowed");
-                DestroyImmediate(this);
-            }
-
-            _created = true;
-
-            base.Awake();
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _created = false;
-        }
-
 
         void OnValidate()
         {
