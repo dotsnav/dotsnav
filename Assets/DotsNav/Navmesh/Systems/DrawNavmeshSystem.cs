@@ -4,6 +4,8 @@ using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace DotsNav.Navmesh.Systems
 {
@@ -25,8 +27,7 @@ namespace DotsNav.Navmesh.Systems
 
             Entities
                 .WithBurst()
-                .WithAll<NavmeshComponent>()
-                .ForEach((NavmeshComponent navmesh) =>
+                .ForEach((NavmeshComponent navmesh, LocalToWorld ltw) =>
                 {
                     var enumerator = navmesh.Navmesh->GetEdgeEnumerator();
                     var lines = new NativeList<Line>(navmesh.Navmesh->Vertices * 3, Allocator.Temp);
@@ -38,7 +39,9 @@ namespace DotsNav.Navmesh.Systems
 
                         var c = edge->Constrained ? constrainedColor : unconstrainedColor;
                         c.a += edge->Constrained ? 30 : 0;
-                        lines.Add(new Line(edge->Org->Point.ToXxY(), edge->Dest->Point.ToXxY(), c));
+                        var a = math.transform(ltw.Value, edge->Org->Point.ToXxY());
+                        var b = math.transform(ltw.Value, edge->Dest->Point.ToXxY());
+                        lines.Add(new Line(a, b, c));
                     }
 
                     Line.Draw(lines);

@@ -50,8 +50,9 @@ class SandboxDev : MonoBehaviour
         foreach (var obstacle in FindObjectsOfType<DotsNavObstacle>())
         {
             var l  = new List<Vector2>();
-            for (int i = 0; i < obstacle.Vertices.Length; i++)
-                l.Add(obstacle.GetVertex(i));
+            // todo fix test
+            // for (int i = 0; i < obstacle.Vertices.Length; i++)
+            //     l.Add(obstacle.GetVertex(i));
             _toDump.Add(l);
         }
 

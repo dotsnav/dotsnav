@@ -33,10 +33,6 @@ namespace DotsNav.Editor
             }
 
             var obstacle = (DotsNavObstacle)target;
-            var scale = obstacle.Scale;
-            var rot = obstacle.Rotation;
-            var offset = obstacle.Offset;
-
             var cam = SceneView.lastActiveSceneView.camera;
             if (_lineMat == null)
                 _lineMat = new Material(Shader.Find("Lines/Colored Blended"));
@@ -49,14 +45,13 @@ namespace DotsNav.Editor
             {
                 var c = Color.Lerp(DotsNavPrefs.EditColor, DotsNavPrefs.FadeColor, i * (.8f / (obstacle.Vertices.Length - 1)));
                 GL.Color(c);
-                var vertex = obstacle.GetVertex(i, scale, rot, offset);
-                var screenPoint = (float3)cam.WorldToScreenPoint(vertex.ToXxY());
+                var vertex = GetPos(i);
+                var screenPoint = (float3)cam.WorldToScreenPoint(vertex);
                 DrawPoint(screenPoint.xy);
             }
 
             GL.End();
             GL.PopMatrix();
-
 
             Handles.BeginGUI();
 
@@ -116,24 +111,27 @@ namespace DotsNav.Editor
                 }
 
                 {
-                    var min = new float2(float.MaxValue);
-                    var max = new float2(float.MinValue);
-                    foreach (var vertex in obstacle.Vertices)
+                    var min = new float3(float.MaxValue);
+                    var max = new float3(float.MinValue);
+                    for (var i = 0; i < obstacle.Vertices.Length; i++)
                     {
+                        var vertex = GetPos(i);
                         min = math.min(min, vertex);
                         max = math.max(max, vertex);
                     }
 
-                    var p = offset + scale * Rotate(min + (max - min) / 2, -rot);
                     Handles.EndGUI();
+                    var pos = (min + max) / 2;
 
                     EditorGUI.BeginChangeCheck();
-                    var newTargetPosition = Handles.PositionHandle(p.ToXxY(), quaternion.RotateY(rot)).xz();
+                    float3 newPos = Handles.PositionHandle(pos, obstacle.transform.rotation);
+
                     if (EditorGUI.EndChangeCheck())
                     {
                         Undo.RecordObject(obstacle, "Edit obstacle");
+                        Vector2 delta = math.mul(math.inverse(obstacle.transform.rotation), newPos - pos).xz;
                         for (int i = 0; i < obstacle.Vertices.Length; i++)
-                            obstacle.Vertices[i] += (Vector2)Rotate((newTargetPosition - p) / scale, rot);
+                            obstacle.Vertices[i] += delta;
                     }
                 }
             }
@@ -154,16 +152,15 @@ namespace DotsNav.Editor
                 Handles.EndGUI();
 
                 EditorGUI.BeginChangeCheck();
-                var position = GetPos(_vertexIndex);
-                var newTargetPosition = Handles.PositionHandle(position, quaternion.RotateY(rot)).xz();
+                var pos = GetPos(_vertexIndex);
+                float3 newPos = Handles.PositionHandle(pos, obstacle.transform.rotation);
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(obstacle, "Edit obstacle");
-                    obstacle.Vertices[_vertexIndex] = Rotate((newTargetPosition - offset) / scale, rot);
+                    Vector2 delta = math.mul(math.inverse(obstacle.transform.rotation), newPos - pos).xz;
+                    obstacle.Vertices[_vertexIndex] += delta;
                 }
             }
-
-            float2 Rotate(double2 p, double degrees) => (float2) new double2(p.x * math.cos(degrees) - p.y * math.sin(degrees), p.x * math.sin(degrees) + p.y * math.cos(degrees));
 
             if (!obstacle.gameObject.activeInHierarchy || obstacle.Vertices == null || obstacle.Vertices.Length < 2)
                 return;
@@ -174,7 +171,7 @@ namespace DotsNav.Editor
                 Handles.DrawLine(GetPos(i), GetPos(i + 1));
             Handles.color = t;
 
-            float3 GetPos(int i) => obstacle.GetVertex(i, scale, rot, offset).ToXxY();
+            float3 GetPos(int i) => math.transform(obstacle.transform.localToWorldMatrix, obstacle.Vertices[i].ToXxY());
 
             void CreateUp()
             {
