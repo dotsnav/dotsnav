@@ -45,7 +45,7 @@ namespace DotsNav.Editor
             {
                 var c = Color.Lerp(DotsNavPrefs.EditColor, DotsNavPrefs.FadeColor, i * (.8f / (obstacle.Vertices.Length - 1)));
                 GL.Color(c);
-                var vertex = GetPos(i);
+                var vertex = obstacle.GetVertexWorldSpace(i);
                 var screenPoint = (float3)cam.WorldToScreenPoint(vertex);
                 DrawPoint(screenPoint.xy);
             }
@@ -115,7 +115,7 @@ namespace DotsNav.Editor
                     var max = new float3(float.MinValue);
                     for (var i = 0; i < obstacle.Vertices.Length; i++)
                     {
-                        var vertex = GetPos(i);
+                        var vertex = obstacle.GetVertexWorldSpace(i);
                         min = math.min(min, vertex);
                         max = math.max(max, vertex);
                     }
@@ -152,7 +152,7 @@ namespace DotsNav.Editor
                 Handles.EndGUI();
 
                 EditorGUI.BeginChangeCheck();
-                var pos = GetPos(_vertexIndex);
+                var pos = obstacle.GetVertexWorldSpace(_vertexIndex);
                 float3 newPos = Handles.PositionHandle(pos, obstacle.transform.rotation);
                 if (EditorGUI.EndChangeCheck())
                 {
@@ -168,10 +168,10 @@ namespace DotsNav.Editor
             var t = Handles.color;
             Handles.color = DotsNavPrefs.EditColor;
             for (int i = 0; i < obstacle.Vertices.Length - 1; i++)
-                Handles.DrawLine(GetPos(i), GetPos(i + 1));
+                Handles.DrawLine(obstacle.GetVertexWorldSpace(i), obstacle.GetVertexWorldSpace(i + 1));
+            if (obstacle.Closed)
+                Handles.DrawLine(obstacle.GetVertexWorldSpace(obstacle.Vertices.Length - 1), obstacle.GetVertexWorldSpace(0));
             Handles.color = t;
-
-            float3 GetPos(int i) => math.transform(obstacle.transform.localToWorldMatrix, obstacle.Vertices[i].ToXxY());
 
             void CreateUp()
             {
