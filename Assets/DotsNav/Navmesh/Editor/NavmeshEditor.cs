@@ -3,7 +3,7 @@ using DotsNav.Navmesh.Hybrid;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.Navmesh.Editor
+namespace DotsNav.Navmesh
 {
     [CustomEditor(typeof(DotsNavNavmesh))]
     class NavmeshEditor : UnityEditor.Editor

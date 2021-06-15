@@ -1,6 +1,5 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using DotsNav.Predicates;
 using Unity.Mathematics;
 
 namespace DotsNav

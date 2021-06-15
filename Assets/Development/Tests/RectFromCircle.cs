@@ -2,7 +2,6 @@
 using UnityEngine;
 using DotsNav;
 using DotsNav.PathFinding;
-using DotsNav.Predicates;
 
 [ExecuteInEditMode]
 public class RectFromCircle : MonoBehaviour

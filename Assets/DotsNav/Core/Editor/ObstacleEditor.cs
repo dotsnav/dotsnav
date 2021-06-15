@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.Editor
+namespace DotsNav
 {
     [CustomEditor(typeof(DotsNavObstacle), editorForChildClasses: true)]
     class ObstacleEditor : UnityEditor.Editor
