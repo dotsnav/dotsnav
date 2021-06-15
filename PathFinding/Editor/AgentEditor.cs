@@ -3,7 +3,7 @@ using DotsNav.PathFinding.Hybrid;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.PathFinding.Editor
+namespace DotsNav.PathFinding
 {
     [CustomEditor(typeof(DotsNavPathFindingAgent), editorForChildClasses: true)]
     [CanEditMultipleObjects]

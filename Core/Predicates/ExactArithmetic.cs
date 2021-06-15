@@ -56,7 +56,7 @@
 //-------------------------------------------------------------------------
 #endregion
 
-namespace DotsNav.Predicates
+namespace DotsNav
 {
     /// <summary>
     /// Implements the exact floating-point described by Shewchuck, and implemented in predicates.c

@@ -4,7 +4,6 @@ using DotsNav.Collections;
 using DotsNav.Drawing;
 using DotsNav.Navmesh;
 using DotsNav.PathFinding.Data;
-using DotsNav.Predicates;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
