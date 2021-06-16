@@ -15,7 +15,6 @@ namespace DotsNav.LocalAvoidance.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     public unsafe class ObstacleTreeSystem : SystemBase
     {
-        public JobHandle OutputDependecy;
         NativeMultiHashMap<ObstacleTree, TreeOperation> _operations;
         NativeList<ObstacleTree> _trees;
         EntityQuery _insertQuery0;
@@ -246,7 +245,6 @@ namespace DotsNav.LocalAvoidance.Systems
                 .Schedule(trees, 1, Dependency);
 
             ecbSource.AddJobHandleForProducer(Dependency);
-            OutputDependecy = Dependency;
         }
 
         [BurstCompile]
