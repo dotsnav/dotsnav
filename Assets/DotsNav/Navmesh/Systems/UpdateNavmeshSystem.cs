@@ -20,7 +20,7 @@ namespace DotsNav.Navmesh.Systems
     {
         public JobHandle OutputDependecy;
         NativeList<Entity> _navmeshes;
-        NativeMultiHashMap<Entity, Insertion> _insertions;
+        NativeMultiHashMap<Entity, Navmesh.Insertion> _insertions;
         NativeMultiHashMap<Entity, Entity> _removals;
         EntityQuery _insertQuery0;
         EntityQuery _insertQuery1;
@@ -35,7 +35,7 @@ namespace DotsNav.Navmesh.Systems
         protected override void OnCreate()
         {
             _navmeshes = new NativeList<Entity>(Allocator.Persistent);
-            _insertions = new NativeMultiHashMap<Entity, Insertion>(64, Allocator.Persistent);
+            _insertions = new NativeMultiHashMap<Entity, Navmesh.Insertion>(64, Allocator.Persistent);
             _removals = new NativeMultiHashMap<Entity, Entity>(64, Allocator.Persistent);
         }
 
@@ -82,7 +82,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, int entityInQueryIndex, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                     buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
@@ -95,7 +95,7 @@ namespace DotsNav.Navmesh.Systems
                 .ForEach((Entity entity, int entityInQueryIndex, VertexBlobComponent vertices, ref NavmeshObstacleComponent element) =>
                 {
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, float4x4.identity, (float2*) v.GetUnsafePtr(), v.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(entity, float4x4.identity, (float2*) v.GetUnsafePtr(), v.Length));
                     buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
@@ -107,7 +107,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery2)
                 .ForEach((DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, NavmeshObstacleComponent element) =>
                 {
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -119,7 +119,7 @@ namespace DotsNav.Navmesh.Systems
                 {
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(float4x4.identity, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -130,7 +130,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery4)
                 .ForEach((Entity entity, int entityInQueryIndex, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, ltw.Value, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(entity, ltw.Value, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                     buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
@@ -142,7 +142,7 @@ namespace DotsNav.Navmesh.Systems
                 .ForEach((Entity entity, int entityInQueryIndex, LocalToWorld ltw, VertexBlobComponent vertices, ref NavmeshObstacleComponent element) =>
                 {
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.Insert, entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(entity, ltw.Value, (float2*) v.GetUnsafePtr(), v.Length));
                     buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
                 .ScheduleParallel();
@@ -153,7 +153,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery6)
                 .ForEach((LocalToWorld ltw, DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, NavmeshObstacleComponent element) =>
                 {
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -164,7 +164,7 @@ namespace DotsNav.Navmesh.Systems
                 {
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    insertionsWriter.Add(element.Navmesh, new Insertion(InsertionType.BulkInsert, ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(ltw.Value, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -224,7 +224,7 @@ namespace DotsNav.Navmesh.Systems
             [ReadOnly]
             public NativeArray<Entity> Keys;
             [ReadOnly]
-            public NativeMultiHashMap<Entity, Insertion> Operations;
+            public NativeMultiHashMap<Entity, Navmesh.Insertion> Operations;
             [ReadOnly]
             public ComponentDataFromEntity<NavmeshComponent> NavmeshLookup;
             [NativeDisableContainerSafetyRestriction]
@@ -252,48 +252,6 @@ namespace DotsNav.Navmesh.Systems
                     navmesh.Navmesh->Update(insertions, removals, destroyedTriangles, ltwInv);
                 }
             }
-        }
-
-        internal readonly struct Insertion
-        {
-            public readonly InsertionType Type;
-            public readonly Entity Obstacle;
-            public readonly float4x4 Ltw;
-            public readonly float2* Vertices;
-            public readonly int* Amounts;
-            public readonly int Amount;
-
-            /// <summary>
-            /// Insert
-            /// </summary>
-            public Insertion(InsertionType type, Entity obstacle, float4x4 ltw, float2* vertices, int amount)
-            {
-                Type = type;
-                Obstacle = obstacle;
-                Ltw = ltw;
-                Vertices = vertices;
-                Amount = amount;
-                Amounts = default;
-            }
-
-            /// <summary>
-            /// Bulk Insert
-            /// </summary>
-            public Insertion(InsertionType type, float4x4 ltw, float2* verts, int* amounts, int length)
-            {
-                Type = type;
-                Obstacle = default;
-                Ltw = ltw;
-                Vertices = verts;
-                Amount = length;
-                Amounts = amounts;
-            }
-        }
-
-        internal enum InsertionType
-        {
-            Insert,
-            BulkInsert,
         }
 
         struct SystemStateComponent : ISystemStateComponentData
