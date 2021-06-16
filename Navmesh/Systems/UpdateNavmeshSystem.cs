@@ -18,7 +18,6 @@ namespace DotsNav.Navmesh.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     public unsafe class UpdateNavmeshSystem : SystemBase
     {
-        public JobHandle OutputDependecy;
         NativeList<Entity> _navmeshes;
         NativeMultiHashMap<Entity, Navmesh.Insertion> _insertions;
         NativeMultiHashMap<Entity, Entity> _removals;
@@ -215,7 +214,6 @@ namespace DotsNav.Navmesh.Systems
                 .Schedule(navmeshes, 1, Dependency);
 
             ecbSource.AddJobHandleForProducer(Dependency);
-            OutputDependecy = Dependency;
         }
 
         [BurstCompile]

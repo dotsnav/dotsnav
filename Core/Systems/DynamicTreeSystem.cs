@@ -14,7 +14,6 @@ namespace DotsNav.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     class DynamicTreeSystem : SystemBase
     {
-        public JobHandle OutputDependecy;
         NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
         NativeList<DynamicTree<Entity>> _trees;
         EntityQuery _insertQuery;
@@ -158,7 +157,6 @@ namespace DotsNav.Systems
                 .Schedule(trees, 1, Dependency);
 
             ecbSource.AddJobHandleForProducer(Dependency);
-            OutputDependecy = Dependency;
         }
 
         [BurstCompile]

@@ -41,7 +41,6 @@ namespace DotsNav.LocalAvoidance.Systems
                 })
                 .ScheduleParallel();
 
-            Dependency = JobHandle.CombineDependencies(Dependency, _dynamicTreeSystem.OutputDependecy, _obstacleTreeSystem.OutputDependecy);
             var velocityObstacleLookup = GetComponentDataFromEntity<VelocityObstacleComponent>(true);
             var obstacleTreeLookup = GetComponentDataFromEntity<ObstacleTreeComponent>(true);
 
