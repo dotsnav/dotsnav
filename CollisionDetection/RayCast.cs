@@ -52,7 +52,7 @@ namespace DotsNav.CollisionDetection
             Assert.IsTrue(math.abs(1 - math.length(rayCast.Direction)) < .001f, "Ray cast direction should be normalized");
 
             open.Clear();
-            var h = navmesh.Max;
+            var h = navmesh.Extent;
             var dist = math.min(math.max(h.x, h.y) * 4, rayCast.Distance);
             var org = rayCast.Origin;
             var dest = org + rayCast.Direction * dist;
