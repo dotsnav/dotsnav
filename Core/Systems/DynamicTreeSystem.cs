@@ -85,7 +85,7 @@ namespace DotsNav.Systems
                     element.TreeRef = tree;
                     var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                     var pos = math.transform(transform, translation.Value).xz;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, pos, radius.Value, element.Tree));
+                    operationsWriter.Add(tree, new TreeOperation(entity, pos, radius.Value, element.Tree));
                 })
                 .ScheduleParallel();
 
@@ -96,7 +96,7 @@ namespace DotsNav.Systems
                 .WithStoreEntityQueryInField(ref _destroyQuery)
                 .ForEach((ElementSystemStateComponent state) =>
                 {
-                    operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, state.Id));
+                    operationsWriter.Add(state.TreeRef, new TreeOperation(state.Id));
                 })
                 .ScheduleParallel();
 
@@ -113,7 +113,7 @@ namespace DotsNav.Systems
                         var transform = math.inverse(localToWorldLookup[state.TreeEntity].Value);
                         var pos = math.transform(transform, translation.Value).xz;
                         var displacement = pos - state.PreviousPosition;
-                        operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Move, state.Id, pos, displacement, radius.Value));
+                        operationsWriter.Add(state.TreeRef, new TreeOperation(state.Id, pos, displacement, radius.Value));
                         state.PreviousPosition = pos;
                     }
                     else
@@ -125,8 +125,8 @@ namespace DotsNav.Systems
                         element.TreeRef = newTree;
                         state.TreeRef = newTree;
                         state.TreeEntity = element.Tree;
-                        operationsWriter.Add(oldTree, new TreeOperation(TreeOperationType.Destroy, state.Id));
-                        operationsWriter.Add(newTree, new TreeOperation(TreeOperationType.Reinsert, entity, pos, radius.Value, element.Tree));
+                        operationsWriter.Add(oldTree, new TreeOperation(state.Id));
+                        operationsWriter.Add(newTree, new TreeOperation(entity, pos, radius.Value, element.Tree, true));
                         state.PreviousPosition = pos;
                     }
                 })
@@ -225,9 +225,9 @@ namespace DotsNav.Systems
             /// <summary>
             /// Insert
             /// </summary>
-            public TreeOperation(TreeOperationType type, Entity agent, float2 pos, float radius, Entity treeEntity)
+            public TreeOperation(Entity agent, float2 pos, float radius, Entity treeEntity, bool reinsert = false)
             {
-                Type = type;
+                Type = reinsert ? TreeOperationType.Reinsert : TreeOperationType.Insert;
                 Agent = agent;
                 Pos = pos;
                 Radius = radius;
@@ -239,9 +239,9 @@ namespace DotsNav.Systems
             /// <summary>
             /// Destroy
             /// </summary>
-            public TreeOperation(TreeOperationType type, int id)
+            public TreeOperation(int id)
             {
-                Type = type;
+                Type = TreeOperationType.Destroy;
                 Id = id;
                 Radius = default;
                 Agent = default;
@@ -253,9 +253,9 @@ namespace DotsNav.Systems
             /// <summary>
             /// Move
             /// </summary>
-            public TreeOperation(TreeOperationType type, int id, float2 pos, float2 displacement, float radius)
+            public TreeOperation(int id, float2 pos, float2 displacement, float radius)
             {
-                Type = type;
+                Type = TreeOperationType.Move;
                 Id = id;
                 Pos = pos;
                 Displacement = displacement;

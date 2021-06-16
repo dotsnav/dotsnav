@@ -100,7 +100,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
                     var transform = math.inverse(localToWorldLookup[element.Tree].Value);
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                 })
                 .ScheduleParallel();
 
@@ -116,7 +116,7 @@ namespace DotsNav.LocalAvoidance.Systems
                     var tree = treeLookup[element.Tree].TreeRef;
                     var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) v.GetUnsafePtr(), v.Length));
+                    operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) v.GetUnsafePtr(), v.Length));
                 })
                 .ScheduleParallel();
 
@@ -130,7 +130,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
                     var transform = math.inverse(localToWorldLookup[element.Tree].Value);
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    operationsWriter.Add(tree, new TreeOperation(transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -146,7 +146,7 @@ namespace DotsNav.LocalAvoidance.Systems
                     var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    operationsWriter.Add(tree, new TreeOperation(transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -161,7 +161,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
                     var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
+                    operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                 })
                 .ScheduleParallel();
 
@@ -176,7 +176,7 @@ namespace DotsNav.LocalAvoidance.Systems
                     var tree = treeLookup[element.Tree].TreeRef;
                     var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
                     ref var v = ref vertices.BlobRef.Value.Vertices;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.Insert, entity, transform, (float2*) v.GetUnsafePtr(), v.Length));
+                    operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) v.GetUnsafePtr(), v.Length));
                 })
                 .ScheduleParallel();
 
@@ -189,7 +189,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
                     var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    operationsWriter.Add(tree, new TreeOperation(transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -204,7 +204,7 @@ namespace DotsNav.LocalAvoidance.Systems
                     var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
-                    operationsWriter.Add(tree, new TreeOperation(TreeOperationType.BulkInsert, transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
+                    operationsWriter.Add(tree, new TreeOperation(transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
@@ -216,7 +216,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithStoreEntityQueryInField(ref _destroyQuery)
                 .ForEach((Entity entity, ElementSystemStateComponent state) =>
                 {
-                    operationsWriter.Add(state.TreeRef, new TreeOperation(TreeOperationType.Destroy, entity));
+                    operationsWriter.Add(state.TreeRef, new TreeOperation(entity));
                 })
                 .ScheduleParallel();
 
@@ -312,9 +312,9 @@ namespace DotsNav.LocalAvoidance.Systems
             /// <summary>
             /// Insert
             /// </summary>
-            public TreeOperation(TreeOperationType type, Entity obstacle, float4x4 ltw, float2* vertices, int amount)
+            public TreeOperation(Entity obstacle, float4x4 ltw, float2* vertices, int amount)
             {
-                Type = type;
+                Type = TreeOperationType.Insert;
                 Obstacle = obstacle;
                 Ltw = ltw;
                 Vertices = vertices;
@@ -325,9 +325,9 @@ namespace DotsNav.LocalAvoidance.Systems
             /// <summary>
             /// Destroy
             /// </summary>
-            public TreeOperation(TreeOperationType type, Entity obstacle)
+            public TreeOperation(Entity obstacle)
             {
-                Type = type;
+                Type = TreeOperationType.Destroy;
                 Obstacle = obstacle;
                 Ltw = default;
                 Vertices = default;
@@ -335,9 +335,12 @@ namespace DotsNav.LocalAvoidance.Systems
                 Amounts = default;
             }
 
-            public TreeOperation(TreeOperationType type, float4x4 ltw, float2* verts, int* amounts, int length)
+            /// <summary>
+            /// Bulk Insert
+            /// </summary>
+            public TreeOperation(float4x4 ltw, float2* verts, int* amounts, int length)
             {
-                Type = type;
+                Type = TreeOperationType.BulkInsert;
                 Obstacle = default;
                 Ltw = ltw;
                 Vertices = verts;
