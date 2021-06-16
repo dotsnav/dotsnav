@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav.PathFinding
+namespace DotsNav.PathFinding.Data
 {
     /// <summary>
     /// Entities with Agent DynamicBuffer&lt;PathSegmentElement&gt; and DynamicBuffer&lt;TriangleElement&gt; are considered for
