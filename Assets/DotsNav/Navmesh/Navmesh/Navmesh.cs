@@ -17,9 +17,7 @@ namespace DotsNav.Navmesh
     {
         const int CrepMinCapacity = 4; // todo what's a good number, shrink when reusing?
 
-        public float2 Max;
-        public float2 Min => -Max;
-        public float2 Size => 2 * Max;
+        public float2 Extent;
         public int Vertices => _verticesSeq.Length;
 
         float _e;
@@ -59,7 +57,7 @@ namespace DotsNav.Navmesh
             Assert.IsTrue(math.all(component.Size > 0));
             Assert.IsTrue(component.ExpectedVerts > 0);
 
-            Max = component.Size / 2;
+            Extent = component.Size / 2;
             _e = component.MergePointsDistance;
             _collinearMargin = component.CollinearMargin;
 
@@ -93,8 +91,8 @@ namespace DotsNav.Navmesh
 
         void BuildBoundingBoxes()
         {
-            var bmin = Min - 1;
-            var bmax = Max + 1;
+            var bmin = -Extent - 1;
+            var bmax = Extent + 1;
 
             var bottomLeft = CreateVertex(bmin);
             var bottomRight = CreateVertex(new float2(bmax.x, bmin.y));
@@ -118,7 +116,7 @@ namespace DotsNav.Navmesh
 
             Connect(right, bottom);
 
-            var bounds = stackalloc float2[] {Min, new float2(Max.x, Min.y), Max, new float2(Min.x, Max.y), Min};
+            var bounds = stackalloc float2[] {-Extent, new float2(Extent.x, -Extent.y), Extent, new float2(-Extent.x, Extent.y), -Extent};
             Insert(bounds, 0, 5, Entity.Null, float4x4.identity);
         }
 
@@ -149,7 +147,7 @@ namespace DotsNav.Navmesh
             _refinementQueue.Dispose();
         }
 
-        public bool Contains(float2 p) => Math.Contains(p, Min, Max);
+        public bool Contains(float2 p) => Math.Contains(p, -Extent, Extent);
 
         internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
@@ -211,6 +209,6 @@ namespace DotsNav.Navmesh
         /// Allows enumeration of all edges in the navmesh
         /// </summary>
         /// <param name="sym">Set to true to enumerate symetric edges, i.e. enumerate edge(x,y) and edge(y,x)</param>
-        public EdgeEnumerator GetEdgeEnumerator(bool sym = false) => new EdgeEnumerator(_verticesSeq, Max, sym);
+        public EdgeEnumerator GetEdgeEnumerator(bool sym = false) => new EdgeEnumerator(_verticesSeq, Extent, sym);
     }
 }

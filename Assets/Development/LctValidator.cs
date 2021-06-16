@@ -90,7 +90,7 @@ unsafe struct LctValidator
             var b = edge->Org->Point;
             var c = edge->Dest->Point;
 
-            if (!Math.Contains(b, lct->Min, lct->Max) || !Math.Contains(c, lct->Min, lct->Max))
+            if (!Math.Contains(b, -lct->Extent, lct->Extent) || !Math.Contains(c, -lct->Extent, lct->Extent))
                 continue;
 
             var entrance = edge->ONext;
@@ -168,7 +168,7 @@ unsafe struct LctValidator
         var e = lct->GetEdgeEnumerator(true);
         while (e.MoveNext())
         {
-            if (!Math.Contains(e.Current->Org->Point, lct->Min, lct->Max))
+            if (!Math.Contains(e.Current->Org->Point, -lct->Extent, lct->Extent))
                 continue;
 
             if (_closed.Contains((IntPtr) e.Current))
@@ -236,7 +236,7 @@ unsafe struct LctValidator
         var e = lct->GetEdgeEnumerator(true);
         while (e.MoveNext())
         {
-            if (!Math.Contains(e.Current->Org->Point, lct->Min, lct->Max))
+            if (!Math.Contains(e.Current->Org->Point, -lct->Extent, lct->Extent))
                 continue;
 
             _triangles.TryAdd(e.Current->TriangleId);
@@ -256,7 +256,7 @@ unsafe struct LctValidator
 
             var o = e.Current->Org->Point;
             var d = e.Current->Dest->Point;
-            if (Math.Contains(o, lct->Min, lct->Max) && Math.Contains(d, lct->Min, lct->Max))
+            if (Math.Contains(o, -lct->Extent, lct->Extent) && Math.Contains(d, -lct->Extent, lct->Extent))
             {
                 var on = e.Current->ONext->Dest->Point;
                 var dn = e.Current->DNext->Org->Point;
