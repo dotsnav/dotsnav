@@ -50,7 +50,6 @@ namespace DotsNav.Navmesh
         int NextEdgeId => ++_edgeId;
         int NextTriangleId => ++_triangleId;
         internal bool IsEmpty => Vertices == 8;
-        internal bool IsInitialized => Vertices > 0;
 
         internal Navmesh(NavmeshComponent component)
         {
