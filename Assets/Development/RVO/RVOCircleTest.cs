@@ -22,14 +22,15 @@ public class RVOCircleTest : MonoBehaviour
             var prefab = Instantiate(Prefab);
             prefab.GetComponent<DotsNavLocalAvoidanceAgent>().LocalAvoidance = LocalAvoidance;
             var pos = SpawnRadius * new float2(math.cos(i * 2 * math.PI / AgentAmount), math.sin(i * 2 * math.PI / AgentAmount));
-            prefab.transform.position = pos.ToXxY();
+            prefab.transform.position = transform.TransformPoint(pos.ToXxY());
+            prefab.GetComponent<TargetableAgent>().Target = transform.TransformPoint(-pos.ToXxY());
         }
     }
 }
 
 struct TargetComponent : IComponentData
 {
-    public float2 Value;
+    public float3 Value;
 }
 
 [UpdateInGroup(typeof(DotsNavSystemGroup))]
@@ -44,13 +45,13 @@ class DirectionSystem : SystemBase
             .WithBurst()
             .ForEach((Translation translation, TargetComponent target, SettingsComponent agent, ref PreferredVelocityComponent preferredVelocity) =>
             {
-                var toTarget = target.Value - translation.Value.xz;
+                var toTarget = target.Value - translation.Value;
                 var length = math.length(toTarget);
                 const float preferredSpeed = 8;
                 if (length >= preferredSpeed * dt)
-                    preferredVelocity.Value = (toTarget / length * preferredSpeed).ToXxY();
+                    preferredVelocity.Value = toTarget / length * preferredSpeed;
                 else if (length >= -1e3f)
-                    preferredVelocity.Value = toTarget.ToXxY();
+                    preferredVelocity.Value = toTarget;
                 else
                     preferredVelocity.Value = 0;
             })
@@ -82,12 +83,9 @@ class TargetSystem : SystemBase
     {
         Entities
             .WithoutBurst()
-            .WithAll<SettingsComponent>()
-            .WithNone<TargetComponent>()
-            .WithStructuralChanges()
-            .ForEach((Entity entity, Translation translation) =>
+            .ForEach((TargetableAgent agent, ref TargetComponent target) =>
             {
-                EntityManager.AddComponentData(entity, new TargetComponent{Value = -translation.Value.xz});
+                target.Value = agent.Target;
             })
             .Run();
     }
