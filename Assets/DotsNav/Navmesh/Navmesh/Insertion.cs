@@ -1,6 +1,5 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace DotsNav.Navmesh
 {
@@ -20,7 +19,6 @@ namespace DotsNav.Navmesh
             /// </summary>
             public Insertion(Entity obstacle, float4x4 ltw, float2* vertices, int amount)
             {
-                Debug.Log($"insert");
                 Type = InsertionType.Insert;
                 Obstacle = obstacle;
                 Ltw = ltw;
@@ -34,8 +32,6 @@ namespace DotsNav.Navmesh
             /// </summary>
             public Insertion(float4x4 ltw, float2* verts, int* amounts, int length)
             {
-                Debug.Log($"bulk");
-
                 Type = InsertionType.BulkInsert;
                 Obstacle = default;
                 Ltw = ltw;
