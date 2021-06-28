@@ -79,9 +79,11 @@ namespace DotsNav.Navmesh.Systems
                 .WithBurst()
                 .WithNone<SystemStateComponent>()
                 .WithNone<LocalToWorld>()
+                .WithNone<VertexAmountElement>()
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, int entityInQueryIndex, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
+                    Debug.Log($"{vertices.Length}");
                     insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                     buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })
@@ -127,6 +129,7 @@ namespace DotsNav.Navmesh.Systems
             Entities
                 .WithBurst()
                 .WithNone<SystemStateComponent>()
+                .WithNone<VertexAmountElement>()
                 .WithStoreEntityQueryInField(ref _insertQuery4)
                 .ForEach((Entity entity, int entityInQueryIndex, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
