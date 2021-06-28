@@ -91,7 +91,7 @@ namespace DotsNav.Navmesh.Hybrid
         {
             var em = World.All[0].EntityManager;
             var obstacle = em.CreateEntity();
-            em.AddComponentData(obstacle, new NavmeshObstacleComponent());
+            em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
             var input = em.AddBuffer<VertexElement>(obstacle);
             foreach (float2 vertex in vertices)
                 input.Add(vertex);
@@ -108,6 +108,7 @@ namespace DotsNav.Navmesh.Hybrid
         {
             var em = World.All[0].EntityManager;
             var obstacle = em.CreateEntity();
+            em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
             em.AddBuffer<VertexElement>(obstacle);
             var amounts = em.AddBuffer<VertexAmountElement>(obstacle);
             var input = em.GetBuffer<VertexElement>(obstacle);
@@ -160,7 +161,7 @@ namespace DotsNav.Navmesh.Hybrid
             var em = World.All[0].EntityManager;
             var obstacle = em.CreateEntity();
             em.AddComponentData(obstacle, new LocalToWorld {Value = float4x4.TRS(position.ToXxY(), quaternion.RotateY(math.radians(rotationDegrees)), ((float2)scale).xxy)});
-            em.AddComponentData(obstacle, new NavmeshObstacleComponent());
+            em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
             var input = em.AddBuffer<VertexElement>(obstacle);
             foreach (float2 vertex in vertices)
                 input.Add(vertex);
