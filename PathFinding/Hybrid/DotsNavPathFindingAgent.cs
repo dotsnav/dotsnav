@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using DotsNav.Data;
 using DotsNav.Hybrid;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Data;
+using DotsNav.PathFinding.Systems;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -22,6 +25,9 @@ namespace DotsNav.PathFinding.Hybrid
                 DstEntityManager.AddBuffer<PathSegmentElement>(entity);
                 DstEntityManager.AddBuffer<TriangleElement>(entity);
                 DstEntityManager.AddComponentData(entity, new AgentDrawComponent {Draw = true});
+
+                DstEntityManager.AddComponentData(entity, new NavmeshElementComponent {Navmesh = agent.Navmesh.Entity});
+
             });
         }
     }
@@ -32,6 +38,8 @@ namespace DotsNav.PathFinding.Hybrid
     [RequireComponent(typeof(DotsNavAgent))]
     public class DotsNavPathFindingAgent : MonoBehaviour
     {
+        public DotsNavNavmesh Navmesh;
+
         /// <summary>
         /// The radius used when finding paths. Call FindPath to trigger calculating a new path
         /// </summary>
@@ -99,6 +107,7 @@ namespace DotsNav.PathFinding.Hybrid
         /// </summary>
         public void FindPath(Vector2 start, Vector2 goal)
         {
+            Assert.IsTrue(Navmesh != null);
             Start = start;
             Goal = goal;
             State = PathQueryState.Pending;
