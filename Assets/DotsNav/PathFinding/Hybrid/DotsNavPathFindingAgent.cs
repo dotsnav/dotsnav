@@ -22,7 +22,7 @@ namespace DotsNav.PathFinding.Hybrid
                 DstEntityManager.AddBuffer<PathSegmentElement>(entity);
                 DstEntityManager.AddBuffer<TriangleElement>(entity);
                 DstEntityManager.AddComponentData(entity, new AgentDrawComponent {Draw = true});
-                DstEntityManager.AddComponentData(entity, new NavmeshElementComponent {Navmesh = agent.Navmesh.Entity});
+                DstEntityManager.AddComponentData(entity, new NavmeshAgentComponent {Navmesh = agent.Navmesh.Entity});
             });
         }
     }
