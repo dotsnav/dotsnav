@@ -17,17 +17,12 @@ namespace DotsNav.PathFinding.Hybrid
             Entities.ForEach((DotsNavPathFindingAgent agent) =>
             {
                 var entity = GetPrimaryEntity(agent);
-                Assert.IsTrue(agent.Radius > 0, "Radius must be larger than 0");
-
                 DstEntityManager.AddComponentData(entity, new PathQueryComponent {State = PathQueryState.Inactive});
-                DstEntityManager.AddComponentData(entity, new RadiusComponent {Value = agent.Radius});
                 DstEntityManager.AddComponentData(entity, new DirectionComponent());
                 DstEntityManager.AddBuffer<PathSegmentElement>(entity);
                 DstEntityManager.AddBuffer<TriangleElement>(entity);
                 DstEntityManager.AddComponentData(entity, new AgentDrawComponent {Draw = true});
-
                 DstEntityManager.AddComponentData(entity, new NavmeshElementComponent {Navmesh = agent.Navmesh.Entity});
-
             });
         }
     }
@@ -39,11 +34,6 @@ namespace DotsNav.PathFinding.Hybrid
     public class DotsNavPathFindingAgent : MonoBehaviour
     {
         public DotsNavNavmesh Navmesh;
-
-        /// <summary>
-        /// The radius used when finding paths. Call FindPath to trigger calculating a new path
-        /// </summary>
-        public float Radius = .5f;
 
         /// <summary>
         /// The path segments making up the current path
@@ -128,7 +118,7 @@ namespace DotsNav.PathFinding.Hybrid
             UnityEditor.Handles.color = DrawColor;
             const int res = 24;
             var q = Quaternion.AngleAxis(360f / res, Vector3.up);
-            var currentArm = new Vector3(0, 0, Radius);
+            var currentArm = new Vector3(0, 0, GetComponent<DotsNavAgent>().Radius);
 
             for (var i = 0; i < res; i++)
             {

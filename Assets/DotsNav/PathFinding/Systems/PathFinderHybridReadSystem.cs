@@ -27,7 +27,6 @@ namespace DotsNav.PathFinding.Systems
                     agent.State = hybrid.State;
                     agent.From = hybrid.Start;
                     agent.To = hybrid.Goal;
-                    radius.Value = hybrid.Radius;
                     var pos = hybrid.transform.position;
                     pos.y = 0;
                     translation.Value = pos;

@@ -79,7 +79,7 @@ class SandboxDev : MonoBehaviour
         var size = _start.localScale.x;
         var s = new Vector3(size, size, size);
         _goal.localScale = s;
-        _agent.Radius = size / 2;
+        _agent.GetComponent<DotsNavAgent>().Radius = size / 2;
     }
 
     protected void Update()
@@ -354,7 +354,7 @@ class SandboxDev : MonoBehaviour
                 var s = new Vector3(size, size, size);
                 _start.localScale = s;
                 _goal.localScale = s;
-                _agent.Radius = size / 2;
+                _agent.GetComponent<DotsNavAgent>().Radius = size / 2;
             }
 
             if (_target != null && Input.GetMouseButton(0) && !Input.GetMouseButtonDown(0) && mouseDelta != Vector2.zero)
