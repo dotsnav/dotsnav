@@ -151,7 +151,31 @@ namespace DotsNav.Navmesh
         internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
             DestroyedTriangles.Clear();
-            Insert(enumerator, ltwInv);
+
+            while (enumerator.MoveNext())
+            {
+                var op = enumerator.Current;
+                var ltw = math.mul(ltwInv, op.Ltw);
+
+                switch (op.Type)
+                {
+                    case InsertionType.Insert:
+                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, ltw);
+                        break;
+                    case InsertionType.BulkInsert:
+                        var start = 0;
+                        for (int i = 0; i < op.Amount; i++)
+                        {
+                            var amount = op.Amounts[i];
+                            Insert(op.Vertices, start, amount, Entity.Null, ltw);
+                            start += amount;
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
             GlobalRefine(destroyed);
         }
 
@@ -170,13 +194,6 @@ namespace DotsNav.Navmesh
             if (removed)
                 RemoveRefinements();
 
-            C.Clear();
-            Insert(enumerator, ltwInv);
-            LocalRefinement(destroyed);
-        }
-
-        void Insert<T>(T enumerator, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
-        {
             while (enumerator.MoveNext())
             {
                 var op = enumerator.Current;
@@ -185,6 +202,7 @@ namespace DotsNav.Navmesh
                 switch (op.Type)
                 {
                     case InsertionType.Insert:
+                        C.Clear();
                         Insert(op.Vertices, 0, op.Amount, op.Obstacle, ltw);
                         SearchDisturbances();
                         break;
@@ -193,6 +211,7 @@ namespace DotsNav.Navmesh
                         for (int i = 0; i < op.Amount; i++)
                         {
                             var amount = op.Amounts[i];
+                            C.Clear();
                             Insert(op.Vertices, start, amount, Entity.Null, ltw);
                             start += amount;
                             SearchDisturbances();
@@ -202,6 +221,8 @@ namespace DotsNav.Navmesh
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
+            LocalRefinement(destroyed);
         }
 
         /// <summary>
