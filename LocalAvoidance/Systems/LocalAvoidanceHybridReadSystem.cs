@@ -18,7 +18,6 @@ namespace DotsNav.LocalAvoidance.Systems
                           ref RadiusComponent radius, ref MaxSpeedComponent maxSpeed) =>
                 {
                     translation.Value = monoAgent.transform.position;
-                    radius.Value = monoAgent.Radius;
                     maxSpeed.Value = monoAgent.MaxSpeed;
                     agentComponent.MaxNeighbours = monoAgent.MaxNeighbours;
                     agentComponent.NeighbourDist = monoAgent.NeighbourDist;

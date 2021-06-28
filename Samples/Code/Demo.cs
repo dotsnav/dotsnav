@@ -100,7 +100,7 @@ namespace DotsNav.Samples.Code
                 var agent = Instantiate(AgentPrefab);
                 _agents[i] = agent;
                 var r = AgentMinRadius + i * AgentRadiusRange / AgentAmount;
-                agent.Radius = r;
+                agent.GetComponent<DotsNavAgent>().Radius = r;
                 agent.transform.localScale = new Vector3(r, r, r) * 2;
 
                 var cycles = 0;

@@ -26,7 +26,6 @@ namespace DotsNav.LocalAvoidance.Hybrid
                     MaxNeighbours = agent.MaxNeighbours,
                 });
 
-                DstEntityManager.AddComponentData(entity, new RadiusComponent(agent.Radius));
                 DstEntityManager.AddComponentData(entity, new MaxSpeedComponent {Value = agent.MaxSpeed});
                 DstEntityManager.AddComponent<VelocityObstacleComponent>(entity);
                 DstEntityManager.AddComponent<PreferredVelocityComponent>(entity);
@@ -39,7 +38,6 @@ namespace DotsNav.LocalAvoidance.Hybrid
     public class DotsNavLocalAvoidanceAgent : MonoBehaviour
     {
         public DotsNavLocalAvoidance LocalAvoidance;
-        public float Radius;
         public float MaxSpeed;
         public int MaxNeighbours;
         public float NeighbourDist;
