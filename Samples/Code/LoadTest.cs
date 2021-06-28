@@ -25,16 +25,13 @@ namespace DotsNav.Samples.Code
         public RectTransform Help;
 
         DotsNavNavmesh _navmesh;
-        Camera _camera;
-        float2 _mousePos;
-        float2 _previousMouse;
-        float _sizeTarget;
-        float _maxSize;
         DrawMode _drawMode = DrawMode.Constrained;
         NativeList<float2> _vertices;
         NativeList<int2> _startEnds;
+        bool _shouldInsert;
+        bool _delayed;
 
-        void Awake()
+        void Start()
         {
             Help.gameObject.SetActive(!Application.isEditor);
             FindObjectOfType<CameraController>().Initialize(Size);
@@ -62,9 +59,7 @@ namespace DotsNav.Samples.Code
         {
             _navmesh = Instantiate(NavmeshPrefab);
             _navmesh.DrawMode = _drawMode;
-            var r = new Random((uint) Seed);
-            var amount = _navmesh.InsertObstacleBulk(Amount, new ObstacleAdder(ScaleOffset, Size, r, _vertices, _startEnds));
-            Output.text = $"Loaded {Amount} obstacles and {amount} vertices\nPress R to reload";
+            _shouldInsert = true;
         }
 
         void Reload()
@@ -126,6 +121,21 @@ namespace DotsNav.Samples.Code
 
         void Update()
         {
+            if (_shouldInsert)
+            {
+                if (!_delayed)
+                {
+                    _delayed = true;
+                }
+                else
+                {
+                    var r = new Random((uint) Seed);
+                    var amount = _navmesh.InsertObstacleBulk(Amount, new ObstacleAdder(ScaleOffset, Size, r, _vertices, _startEnds));
+                    Output.text = $"Loaded {Amount} obstacles and {amount} vertices\nPress R to reload";
+                    _shouldInsert = false;
+                    _delayed = false;
+                }
+            }
 
             if (Input.GetKeyDown(KeyCode.M))
             {

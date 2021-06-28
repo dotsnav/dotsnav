@@ -82,7 +82,7 @@ namespace DotsNav.Samples.Code
             }
         }
 
-        void Awake()
+        void Start()
         {
             _lineDrawer = GetComponent<LineDrawer>();
             _size = Navmesh.Size;
@@ -101,6 +101,7 @@ namespace DotsNav.Samples.Code
                 _agents[i] = agent;
                 var r = AgentMinRadius + i * AgentRadiusRange / AgentAmount;
                 agent.GetComponent<DotsNavAgent>().Radius = r;
+                agent.GetComponent<DotsNavPathFindingAgent>().Navmesh = Navmesh;
                 agent.transform.localScale = new Vector3(r, r, r) * 2;
 
                 var cycles = 0;
