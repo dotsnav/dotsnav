@@ -181,7 +181,7 @@ namespace DotsNav.Navmesh
             {
                 var op = enumerator.Current;
                 var ltw = math.mul(ltwInv, op.Ltw);
-                
+
                 switch (op.Type)
                 {
                     case InsertionType.Insert:
