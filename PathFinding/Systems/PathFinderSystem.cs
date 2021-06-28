@@ -76,7 +76,7 @@ namespace DotsNav.PathFinding.Systems
             Dependency = new FindPathJob
                 {
                     Agents = buffer.AsDeferredJobArray(),
-                    NavmeshElements = GetComponentDataFromEntity<NavmeshElementComponent>(),
+                    NavmeshElements = GetComponentDataFromEntity<NavmeshAgentComponent>(),
                     Navmeshes = GetComponentDataFromEntity<NavmeshComponent>(),
                     Queries = GetComponentDataFromEntity<PathQueryComponent>(),
                     Radii = GetComponentDataFromEntity<RadiusComponent>(),
@@ -107,7 +107,7 @@ namespace DotsNav.PathFinding.Systems
             int _threadId;
 
             [ReadOnly]
-            public ComponentDataFromEntity<NavmeshElementComponent> NavmeshElements;
+            public ComponentDataFromEntity<NavmeshAgentComponent> NavmeshElements;
             [ReadOnly]
             public ComponentDataFromEntity<NavmeshComponent> Navmeshes;
 
@@ -163,10 +163,5 @@ namespace DotsNav.PathFinding.Systems
                     return false;
             }
         }
-    }
-
-    public struct NavmeshElementComponent : IComponentData
-    {
-        public Entity Navmesh;
     }
 }
