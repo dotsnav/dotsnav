@@ -9,7 +9,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DotsNav.Navmesh.Systems
 {
@@ -71,7 +70,6 @@ namespace DotsNav.Navmesh.Systems
             removals.Clear();
             var removalsWriter = removals.AsParallelWriter();
 
-
             var buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
 
             // Insert Without LocalToWorld
@@ -83,7 +81,6 @@ namespace DotsNav.Navmesh.Systems
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, int entityInQueryIndex, DynamicBuffer<VertexElement> vertices, ref NavmeshObstacleComponent element) =>
                 {
-                    Debug.Log($"{vertices.Length}");
                     insertionsWriter.Add(element.Navmesh, new Navmesh.Insertion(entity, float4x4.identity, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                     buffer.AddComponent(entityInQueryIndex, entity, new SystemStateComponent {Navmesh = element.Navmesh});
                 })

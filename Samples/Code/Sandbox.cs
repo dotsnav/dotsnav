@@ -31,8 +31,6 @@ namespace DotsNav.Samples.Code
         readonly List<List<Vector2>> _points = new List<List<Vector2>> {new List<Vector2>()};
         readonly List<ObstacleReference> _obstacles = new List<ObstacleReference>();
 
-        int _constraint;
-        Vector2 _scrollPos;
         GameObject _target;
         int _placingPrefab = -1;
         float _prefabSize = 1;

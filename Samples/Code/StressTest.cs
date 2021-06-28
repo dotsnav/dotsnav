@@ -27,11 +27,6 @@ namespace DotsNav.Samples.Code
         readonly List<ObstacleReference> _ids = new List<ObstacleReference>();
         Mode _mode = Mode.Inserting;
         readonly List<Vector2> _points = new List<Vector2>();
-        Camera _camera;
-        float2 _mousePos;
-        float2 _previousMouse;
-        float _sizeTarget;
-        float _maxSize;
         float _startTime;
 
         void Awake()
