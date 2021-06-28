@@ -2,7 +2,7 @@ using Unity.Entities;
 
 namespace DotsNav.Systems
 {
-    [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
+    [UpdateInGroup(typeof(PresentationSystemGroup))]
     public class DotsNavDrawingSystemGroup : ComponentSystemGroup
     {
     }
