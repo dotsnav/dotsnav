@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1478449553652949204}
   - component: {fileID: 673527040873305054}
   - component: {fileID: 5843786958838245045}
-  - component: {fileID: -7293092406927284629}
+  - component: {fileID: 4553706958819566844}
   - component: {fileID: 6714639268391541046}
   m_Layer: 0
   m_Name: RVO Agent
@@ -66,7 +66,7 @@ MonoBehaviour:
   NeighbourDist: 10
   TimeHorizon: 3
   TimeHorizonObst: 3
---- !u!114 &-7293092406927284629
+--- !u!114 &4553706958819566844
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,12 +75,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1478449553652949201}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 144676719b204b08be2dc15509b07ce7, type: 3}
+  m_Script: {fileID: 11500000, guid: 2aa847cfce964846a30206dbf018f643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target:
-    x: 0
-    y: 0
+  Navmesh: {fileID: 0}
+  Radius: 0.5
+  Direction: {x: 0, y: 0}
+  DrawGizmos: 0
+  DrawPath: 0
+  DrawCorners: 0
+  DrawColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &6714639268391541046
 MonoBehaviour:
   m_ObjectHideFlags: 0
