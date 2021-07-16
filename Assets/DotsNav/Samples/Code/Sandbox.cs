@@ -67,7 +67,7 @@ namespace DotsNav.Samples.Code
             // Enqueue a path queries using FindPath. Checking start or goal changed
             // is omitted for clarity. Use Pathfinder recalculate flags to indicate which
             // states trigger automatic recalculation of an agent's path.
-            _agent.FindPath(_start.position.xz(), _goal.position.xz());
+            _agent.FindPath(_start.position, _goal.position);
 
             // Manually trigger navmesh and pathfinder update to ensure the visuals line up
             Runner.ProcessModifications();

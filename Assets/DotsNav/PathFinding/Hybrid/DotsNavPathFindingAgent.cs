@@ -58,12 +58,12 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// The starting position used when finding paths. Use FindPath to update.
         /// </summary>
-        public Vector2 Start { get; private set; }
+        public Vector3 Start { get; private set; }
 
         /// <summary>
         /// The destination used when finding paths. Use FindPath to update.
         /// </summary>
-        public Vector2 Goal { get; private set; }
+        public Vector3 Goal { get; private set; }
 
         /// <summary>
         /// DebugDisplay will draw this agent's path when set to true
@@ -90,12 +90,12 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// Set goal and activate agent. Start is set to the agent's current position.
         /// </summary>
-        public void FindPath(Vector2 goal) => FindPath(((float3) transform.position).xz, goal);
+        public void FindPath(Vector3 goal) => FindPath(transform.position, goal);
 
         /// <summary>
         /// Set start and goal and activate agent
         /// </summary>
-        public void FindPath(Vector2 start, Vector2 goal)
+        public void FindPath(Vector3 start, Vector3 goal)
         {
             Assert.IsTrue(Navmesh != null);
             Start = start;

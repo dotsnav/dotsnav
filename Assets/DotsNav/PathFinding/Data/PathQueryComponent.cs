@@ -9,8 +9,8 @@ namespace DotsNav.PathFinding.Data
     /// </summary>
     public struct PathQueryComponent : IComponentData
     {
-        public float2 From;
-        public float2 To;
+        public float3 From;
+        public float3 To;
 
         /// <summary>
         /// When State is part of PathFinderComponent.RecalculateFlags a path search is performed

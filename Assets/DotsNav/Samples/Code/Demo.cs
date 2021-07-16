@@ -125,7 +125,7 @@ namespace DotsNav.Samples.Code
                 goal.position = pos.ToXxY();
                 placedGoals.Add(new Circle{Position = pos, Radius = r});
 
-                agent.FindPath(pos);
+                agent.FindPath(pos.ToXxY());
             }
 
             Help.gameObject.SetActive(!Application.isEditor);

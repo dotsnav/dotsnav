@@ -1,3 +1,4 @@
+using DotsNav.Hybrid;
 using DotsNav.PathFinding.Data;
 using UnityEngine;
 
@@ -19,7 +20,7 @@ namespace DotsNav.PathFinding.Hybrid
     /// Create to triggers insertion of the path finder. Destroy to trigger disposal of the path finder. Use RecalculateFlags to
     /// indicate which agent states result in recalculating an agent's path
     /// </summary>
-    public class DotsNavPathFinder : MonoBehaviour
+    public class DotsNavPathFinder : EntityLifetimeBehaviour
     {
         /// <summary>
         /// Set to indicate which agent states result in recalculating an agent's path
@@ -30,8 +31,10 @@ namespace DotsNav.PathFinding.Hybrid
 
         internal PathQueryState GetRecalculateFlags() => (PathQueryState) (int) RecalculateFlags | PathQueryState.Pending;
 
-        void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+
             if (_created)
             {
                 Debug.LogError("Only one pathfinder is allowed");
@@ -41,8 +44,9 @@ namespace DotsNav.PathFinding.Hybrid
             _created = true;
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
             _created = false;
         }
     }

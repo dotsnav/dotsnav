@@ -4,6 +4,7 @@ using DotsNav.LocalAvoidance.Data;
 using DotsNav.LocalAvoidance.Hybrid;
 using DotsNav.LocalAvoidance.Systems;
 using DotsNav.Navmesh.Hybrid;
+using DotsNav.PathFinding.Data;
 using DotsNav.PathFinding.Hybrid;
 using DotsNav.Systems;
 using Unity.Entities;
@@ -31,17 +32,12 @@ public class RVOCircleTest : MonoBehaviour
 
             var pathFinding = prefab.GetComponent<DotsNavPathFindingAgent>();
             pathFinding.Navmesh = navmesh;
-            pathFinding.FindPath(((float3) transform.TransformPoint(-pos.ToXxY())).xz);
+            pathFinding.FindPath(transform.TransformPoint(-pos.ToXxY()));
 
             prefab.GetComponent<DotsNavLocalAvoidanceAgent>().LocalAvoidance = localAvoidance;
         }
     }
 }
-
-// struct TargetComponent : IComponentData
-// {
-//     public float3 Value;
-// }
 
 [UpdateInGroup(typeof(DotsNavSystemGroup))]
 [UpdateBefore(typeof(RVOSystem))]
@@ -49,23 +45,12 @@ class DirectionSystem : SystemBase
 {
     protected override void OnUpdate()
     {
-        var dt = Time.fixedDeltaTime;
-
         Entities
             .WithBurst()
-            .ForEach((DirectionComponent direction, SettingsComponent agent, ref PreferredVelocityComponent preferredVelocity) =>
+            .ForEach((DirectionComponent direction, SettingsComponent agent, NavmeshAgentComponent navmesh, ref PreferredVelocityComponent preferredVelocity) =>
             {
-                // var toTarget = target.Value - translation.Value;
-                // var length = math.length(toTarget);
                 const float preferredSpeed = 8;
-                // if (length >= preferredSpeed * dt)
-                //     preferredVelocity.Value = toTarget / length * preferredSpeed;
-                // else if (length >= -1e3f)
-                //     preferredVelocity.Value = toTarget;
-                // else
-                //     preferredVelocity.Value = 0;
-
-                preferredVelocity.Value = (direction.Value * preferredSpeed).ToXxY();
+                preferredVelocity.Value = direction.Value * preferredSpeed;
             })
             .ScheduleParallel();
     }
@@ -88,17 +73,3 @@ class MoveSystem : SystemBase
             .Run();
     }
 }
-
-// class TargetSystem : SystemBase
-// {
-//     protected override void OnUpdate()
-//     {
-//         Entities
-//             .WithoutBurst()
-//             .ForEach((TargetableAgent agent, ref TargetComponent target) =>
-//             {
-//                 target.Value = agent.Target;
-//             })
-//             .Run();
-//     }
-// }

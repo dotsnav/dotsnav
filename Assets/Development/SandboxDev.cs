@@ -85,7 +85,7 @@ class SandboxDev : MonoBehaviour
     protected void Update()
     {
         ProcessInputAndUpdateUi();
-        _agent.FindPath(_start.position.xz(), _goal.position.xz());
+        _agent.FindPath(_start.position, _goal.position);
 
         var rbs = FindObjectsOfType<RaycastBehaviour>();
         foreach (var rb in rbs)

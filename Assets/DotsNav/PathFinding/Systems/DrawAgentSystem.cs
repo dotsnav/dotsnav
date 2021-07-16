@@ -6,6 +6,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace DotsNav.PathFinding.Systems
 {
@@ -14,12 +15,17 @@ namespace DotsNav.PathFinding.Systems
     {
         protected override void OnUpdate()
         {
+            var ltwLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+
             Entities
                 .WithBurst()
-                .ForEach((PathQueryComponent agent, RadiusComponent radius, AgentDrawComponent debug, DynamicBuffer<PathSegmentElement> path) =>
+                .WithReadOnly(ltwLookup)
+                .ForEach((PathQueryComponent agent, RadiusComponent radius, AgentDrawComponent debug, DynamicBuffer<PathSegmentElement> path, NavmeshAgentComponent navmesh) =>
                 {
                     if (!debug.Draw || path.Length == 0)
                         return;
+
+                    var ltw = ltwLookup[navmesh.Navmesh].Value;
 
                     var lines = new NativeList<Line>(Allocator.Temp);
                     var color = debug.Color;
@@ -30,11 +36,11 @@ namespace DotsNav.PathFinding.Systems
                     {
                         var segment = path[j];
                         var perp = math.normalize(Math.PerpCcw(segment.To - segment.From)) * radius;
-                        lines.Add(new Line(segment.From + perp, segment.To + perp, color));
-                        lines.Add(new Line(segment.From - perp, segment.To - perp, color));
+                        lines.Add(new Line(math.transform(ltw, (segment.From + perp).ToXxY()), math.transform(ltw, (segment.To + perp).ToXxY()), color));
+                        lines.Add(new Line(math.transform(ltw, (segment.From - perp).ToXxY()), math.transform(ltw, (segment.To - perp).ToXxY()), color));
                     }
 
-                    var up = new float3(0, 1, 0);
+                    var up = math.rotate(ltw, new float3(0, 1, 0));
 
                     for (int j = 1; j < path.Length; j++)
                     {
@@ -42,12 +48,12 @@ namespace DotsNav.PathFinding.Systems
                         var c = path[j].Corner;
                         var to = path[j].From;
                         var angle = (Angle) Math.Angle(to - c) - Math.Angle(from - c);
-                        Arc.Draw(lines, c.ToXxY(), up, 2 * (from - c).ToXxY(), angle, color, radius, debug.Delimit);
+                        Arc.Draw(lines, math.transform(ltw, c.ToXxY()), up, math.rotate(ltw, 2 * (from - c).ToXxY()), angle, color, radius, debug.Delimit);
                     }
 
-                    var arm = new float3(0, 0, radius);
-                    Arc.Draw(lines, path[0].From.ToXxY(), up, arm, 2 * math.PI, color, radius, debug.Delimit);
-                    Arc.Draw(lines, path[path.Length - 1].To.ToXxY(), up, arm, 2 * math.PI, color, radius, debug.Delimit);
+                    var arm = math.rotate(ltw, new float3(0, 0, radius));
+                    Arc.Draw(lines, math.transform(ltw, path[0].From.ToXxY()), up, arm, 2 * math.PI, color, radius, debug.Delimit);
+                    Arc.Draw(lines, math.transform(ltw, path[path.Length - 1].To.ToXxY()), up, arm, 2 * math.PI, color, radius, debug.Delimit);
 
                     Line.Draw(lines);
                 })
