@@ -25,6 +25,6 @@ namespace DotsNav.LocalAvoidance.Hybrid
     public class DotsNavLocalAvoidance : EntityLifetimeBehaviour
     {
         public bool DrawObstacleTree;
-        public Color Color;
+        public Color Color = Color.red;
     }
 }

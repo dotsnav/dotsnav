@@ -8,6 +8,8 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace DotsNav.PathFinding.Systems
@@ -37,7 +39,6 @@ namespace DotsNav.PathFinding.Systems
         {
             var data = GetSingleton<PathFinderComponent>();
             var resources = GetSingleton<PathFinderSystemStateComponent>();
-            var navmeshEntity = GetSingletonEntity<NavmeshComponent>();
             var destroyed = GetBufferFromEntity<DestroyedTriangleElement>(true);
             var buffer = _buffer;
             var queue = _queue;
@@ -46,11 +47,11 @@ namespace DotsNav.PathFinding.Systems
             Entities
                 .WithBurst()
                 .WithReadOnly(destroyed)
-                .ForEach((Entity entity, int nativeThreadIndex, ref PathQueryComponent query, ref DynamicBuffer<TriangleElement> triangles) =>
+                .ForEach((Entity entity, int nativeThreadIndex, NavmeshAgentComponent navmesh, ref PathQueryComponent query, ref DynamicBuffer<TriangleElement> triangles) =>
                 {
                     if (query.State == PathQueryState.PathFound)
                     {
-                        var seq0 = destroyed[navmeshEntity].Reinterpret<int>();
+                        var seq0 = destroyed[navmesh.Navmesh].Reinterpret<int>();
                         var seq1 = triangles.Reinterpret<int>();
 
                         if (SortedSequencesContainIdenticalElement(seq0, seq1))
@@ -76,10 +77,11 @@ namespace DotsNav.PathFinding.Systems
             Dependency = new FindPathJob
                 {
                     Agents = buffer.AsDeferredJobArray(),
-                    NavmeshElements = GetComponentDataFromEntity<NavmeshAgentComponent>(),
-                    Navmeshes = GetComponentDataFromEntity<NavmeshComponent>(),
+                    NavmeshElements = GetComponentDataFromEntity<NavmeshAgentComponent>(true),
+                    Navmeshes = GetComponentDataFromEntity<NavmeshComponent>(true),
+                    LTWLookup = GetComponentDataFromEntity<LocalToWorld>(true),
                     Queries = GetComponentDataFromEntity<PathQueryComponent>(),
-                    Radii = GetComponentDataFromEntity<RadiusComponent>(),
+                    Radii = GetComponentDataFromEntity<RadiusComponent>(true),
                     PathSegments = GetBufferFromEntity<PathSegmentElement>(),
                     TriangleIds = GetBufferFromEntity<TriangleElement>(),
                     PathFinder = resources,
@@ -110,6 +112,8 @@ namespace DotsNav.PathFinding.Systems
             public ComponentDataFromEntity<NavmeshAgentComponent> NavmeshElements;
             [ReadOnly]
             public ComponentDataFromEntity<NavmeshComponent> Navmeshes;
+            [ReadOnly]
+            public ComponentDataFromEntity<LocalToWorld> LTWLookup;
 
             public unsafe void Execute(int index)
             {
@@ -127,7 +131,11 @@ namespace DotsNav.PathFinding.Systems
                 ids.Clear();
                 var instanceIndex = _threadId - 1;
                 var instance = PathFinder.Instances[instanceIndex];
-                query.State = instance.FindPath(query.From, query.To, Radii[agent], segments, ids, *Navmeshes[NavmeshElements[agent].Navmesh].Navmesh, out _);
+
+                var navmeshEntity = NavmeshElements[agent].Navmesh;
+                var ltw = math.inverse(LTWLookup[navmeshEntity].Value);
+                var navmesh = *Navmeshes[navmeshEntity].Navmesh; // todo just pass pointer?
+                query.State = instance.FindPath(math.transform(ltw, query.From).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, navmesh, out _);
                 if (query.State == PathQueryState.PathFound)
                     ++query.Version;
                 Queries[agent] = query;

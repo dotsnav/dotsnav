@@ -13,14 +13,19 @@ namespace DotsNav.PathFinding.Systems
     {
         protected override void OnUpdate()
         {
+            var ltwLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+
             Entities
                 .WithBurst()
-                .ForEach((PathQueryComponent agent, RadiusComponent radius, Translation translation, DynamicBuffer<PathSegmentElement> path, ref DirectionComponent data) =>
+                .WithReadOnly(ltwLookup)
+                .ForEach((PathQueryComponent agent, RadiusComponent radius, Translation translation, NavmeshAgentComponent navmesh, DynamicBuffer<PathSegmentElement> path, ref DirectionComponent data) =>
                 {
                     if (agent.State != PathQueryState.PathFound)
                         return;
 
-                    var p = translation.Value.xz;
+                    // todo find a way not to calculate this several times
+                    var inv = math.inverse(ltwLookup[navmesh.Navmesh].Value);
+                    var p = math.transform(inv, translation.Value).xz;
 
                     var dest = path[path.Length - 1].To;
                     if (math.all(p == dest))

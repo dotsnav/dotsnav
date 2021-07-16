@@ -5,6 +5,6 @@ namespace DotsNav.LocalAvoidance.Data
 {
     public struct PreferredVelocityComponent : IComponentData
     {
-        public float3 Value;
+        public float2 Value;
     }
 }

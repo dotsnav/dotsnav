@@ -14,7 +14,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithoutBurst()
                 .ForEach((VelocityComponent velocity, DotsNavLocalAvoidanceAgent monoAgent) =>
                 {
-                    monoAgent.Velocity = velocity.Value;
+                    monoAgent.Velocity = velocity.WorldSpace;
                 })
                 .Run();
         }

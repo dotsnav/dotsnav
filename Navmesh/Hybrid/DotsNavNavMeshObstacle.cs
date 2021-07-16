@@ -1,8 +1,6 @@
-﻿using DotsNav.Data;
-using DotsNav.Hybrid;
+﻿using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace DotsNav.Navmesh.Hybrid
@@ -16,14 +14,6 @@ namespace DotsNav.Navmesh.Hybrid
             {
                 var entity = GetPrimaryEntity(obstacle);
                 DstEntityManager.AddComponentData(entity, new NavmeshObstacleComponent{Navmesh = GetPrimaryEntity(obstacle.Navmesh)});
-                var values = DstEntityManager.AddBuffer<VertexElement>(entity);
-                var o = obstacle.transform.GetComponent<DotsNavObstacle>();
-
-                for (int i = 0; i < o.Vertices.Length; i++)
-                    values.Add((float2)o.Vertices[i]);
-
-                if (o.Closed)
-                    values.Add((float2)o.Vertices[0]);
             });
         }
     }

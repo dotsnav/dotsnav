@@ -1,4 +1,5 @@
 using System.Linq;
+using DotsNav.Data;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -14,6 +15,14 @@ namespace DotsNav.Hybrid
                 var entity = GetPrimaryEntity(obstacle);
                 obstacle.Entity = entity;
                 obstacle.World = DstEntityManager.World;
+
+                var values = DstEntityManager.AddBuffer<VertexElement>(entity);
+
+                for (int i = 0; i < obstacle.Vertices.Length; i++)
+                    values.Add((float2) obstacle.Vertices[i]);
+
+                if (obstacle.Closed)
+                    values.Add((float2) obstacle.Vertices[0]);
             });
         }
     }
