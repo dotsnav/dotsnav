@@ -134,6 +134,10 @@ PrefabInstance:
       propertyPath: Navmesh
       value: 
       objectReference: {fileID: 967347506}
+    - target: {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+      propertyPath: Plane
+      value: 
+      objectReference: {fileID: 967347511}
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
@@ -369,6 +373,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 967347507}
+  - component: {fileID: 967347511}
   - component: {fileID: 967347506}
   - component: {fileID: 967347509}
   - component: {fileID: 967347508}
@@ -455,6 +460,18 @@ MonoBehaviour:
   AgentAmount: 100
   SpawnRadius: 40
   Prefab: {fileID: 5843786958838245045, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
+--- !u!114 &967347511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967347505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be784399eb054a828f86ae60e19b2ac6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1127323325
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -466,6 +483,10 @@ PrefabInstance:
       propertyPath: Navmesh
       value: 
       objectReference: {fileID: 967347506}
+    - target: {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+      propertyPath: Plane
+      value: 
+      objectReference: {fileID: 967347511}
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
@@ -638,6 +659,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1312540655}
+  - component: {fileID: 1312540656}
   - component: {fileID: 1312540654}
   - component: {fileID: 1312540653}
   - component: {fileID: 1312540652}
@@ -724,6 +746,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1312540656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1312540650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be784399eb054a828f86ae60e19b2ac6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1341592342
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -735,6 +769,10 @@ PrefabInstance:
       propertyPath: Navmesh
       value: 
       objectReference: {fileID: 1312540654}
+    - target: {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+      propertyPath: Plane
+      value: 
+      objectReference: {fileID: 1312540656}
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
@@ -816,6 +854,10 @@ PrefabInstance:
       propertyPath: Navmesh
       value: 
       objectReference: {fileID: 1312540654}
+    - target: {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+      propertyPath: Plane
+      value: 
+      objectReference: {fileID: 1312540656}
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
@@ -897,6 +939,10 @@ PrefabInstance:
       propertyPath: Navmesh
       value: 
       objectReference: {fileID: 1312540654}
+    - target: {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+      propertyPath: Plane
+      value: 
+      objectReference: {fileID: 1312540656}
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 
@@ -978,6 +1024,10 @@ PrefabInstance:
       propertyPath: Navmesh
       value: 
       objectReference: {fileID: 967347506}
+    - target: {fileID: 142282900861041560, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
+      propertyPath: Plane
+      value: 
+      objectReference: {fileID: 967347511}
     - target: {fileID: 1064610349845458268, guid: 274fe0b6a61d13c479e9aecb64445f2e, type: 3}
       propertyPath: LocalAvoidance
       value: 

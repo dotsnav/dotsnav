@@ -1,15 +1,14 @@
 using DotsNav;
 using DotsNav.Data;
+using DotsNav.Hybrid;
 using DotsNav.LocalAvoidance.Data;
 using DotsNav.LocalAvoidance.Hybrid;
 using DotsNav.LocalAvoidance.Systems;
-using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Data;
 using DotsNav.PathFinding.Hybrid;
 using DotsNav.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 
 public class RVOCircleTest : MonoBehaviour
@@ -20,8 +19,7 @@ public class RVOCircleTest : MonoBehaviour
 
     void Start()
     {
-        var navmesh = GetComponent<DotsNavNavmesh>();
-        var localAvoidance = GetComponent<DotsNavLocalAvoidance>();
+        var plane = GetComponent<DotsNavPlane>();
 
         for (int i = 0; i < AgentAmount; i++)
         {
@@ -31,10 +29,9 @@ public class RVOCircleTest : MonoBehaviour
             prefab.transform.position = transform.TransformPoint(pos.ToXxY());
 
             var pathFinding = prefab.GetComponent<DotsNavPathFindingAgent>();
-            pathFinding.Navmesh = navmesh;
             pathFinding.FindPath(transform.TransformPoint(-pos.ToXxY()));
 
-            prefab.GetComponent<DotsNavLocalAvoidanceAgent>().LocalAvoidance = localAvoidance;
+            prefab.GetComponent<DotsNavAgent>().Plane = plane;
         }
     }
 }

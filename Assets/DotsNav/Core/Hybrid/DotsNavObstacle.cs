@@ -29,6 +29,8 @@ namespace DotsNav.Hybrid
 
     public class DotsNavObstacle : EntityLifetimeBehaviour
     {
+        public DotsNavPlane Plane;
+
         [SerializeField]
         bool Close = true;
 
