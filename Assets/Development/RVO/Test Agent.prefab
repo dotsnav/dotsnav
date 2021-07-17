@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1198927799591733719}
   - component: {fileID: 6714639268391541046}
   m_Layer: 0
-  m_Name: RVO Agent
+  m_Name: Test Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
