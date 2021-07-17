@@ -7,8 +7,9 @@ using UnityEngine;
 
 namespace DotsNav
 {
-    [CustomEditor(typeof(DotsNavObstacle), editorForChildClasses: true)]
-    class ObstacleEditor : UnityEditor.Editor
+    [CustomEditor(typeof(DotsNavObstacle), true)]
+    [CanEditMultipleObjects]
+    class ObstacleEditor : Editor
     {
         const int Width = 50;
         int _vertexIndex;
@@ -22,7 +23,7 @@ namespace DotsNav
 
         void OnSceneGUI()
         {
-            if (Application.isPlaying)
+            if (Application.isPlaying || Selection.count > 1)
                 return;
 
             if (!_initialized)

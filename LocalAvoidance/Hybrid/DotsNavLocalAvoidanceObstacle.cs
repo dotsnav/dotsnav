@@ -5,15 +5,17 @@ using UnityEngine;
 
 namespace DotsNav.LocalAvoidance.Hybrid
 {
-    [UpdateAfter(typeof(LocalAvoidanceConversionSystem))]
+    [UpdateAfter(typeof(PlaneConversionSystem))]
     class LocalAvoidanceObstacleConversionSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavLocalAvoidanceObstacle localAvoidance) =>
+            Entities
+                .WithAll<DotsNavLocalAvoidanceObstacle>()
+                .ForEach((DotsNavObstacle obstacle) =>
             {
-                var entity = GetPrimaryEntity(localAvoidance);
-                DstEntityManager.AddComponentData(entity, new ObstacleTreeElementComponent{Tree = localAvoidance.LocalAvoidance.Entity});
+                var entity = GetPrimaryEntity(obstacle);
+                DstEntityManager.AddComponentData(entity, new ObstacleTreeElementComponent{Tree = obstacle.Plane.Entity});
             });
         }
     }
@@ -21,6 +23,5 @@ namespace DotsNav.LocalAvoidance.Hybrid
     [RequireComponent(typeof(DotsNavObstacle))]
     public class DotsNavLocalAvoidanceObstacle : MonoBehaviour
     {
-        public DotsNavLocalAvoidance LocalAvoidance;
     }
 }

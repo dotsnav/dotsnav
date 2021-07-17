@@ -16,7 +16,8 @@ namespace DotsNav.Samples.Code
 {
     class Demo : MonoBehaviour
     {
-        public DotsNavNavmesh Navmesh;
+        public DotsNavPlane Plane;
+        DotsNavNavmesh Navmesh;
 
         [Header("Agents")]
         public int AgentAmount;
@@ -84,6 +85,7 @@ namespace DotsNav.Samples.Code
 
         void Start()
         {
+            Navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _lineDrawer = GetComponent<LineDrawer>();
             _size = Navmesh.Size;
             FindObjectOfType<CameraController>().Initialize(_size);
@@ -100,8 +102,9 @@ namespace DotsNav.Samples.Code
                 var agent = Instantiate(AgentPrefab);
                 _agents[i] = agent;
                 var r = AgentMinRadius + i * AgentRadiusRange / AgentAmount;
-                agent.GetComponent<DotsNavAgent>().Radius = r;
-                agent.GetComponent<DotsNavPathFindingAgent>().Navmesh = Navmesh;
+                var dotsNavAgent = agent.GetComponent<DotsNavAgent>();
+                dotsNavAgent.Radius = r;
+                dotsNavAgent.Plane = Plane;
                 agent.transform.localScale = new Vector3(r, r, r) * 2;
 
                 var cycles = 0;

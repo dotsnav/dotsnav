@@ -5,24 +5,26 @@ using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Data;
 using DotsNav.PathFinding.Systems;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace DotsNav.PathFinding.Hybrid
 {
+    [UpdateAfter(typeof(PlaneConversionSystem))]
     class AgentConversionSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavPathFindingAgent agent) =>
+            Entities.ForEach((DotsNavAgent agent, DotsNavPathFindingAgent pathFindingAgent) =>
             {
-                var entity = GetPrimaryEntity(agent);
+                var entity = GetPrimaryEntity(pathFindingAgent);
                 DstEntityManager.AddComponentData(entity, new PathQueryComponent {State = PathQueryState.Inactive});
                 DstEntityManager.AddComponentData(entity, new DirectionComponent());
                 DstEntityManager.AddBuffer<PathSegmentElement>(entity);
                 DstEntityManager.AddBuffer<TriangleElement>(entity);
                 DstEntityManager.AddComponentData(entity, new AgentDrawComponent {Draw = true});
-                DstEntityManager.AddComponentData(entity, new NavmeshAgentComponent {Navmesh = agent.Navmesh.Entity});
+                DstEntityManager.AddComponentData(entity, new NavmeshAgentComponent {Navmesh = agent.Plane.Entity});
             });
         }
     }
@@ -33,8 +35,6 @@ namespace DotsNav.PathFinding.Hybrid
     [RequireComponent(typeof(DotsNavAgent))]
     public class DotsNavPathFindingAgent : MonoBehaviour
     {
-        public DotsNavNavmesh Navmesh;
-
         /// <summary>
         /// The path segments making up the current path
         /// </summary>
@@ -97,7 +97,6 @@ namespace DotsNav.PathFinding.Hybrid
         /// </summary>
         public void FindPath(Vector3 start, Vector3 goal)
         {
-            Assert.IsTrue(Navmesh != null);
             Start = start;
             Goal = goal;
             State = PathQueryState.Pending;

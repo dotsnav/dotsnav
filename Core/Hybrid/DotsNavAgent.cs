@@ -19,6 +19,7 @@ namespace DotsNav.Hybrid
 
     public class DotsNavAgent : EntityLifetimeBehaviour
     {
+        public DotsNavPlane Plane;
         public float Radius = .5f;
     }
 }

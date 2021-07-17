@@ -5,16 +5,18 @@ using UnityEngine;
 
 namespace DotsNav.Navmesh.Hybrid
 {
-    [UpdateAfter(typeof(NavmeshConversionSystem))]
+    [UpdateAfter(typeof(PlaneConversionSystem))]
     class NavMeshObstacleConversionSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavNavMeshObstacle obstacle) =>
-            {
-                var entity = GetPrimaryEntity(obstacle);
-                DstEntityManager.AddComponentData(entity, new NavmeshObstacleComponent{Navmesh = GetPrimaryEntity(obstacle.Navmesh)});
-            });
+            Entities
+                .WithAll<DotsNavNavMeshObstacle>()
+                .ForEach((DotsNavObstacle obstacle) =>
+                {
+                    var entity = GetPrimaryEntity(obstacle);
+                    DstEntityManager.AddComponentData(entity, new NavmeshObstacleComponent {Navmesh = obstacle.Plane.Entity});
+                });
         }
     }
 
@@ -24,6 +26,5 @@ namespace DotsNav.Navmesh.Hybrid
     [RequireComponent(typeof(DotsNavObstacle))]
     public class DotsNavNavMeshObstacle : MonoBehaviour
     {
-        public DotsNavNavmesh Navmesh;
     }
 }
