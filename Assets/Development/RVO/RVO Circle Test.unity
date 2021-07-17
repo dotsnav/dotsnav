@@ -459,7 +459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AgentAmount: 100
   SpawnRadius: 40
-  Prefab: {fileID: 5843786958838245045, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
+  Prefab: {fileID: 673527040873305054, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
 --- !u!114 &967347511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -685,7 +685,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AgentAmount: 100
   SpawnRadius: 40
-  Prefab: {fileID: 5843786958838245045, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
+  Prefab: {fileID: 673527040873305054, guid: fe66031e7ca6a824bb0da0902ac66744, type: 3}
 --- !u!114 &1312540652
 MonoBehaviour:
   m_ObjectHideFlags: 0
