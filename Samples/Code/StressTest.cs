@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotsNav.Core.Hybrid;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
@@ -18,7 +19,8 @@ namespace DotsNav.Samples.Code
         public int Amount;
         public int Seed;
         public float ScaleOffset;
-        public DotsNavNavmesh Navmesh;
+        public DotsNavPlane Plane;
+        DotsNavNavmesh _navmesh;
         public DotsNavObstacle[] Prefabs;
         public Text Output;
         public Text Output1;
@@ -35,7 +37,8 @@ namespace DotsNav.Samples.Code
             // Ensure gameobject conversion when loading a scene
             World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
 
-            FindObjectOfType<CameraController>().Initialize(Navmesh.Size);
+            _navmesh = Plane.GetComponent<DotsNavNavmesh>();
+            FindObjectOfType<CameraController>().Initialize(_navmesh.Size);
             _startTime = Time.time;
             _r = new Random((uint) Seed);
             UpdateSeedText();
@@ -56,7 +59,7 @@ namespace DotsNav.Samples.Code
                 Help.gameObject.SetActive(!Help.gameObject.activeSelf);
 
             if (Input.GetKeyDown(KeyCode.E))
-                Navmesh.DrawMode = Navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
+                _navmesh.DrawMode = _navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
 
             if (!Application.isEditor && Time.time - _startTime < 1)
                 return;
@@ -69,7 +72,7 @@ namespace DotsNav.Samples.Code
                         _mode = Mode.Removing;
                     break;
                 case Mode.Removing:
-                    Navmesh.RemoveObstacle(_ids.Last());
+                    Plane.RemoveObstacle(_ids.Last());
                     _ids.RemoveAt(_ids.Count - 1);
 
                     if (_ids.Count == 0)
@@ -85,7 +88,7 @@ namespace DotsNav.Samples.Code
                     throw new Exception();
             }
 
-            Output1.text = $"Vertices: {Navmesh.Vertices}";
+            Output1.text = $"Vertices: {_navmesh.Vertices}";
         }
 
         void Insert()
@@ -110,13 +113,13 @@ namespace DotsNav.Samples.Code
             }
 
             var size = max - min;
-            var range = (float2) Navmesh.Size - size;
+            var range = (float2) _navmesh.Size - size;
             var offset = _r.NextFloat2(range);
 
             for (var i = 0; i < _points.Count; i++)
-                _points[i] += (Vector2) (offset - min - (float2) Navmesh.Size / 2);
+                _points[i] += (Vector2) (offset - min - (float2) _navmesh.Size / 2);
 
-            _ids.Add(Navmesh.InsertObstacle(_points));
+            _ids.Add(Plane.InsertObstacle(_points));
         }
 
         enum Mode

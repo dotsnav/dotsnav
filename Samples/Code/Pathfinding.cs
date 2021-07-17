@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DotsNav.Core.Hybrid;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
@@ -177,7 +178,7 @@ namespace DotsNav.Samples.Code
             for (var i = 0; i < vertices.Count; i++)
                 vertices[i] += (Vector2) (offset - min);
 
-            var id = _navmesh.InsertObstacle(vertices);
+            var id = Plane.InsertObstacle(vertices);
             _obstacles.Add(id, vertices);
 
             _added.Clear();
@@ -251,7 +252,7 @@ namespace DotsNav.Samples.Code
                 {
                     var ids = _obstacles.Keys.ToArray();
                     var toRemove = ids[_r.NextInt(ids.Length)];
-                    _navmesh.RemoveObstacle(toRemove);
+                    Plane.RemoveObstacle(toRemove);
                     _removed = _obstacles[toRemove];
                     _obstacles.Remove(toRemove);
                     _added.Clear();

@@ -1,7 +1,7 @@
 using System;
 using Unity.Entities;
 
-namespace DotsNav.Navmesh.Hybrid
+namespace DotsNav.Core.Hybrid
 {
     /// <summary>
     /// Used to indicate which obstacle should be removed. Obtained when inserting obstacles.

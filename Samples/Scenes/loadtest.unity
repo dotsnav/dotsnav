@@ -627,7 +627,7 @@ MonoBehaviour:
   - {fileID: 5547837765248228189, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
   - {fileID: 6915082999526884430, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
   Seed: 1
-  NavmeshPrefab: {fileID: 4979978658142159214, guid: d806152bef81aab44b2e323d82562494, type: 3}
+  PlanePrefab: {fileID: -6629413616465762495, guid: d806152bef81aab44b2e323d82562494, type: 3}
   ScaleOffset: 0.2
   Output: {fileID: 8887295453427190892}
   Help: {fileID: 1161068625}

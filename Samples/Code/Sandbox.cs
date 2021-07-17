@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DotsNav.CollisionDetection.Hybrid;
+using DotsNav.Core.Hybrid;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
@@ -16,7 +17,8 @@ namespace DotsNav.Samples.Code
     class Sandbox : MonoBehaviour
     {
         public DotsNavRunner Runner;
-        public DotsNavNavmesh Navmesh;
+        public DotsNavPlane Plane;
+        DotsNavNavmesh _navmesh;
         public float AgentSizeZoomSpeed;
         public float MinAgentSize;
         public float MaxAgentSize;
@@ -49,8 +51,9 @@ namespace DotsNav.Samples.Code
             // Ensure gameobject conversion when loading a scene
             World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
 
+            _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _cameraController = FindObjectOfType<CameraController>();
-            _cameraController.Initialize(Navmesh.Size, .5f);
+            _cameraController.Initialize(_navmesh.Size, .5f);
             _lineDrawer = GetComponent<LineDrawer>();
             _camera = Camera.main;
             Help.gameObject.SetActive(!Application.isEditor);
@@ -84,12 +87,12 @@ namespace DotsNav.Samples.Code
                 var from = rb.GetStart();
                 var to = rb.GetGoal();
 
-                if (!Navmesh.Contains(from) || !Navmesh.Contains(to))
+                if (!_navmesh.Contains(from) || !_navmesh.Contains(to))
                     continue;
 
                 var pointSize = .1f * _cameraController.Zoom;
 
-                using var result = Navmesh.CastSegment(from, to, true);
+                using var result = _navmesh.CastSegment(from, to, true);
                 _lineDrawer.DrawLine(from, to, result.CollisionDetected ? CastHitColor : CastColor);
                 var hits = result.Hits;
                 for (int i = 0; i < hits.Length; i++)
@@ -101,9 +104,9 @@ namespace DotsNav.Samples.Code
             var dbs = FindObjectsOfType<DiscCastBehaviour>();
             foreach (var db in dbs)
             {
-                if (!Navmesh.Contains(db.Centre))
+                if (!_navmesh.Contains(db.Centre))
                     continue;
-                using var result = Navmesh.CastDisc(db.Centre, db.Radius, false);
+                using var result = _navmesh.CastDisc(db.Centre, db.Radius, false);
                 _lineDrawer.DrawCircle(db.Centre, new Vector2(0, db.Radius), 2 * Mathf.PI, result.CollisionDetected ? CastHitColor : CastColor, res:200);
             }
 
@@ -118,11 +121,11 @@ namespace DotsNav.Samples.Code
             {
                 // Note that generally speaking it is recommended to use a larger navmesh
                 // with an inner bounding box to avoid having to adjust each obstacle
-                ClampObstacle(points, Navmesh.Size);
+                ClampObstacle(points, _navmesh.Size);
 
                 if (points.Count == 0)
                     continue;
-                var obstacleReference = Navmesh.InsertObstacle(points);
+                var obstacleReference = Plane.InsertObstacle(points);
                 _obstacles.Add(obstacleReference);
             }
             _points.Clear();
@@ -338,13 +341,13 @@ namespace DotsNav.Samples.Code
             }
 
             if (Input.GetKeyDown(KeyCode.E))
-                Navmesh.DrawMode = Navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
+                _navmesh.DrawMode = _navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
             if (Input.GetKeyDown(KeyCode.H))
                 Help.gameObject.SetActive(!Help.gameObject.activeSelf);
 
             if ((Input.GetKey(KeyCode.T) || Input.GetKeyDown(KeyCode.R)) && _obstacles.Count > 0)
             {
-                Navmesh.RemoveObstacle(_obstacles.Last());
+                Plane.RemoveObstacle(_obstacles.Last());
                 _obstacles.RemoveAt(_obstacles.Count - 1);
             }
 
