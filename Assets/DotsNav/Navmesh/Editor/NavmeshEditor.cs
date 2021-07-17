@@ -6,7 +6,8 @@ using UnityEngine;
 namespace DotsNav.Navmesh
 {
     [CustomEditor(typeof(DotsNavNavmesh))]
-    class NavmeshEditor : UnityEditor.Editor
+    [CanEditMultipleObjects]
+    class NavmeshEditor : Editor
     {
         public override void OnInspectorGUI()
         {
