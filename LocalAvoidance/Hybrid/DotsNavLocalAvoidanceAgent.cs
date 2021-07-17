@@ -20,7 +20,7 @@ namespace DotsNav.LocalAvoidance.Hybrid
                 DstEntityManager.AddComponentData(entity, new DynamicTreeElementComponent {Tree = tree});
                 DstEntityManager.AddComponentData(entity, new ObstacleTreeAgentComponent {Tree = tree});
 
-                DstEntityManager.AddComponentData(entity, new SettingsComponent
+                DstEntityManager.AddComponentData(entity, new RVOSettingsComponent
                 {
                     NeighbourDist = localAvoidanceAgent.NeighbourDist,
                     TimeHorizon = localAvoidanceAgent.TimeHorizon,
