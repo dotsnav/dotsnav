@@ -85,13 +85,11 @@ namespace DotsNav.Samples.Code
 
                 var pointSize = .1f * _cameraController.Zoom;
 
-                using (var result = Navmesh.CastSegment(from, to, true))
-                {
-                    _lineDrawer.DrawLine(from, to, result.CollisionDetected ? CastHitColor : CastColor);
-                    var hits = result.Hits;
-                    for (int i = 0; i < hits.Length; i++)
-                        _lineDrawer.DrawPoint(hits[i].Position, i == 0 ? CastHitColor : CastColor, pointSize);
-                }
+                using var result = Navmesh.CastSegment(from, to, true);
+                _lineDrawer.DrawLine(from, to, result.CollisionDetected ? CastHitColor : CastColor);
+                var hits = result.Hits;
+                for (int i = 0; i < hits.Length; i++)
+                    _lineDrawer.DrawPoint(hits[i].Position, i == 0 ? CastHitColor : CastColor, pointSize);
             }
 
             // A disc cast, make sure to dispose of the DiscCastResult returned from
@@ -101,8 +99,8 @@ namespace DotsNav.Samples.Code
             {
                 if (!Navmesh.Contains(db.Centre))
                     continue;
-                using (var result = Navmesh.CastDisc(db.Centre, db.Radius, false))
-                    _lineDrawer.DrawCircle(db.Centre, new Vector2(0, db.Radius), 2 * Mathf.PI, result.CollisionDetected ? CastHitColor : CastColor, res:200);
+                using var result = Navmesh.CastDisc(db.Centre, db.Radius, false);
+                _lineDrawer.DrawCircle(db.Centre, new Vector2(0, db.Radius), 2 * Mathf.PI, result.CollisionDetected ? CastHitColor : CastColor, res:200);
             }
 
         }
