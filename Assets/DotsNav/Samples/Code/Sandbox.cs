@@ -6,6 +6,7 @@ using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -43,8 +44,11 @@ namespace DotsNav.Samples.Code
         LineDrawer _lineDrawer;
         CameraController _cameraController;
 
-        void Awake()
+        void Start()
         {
+            // Ensure gameobject conversion when loading a scene
+            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
+
             _cameraController = FindObjectOfType<CameraController>();
             _cameraController.Initialize(Navmesh.Size, .5f);
             _lineDrawer = GetComponent<LineDrawer>();
