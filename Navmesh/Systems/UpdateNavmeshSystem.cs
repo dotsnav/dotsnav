@@ -236,6 +236,11 @@ namespace DotsNav.Navmesh.Systems
             public void Execute(int index)
             {
                 var entity = Keys[index];
+
+                // todo this occurs when all entities are destroyed, is there a better way to prevent this?
+                if (!NavmeshLookup.HasComponent(entity))
+                    return;
+
                 var navmesh = NavmeshLookup[entity];
                 var insertions = Operations.GetValuesForKey(entity);
                 var destroyedTriangles = DestroyedLookup[entity];
