@@ -5,6 +5,7 @@ using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -85,6 +86,9 @@ namespace DotsNav.Samples.Code
 
         void Start()
         {
+            // Ensure gameobject conversion when loading a scene
+            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
+
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _lineDrawer = GetComponent<LineDrawer>();
             _size = _navmesh.Size;

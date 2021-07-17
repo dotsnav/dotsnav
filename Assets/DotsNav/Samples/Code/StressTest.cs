@@ -4,6 +4,7 @@ using System.Linq;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,9 @@ namespace DotsNav.Samples.Code
 
         void Awake()
         {
+            // Ensure gameobject conversion when loading a scene
+            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
+
             FindObjectOfType<CameraController>().Initialize(Navmesh.Size);
             _startTime = Time.time;
             _r = new Random((uint) Seed);

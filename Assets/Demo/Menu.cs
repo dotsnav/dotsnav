@@ -1,8 +1,15 @@
-﻿using UnityEngine;
+﻿using Unity.Entities;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
+    void Start()
+    {
+        var em = World.All[0].EntityManager;
+        em.DestroyEntity(em.UniversalQuery);
+    }
+
     public void Pathfinding()
     {
         SceneManager.LoadScene("pathfinding");
