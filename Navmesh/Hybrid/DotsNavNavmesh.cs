@@ -47,10 +47,9 @@ namespace DotsNav.Navmesh.Hybrid
     public class DotsNavNavmesh : EntityLifetimeBehaviour
     {
         /// <summary>
-        /// Size of the navmesh to be created. The navmesh will be centered around the origin.
-        /// Changing this value after initialization has no effect
+        /// Size of the navmesh to be created. Changing this value after initialization has no effect
         /// </summary>
-        public Vector2 Size = new Vector2(50, 50);
+        public Vector2 Size = new Vector2(1000, 1000);
 
         /// <summary>
         /// Determines the size of initial allocations. Changing this value after initialization has no effect
