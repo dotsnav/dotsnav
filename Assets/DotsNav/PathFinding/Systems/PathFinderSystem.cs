@@ -117,12 +117,7 @@ namespace DotsNav.PathFinding.Systems
 
             public unsafe void Execute(int index)
             {
-                if (_threadId <= 0 || _threadId > PathFinder.Instances.Length)
-                {
-                    Debug.LogError($"Path finder got unexpected Thread Index: {_threadId}");
-                    return;
-                }
-
+                Assert.IsTrue(_threadId > 0 && _threadId <= PathFinder.Instances.Length);
                 var agent = Agents[index];
                 var query = Queries[agent];
                 var segments = PathSegments[agent];
