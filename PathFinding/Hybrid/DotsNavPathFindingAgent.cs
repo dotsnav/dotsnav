@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DotsNav.Data;
 using DotsNav.Hybrid;
@@ -43,6 +44,7 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// The direction needed to follow the path
         /// </summary>
+        [NonSerialized]
         public Vector3 Direction;
 
         /// <summary>
