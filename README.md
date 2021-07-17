@@ -33,25 +33,25 @@ Alternatively, open the package manager, choose Add package from git URL and ent
 Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
 
 ### Planes
-Attach a DotsNav Plane behaviour to a gameobject. To create a navmesh attach a DotsNav Navmesh behaviour. The navmesh border will be drawn in the scene view. The value of Expected Verts determines the size of initial allocations.
+Attach a DotsNavPlane behaviour to a gameobject. To create a navmesh attach a DotsNavNavmesh behaviour. The navmesh border will be drawn in the scene view. The value of ExpectedVerts determines the size of initial allocations.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image21.png?raw=true)
 
-To enable local avoidance attach a DotsNav Local Avoidance behaviour. Note that this behaviour does not require a navmesh and has no boundary.
+To enable local avoidance attach a DotsNavLocalAvoidance behaviour. Note that this behaviour does not require a navmesh and has no boundary.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image22.png?raw=true)
     
 ### Pathfinder
-To enable path finding attach a DotsNav Pathfinder behaviour to a gameobject. The pathfinder manages the resources required to search for paths on any number of threads, and only one pathfinder is allowed at any time.
+To enable path finding attach a DotsNavPathfinder behaviour to a gameobject. The pathfinder manages the resources required to search for paths on any number of threads, and only one pathfinder is allowed at any time.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image23.png?raw=true) 
 
 ### Obstacles
-To create an obstacle add a DotsNav Obstacle behaviour to a gameobject and assign the Plane field. When spawning obstacle prefabs make sure to assign the Plane immediately after instantiation.
+To create an obstacle add a DotsNavObstacle behaviour to a gameobject and assign the Plane field. When spawning obstacle prefabs make sure to assign the Plane immediately after instantiation.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image24.png?raw=true)
 
-Add DotsNav Navmesh Obstacle and DotsNav Local Avoidance Obstacle behaviours as appropriate.
+Add DotsNavNavmeshObstacle and DotsNavLocalAvoidanceObstacle behaviours as appropriate.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image20.png?raw=true)
   
@@ -76,7 +76,7 @@ Attach a Convert to Entity component all to planes, agents, obstacles and the pa
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image27.png?raw=true)
 
 ### Renderer
-To draw the navmesh while playing, add a DotsNav Renderer component to a gameobject. If the renderer is attached to the camera it can draw in the game view as well as the scene view.
+To draw the navmesh while playing, add a DotsNavRenderer component to a gameobject. If the renderer is attached to the camera it can draw in the game view as well as the scene view.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image7.png?raw=true)
 
@@ -91,7 +91,7 @@ Next navmesh update a path will be calculated.
 
 Each navmesh update the direction required to follow the path is calculated using the agent's position.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image27.png?raw=true)
+![](https://github.com/bassmit/images/blob/master/DotsNav/image28.png?raw=true)
 
 Using the default settings, invalidated paths are recalculated automatically.
 
@@ -111,18 +111,21 @@ Obstacles can be removed by destroying a previously spawned gameobject, or by ca
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image13.png?raw=true)
 
 ## Getting Started with DOTS
-### Creating entities
-The easiest way to get started with DOTS is to do all of the above, but instead use “Convert and Destroy”.
+### Conversion
+When using monobehaviour conversion use “Convert and Destroy”.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image14.png?raw=true)
 
-This creates appropriate entities and components. Note that you can use the DOTS Editor to inspect these and entities in the sample scenes to get a better understanding of the components involved.
+Note that you can use the DOTS Editor to inspect these and entities in the sample scenes to get a better understanding of the components involved.
 
-### Navmesh
-Navmeshes are created by adding a NavmeshComponent to an entity. This allows you to supply the parameters used when the navmesh is created. Destroy the entity to dispose of its resources.
+### API
+All public APIs expose read-only operations. Write operations are triggered by creating entities with appropriate archetypes, or updating component data.
 
-### Local Avoidance
-Local Avoidance requires an ObstacleTreeComponent and a DynamicTreeComponent. Destroy the entity to dispose of its resources. When also using a navmesh it is recommended to use the same entity.
+### Planes
+Navmeshes are created by adding a NavmeshComponent to an entity. Local avoidance requires an ObstacleTreeComponent and a DynamicTreeComponent. Destroy the entity to dispose of its resources.
+
+### PathFinder
+When adding a PathFinderComponent to an entity, use the constructor so it is initialized properly. Destroy the entity to dispose of its resources. There should be only one PathFinderComponent at any time.
 
 ### Obstacles
 There are two types of obstacles:
@@ -141,24 +144,31 @@ The following archetypes trigger obstacle insertion:
 
 Note that any obstacle requires a NavmeshObstacleComponent and or a ObstacleTreeElementComponent. Obstacles with static archetypes are destroyed after insertion. To destroy dynamic obstacles destroy their associated entity.
 
-### PathFinder
-Add a PathFinderComponent to an entity. Use the constructor so it is initialized properly. Destroy the entity to dispose of its resources. There should be only one PathFinderComponent at any time.
-
 ### Agents
-Create an entity with the following archetype:
+General components:
+- RadiusComponent
 
-- AgentComponent
+Pathfinding related components:
+- NavmeshAgentComponent
+- PathQueryComponent
 - DynamicBuffer&lt;PathSegmentElement&gt;
 - DynamicBuffer&lt;TriangleElement&gt;
-- AgentDirectionComponent (optional)
+- DirectionComponent (optional)
 - AgentDrawComponent (optional)
 
-Note that any agent requires a NavmeshAgentComponent and or a DynamicTreeElementComponent. To trigger path queries set AgentComponent.State to Pending.
+Local avoidance related components:
+- DynamicTreeElementComponent
+- ObstacleTreeAgentComponent
+- VelocityObstacleComponent
+- RVOSettingsComponent
+- MaxSpeedComponent
+- PreferredVelocityComponent
+- VelocityComponent
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image15.png?raw=true)
+To trigger a path query set PathQuery.State to Pending.
 
 ### Accessing the triangulation
-The Navmesh component provides access to the triangulation through the following methods, allowing for traversal of the triangulation and development of additional algorithms:
+The NavmeshComponent provides access to the triangulation through the following methods, allowing for traversal of the triangulation and development of additional algorithms:
 
 - Edge* FindTriangleContainingPoint
 - Vertex* FindClosestVertex
