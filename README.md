@@ -18,11 +18,7 @@
 ## Introduction
 DotsNav is a fully dynamic and robust planar navmesh Unity package built on DOTS. It is fast enough to add and remove many obstacles each frame, supports agents of any size, and can be used through monobehaviours without prior knowledge of DOTS.
 
-DotsNav is in an early stage of development. It passes demanding robustness tests as can be seen in the video and demo, but has not been used beyond developing the demo.
-
-For contract work contact me on [Discord](https://discordapp.com/users/bassmit#3079) or at bas@bassmit.info.
-
-To support further development consider becoming a [sponsor](https://github.com/sponsors/bassmit).
+To support further development consider becoming a [sponsor](https://github.com/sponsors/bassmit), for contract work contact me on [Discord](https://discordapp.com/users/bassmit#3079) or at bas@bassmit.info.
 
 ## Getting Started
 ### Installation
@@ -36,36 +32,40 @@ Alternatively, open the package manager, choose Add package from git URL and ent
 
 Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
 
-### Navmesh
-To create a navmesh attach a DotsNav Navmesh behaviour to a gameobject. The navmesh dimensions will be drawn in the scene view. A top down orthogonal perspective is usually the easiest way to view navmeshes and edit obstacles. Currently only one navmesh is allowed which will be centered around the origin. The value of Expected Verts determines the size of initial allocations.
+### Planes
+Attach a DotsNav Plane behaviour to a gameobject. To create a navmesh attach a DotsNav Navmesh behaviour. The navmesh border will be drawn in the scene view. The value of Expected Verts determines the size of initial allocations.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image1.png?raw=true)
+![](https://github.com/bassmit/images/blob/master/DotsNav/image21.png?raw=true)
 
-### Conversion to DOTS
-Add a Convert to Entity component to the Navmesh so it is converted to DOTS. When using monobehaviours to develop a project choose “Convert and Inject”. Obstacles can then be removed from the navmesh by destroying the associated gameobject. The navmesh can be disposed of similarly.
+To enable local avoidance attach a DotsNav Local Avoidance behaviour. Note that this behaviour does not require a navmesh and has no boundary.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image2.png?raw=true)
+![](https://github.com/bassmit/images/blob/master/DotsNav/image22.png?raw=true)
+    
+### Pathfinder
+To enable path finding attach a DotsNav Pathfinder behaviour to a gameobject. The path finder manages the resources required to search for paths on any number of threads, and only one pathfinder is allowed at any time.
+
+![](https://github.com/bassmit/images/blob/master/DotsNav/image23.png?raw=true) 
 
 ### Obstacles
-To create an obstacle add a DotsNav Obstacle behaviour to a different gameobject and make sure it is converted.
+To create an obstacle add a DotsNav Obstacle behaviour to a gameobject and add DotsNav Navmesh Obstacle and DotsNav Local Avoidance Obstacle behaviours as appropriate.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image3.png?raw=true)
- 
+![](https://github.com/bassmit/images/blob/master/DotsNav/image24.png?raw=true)
+  
 Add a few vertices and move them around using the position handle. The edit mode colors can be set in the DotsNav tab in Preferences.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image4.png?raw=true)
-
-Alternatively an obstacle's Vertices array can be populated through script. Obstacle gameobjects can be scaled, rotated around their y axis, and used as prefabs.
-
-### Pathfinder
-To enable pathfinding agents first add a DotsNav Pathfinder behaviour and make sure it is converted. The navmesh gameobject is a good place to add the pathfinder, but this is not required.
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image5.png?raw=true)
+  
+Alternatively an obstacle's Vertices array can be populated through script. Obstacle gameobjects can be scaled, rotated and used as prefabs. Obstacles are projected on to their respective planes when inserted.
 
 ### Agents
-Add a DotsNav Agent behaviour to a different gameobject and make sure it is converted.
+To create an agent attach a DotsNav Agent behaviour to a gameobject and assign the Plane field. When spawning agent prefabs make sure to assign the Plane immediately after instantiation. Add DotsNav Pathfinding Agent and DotsNav Local Avoidance Agent behaviours as appropriate.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image6.png?raw=true)
+![](https://github.com/bassmit/images/blob/master/DotsNav/image25.png?raw=true)
+  
+### Conversion to DOTS
+Attach a Convert to Entity component all to planes, agents, obstacles and the pathfinder. When using monobehaviours to develop a project choose “Convert and Inject”. Obstacles and agents can then be removed by destroying the associated gameobject. Planes can be disposed of similarly.
+
+![](https://github.com/bassmit/images/blob/master/DotsNav/image26.png?raw=true)
 
 ### Renderer
 To draw the navmesh while playing, add a DotsNav Renderer component to a gameobject. If the renderer is attached to the camera it can draw in the game view as well as the scene view.
@@ -83,7 +83,7 @@ Next navmesh update a path will be calculated.
 
 Each navmesh update the direction required to follow the path is calculated using the agent's position.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image10.png?raw=true)
+![](https://github.com/bassmit/images/blob/master/DotsNav/image27.png?raw=true)
 
 Using the default settings, invalidated paths are recalculated automatically.
 
@@ -111,7 +111,7 @@ The easiest way to get started with DOTS is to do all of the above, but instead 
 This creates appropriate entities and components. Alternatively you can create entities and components manually, which is described below.
 
 ### Navmesh
-Navmeshes are created by adding a NavmeshComponent to an entity. This allows you to supply the parameters used when the navmesh is created. Destroy the entity to dispose of its resources. There should only be one navmesh at any time.
+Navmeshes are created by adding a NavmeshComponent to an entity. This allows you to supply the parameters used when the navmesh is created. Destroy the entity to dispose of its resources.
 
 ### Obstacles
 There are two types of obstacles:
@@ -162,12 +162,11 @@ Due to the nature of the algorithms involved exact geometric predicates are requ
 DotsNav provides locally optimal search. First, a channel of connected triangles with enough clearance is found using A*. The optimal path given this channel is then found using the funnel algorithm. While channels found are often optimal they are not guaranteed to be. An algorithm to find the optimal channel exists, but can easily take 100 times longer to execute and is not currently implemented. As there are valid use cases for globally optimal search, if only to benchmark cost functions, it is included on the roadmap.
 
 ## Roadmap
-- Collision avoidance, port rvo2c#
 - Point agent path finding
 - Preferred radius to use where clearance allows
 - Custom cost functions, so agents can prefer to avoid certain conditions
 - Deterministic path finding budget and agent priorities
-- Multiple and overlapping navmeshes and offmesh links
+- Offmesh links
 - Serialization for faster loading of large amounts of obstacles
 - Queries to determine shapes are outside any obstacle
 - Steering behaviours
