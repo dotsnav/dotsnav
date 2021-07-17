@@ -22,6 +22,7 @@ namespace DotsNav.LocalAvoidance.Hybrid
         }
     }
 
+    [RequireComponent(typeof(DotsNavPlane))]
     public class DotsNavLocalAvoidance : EntityLifetimeBehaviour
     {
         public bool DrawObstacleTree;
