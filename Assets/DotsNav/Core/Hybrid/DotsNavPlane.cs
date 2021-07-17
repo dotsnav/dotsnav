@@ -1,4 +1,7 @@
-﻿namespace DotsNav.Hybrid
+﻿using Unity.Mathematics;
+using UnityEngine;
+
+namespace DotsNav.Hybrid
 {
     class PlaneConversionSystem : GameObjectConversionSystem
     {
@@ -15,5 +18,9 @@
 
     public class DotsNavPlane : EntityLifetimeBehaviour
     {
+        public Vector3 DirectionToWorldSpace(float2 dir)
+        {
+            return transform.InverseTransformDirection(dir.ToXxY());
+        }
     }
 }
