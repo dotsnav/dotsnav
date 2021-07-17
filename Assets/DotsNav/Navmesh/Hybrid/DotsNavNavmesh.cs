@@ -43,6 +43,7 @@ namespace DotsNav.Navmesh.Hybrid
     /// Creates a navmesh on startup and can then be used to insert and destroy obstacles. Destroying this object triggers
     /// the destruction of the navmesh releasing its resources.
     /// </summary>
+    [RequireComponent(typeof(DotsNavPlane))]
     public class DotsNavNavmesh : EntityLifetimeBehaviour
     {
         /// <summary>
