@@ -55,7 +55,7 @@ To create an obstacle add a DotsNavObstacle behaviour to a gameobject and assign
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image24.png?raw=true)
 
-Add DotsNavNavmeshObstacle and DotsNavLocalAvoidanceObstacle behaviours as appropriate.
+Add DotsNavNavmeshObstacle and or DotsNavLocalAvoidanceObstacle behaviours as appropriate.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image20.png?raw=true)
   
@@ -66,13 +66,15 @@ Add a few vertices and move them around using the position handle. The edit mode
 Alternatively an obstacle's Vertices array can be populated through script. Obstacle gameobjects can be scaled, rotated and used as prefabs. Obstacles are projected on to their respective planes when inserted.
 
 ### Agents
-To create an agent attach a DotsNav Agent behaviour to a gameobject and assign the Plane field. When spawning agent prefabs make sure to assign the Plane immediately after instantiation.
+To create an agent attach a DotsNavAgent behaviour to a gameobject and assign the Plane field. When spawning agent prefabs make sure to assign the Plane immediately after instantiation.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image25.png?raw=true)
 
-Add DotsNav Pathfinding Agent and DotsNav Local Avoidance Agent behaviours as appropriate.
+Add DotsNavPathfindingAgent and or DotsNavLocalAvoidanceAgent behaviours as appropriate.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image25.png?raw=true)
+![](https://github.com/bassmit/images/blob/master/DotsNav/image26.png?raw=true)
+
+Note that DotsNavPathfindingAgent and DotsNavLocalAvoidanceAgent have Direction and Velocity fields respectively. Currently no steering behaviours are provided, but a basic example can be seen in the avoidance sample scene.
   
 ### Conversion to DOTS
 Attach a Convert to Entity component all to planes, agents, obstacles and the pathfinder. When using monobehaviours to develop a project choose “Convert and Inject”. Obstacles and agents can then be removed by destroying the associated gameobject. Planes can be disposed of similarly.
