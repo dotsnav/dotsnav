@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 673527040873305054}
   - component: {fileID: 4553706958819566844}
   - component: {fileID: 5843786958838245045}
+  - component: {fileID: 1198927799591733719}
   - component: {fileID: 6714639268391541046}
   m_Layer: 0
   m_Name: RVO Agent
@@ -47,6 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 409a61fe23d14649849f381f7f21c304, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Plane: {fileID: 0}
+  Radius: 0.5
 --- !u!114 &4553706958819566844
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,8 +62,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2aa847cfce964846a30206dbf018f643, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Navmesh: {fileID: 0}
-  Radius: 0.5
   Direction: {x: 0, y: 0}
   DrawGizmos: 0
   DrawPath: 1
@@ -78,13 +79,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22a8dbb25b1346fdbeffe1c33d7dd07c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LocalAvoidance: {fileID: 0}
-  Radius: 0.5
   MaxSpeed: 10
   MaxNeighbours: 10
   NeighbourDist: 10
   TimeHorizon: 3
   TimeHorizonObst: 3
+--- !u!114 &1198927799591733719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1478449553652949201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068e3c499ea44e55a06fe36f97352f42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PreferredSpeed: 8
 --- !u!114 &6714639268391541046
 MonoBehaviour:
   m_ObjectHideFlags: 0
