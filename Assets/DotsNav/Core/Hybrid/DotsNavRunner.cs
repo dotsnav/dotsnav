@@ -47,6 +47,13 @@ namespace DotsNav.Hybrid
             _dotsNavSystemGroup.Update();
         }
 
+        void OnDestroy()
+        {
+            var world = World.All[0];
+            world.GetOrCreateSystem<FixedStepSimulationSystemGroup>().AddSystemToUpdateList(_dotsNavSystemGroup);
+            world.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystem<EndFixedStepSimulationEntityCommandBufferSystem>();
+        }
+
         /// <summary>
         /// Determines when queued updates should be processed
         /// </summary>
