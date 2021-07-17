@@ -1,3 +1,4 @@
+using DotsNav.Core.Hybrid;
 using DotsNav.Data;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
@@ -18,7 +19,7 @@ namespace DotsNav.Samples.Code
         public int Amount;
         public DotsNavObstacle[] Prefabs;
         public int Seed;
-        public DotsNavNavmesh NavmeshPrefab;
+        public DotsNavPlane PlanePrefab;
         public float ScaleOffset;
         public Text Output;
         public RectTransform Help;
@@ -29,6 +30,7 @@ namespace DotsNav.Samples.Code
         NativeList<int2> _startEnds;
         bool _shouldInsert;
         bool _delayed;
+        DotsNavPlane _plane;
 
         void Start()
         {
@@ -59,7 +61,8 @@ namespace DotsNav.Samples.Code
         // compatible obstacle adder as seen below.
         void Load()
         {
-            _navmesh = Instantiate(NavmeshPrefab);
+            _plane = Instantiate(PlanePrefab);
+            _navmesh = _plane.GetComponent<DotsNavNavmesh>();
             _navmesh.DrawMode = _drawMode;
             _shouldInsert = true;
         }
@@ -67,7 +70,7 @@ namespace DotsNav.Samples.Code
         void Reload()
         {
             Seed++;
-            DestroyImmediate(_navmesh.gameObject);
+            DestroyImmediate(_plane.gameObject);
             Load();
         }
 
@@ -132,8 +135,8 @@ namespace DotsNav.Samples.Code
                 else
                 {
                     var r = new Random((uint) Seed);
-                    var amount = _navmesh.InsertObstacleBulk(Amount, new ObstacleAdder(ScaleOffset, Size, r, _vertices, _startEnds));
-                    Output.text = $"Loaded {Amount} obstacles and {amount} vertices\nPress R to reload";
+                    _plane.InsertObstacleBulk(Amount, new ObstacleAdder(ScaleOffset, Size, r, _vertices, _startEnds));
+                    Output.text = $"Loaded {Amount} obstacles and {_startEnds[_startEnds.Length - 1].y} vertices\nPress R to reload";
                     _shouldInsert = false;
                     _delayed = false;
                 }

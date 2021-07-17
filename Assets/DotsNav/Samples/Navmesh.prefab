@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4979978658142159185}
-  - component: {fileID: 4979978658142159214}
+  - component: {fileID: -6629413616465762495}
+  - component: {fileID: 4601750699068902185}
   - component: {fileID: 4979978658142159215}
   m_Layer: 0
   m_Name: Navmesh
@@ -32,7 +33,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4979978658142159214
+--- !u!114 &-6629413616465762495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4979978658142159184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be784399eb054a828f86ae60e19b2ac6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4601750699068902185
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,7 +58,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Size: {x: 467, y: 300}
-  UpdateMode: 0
   ExpectedVerts: 13000
   MergePointDistance: 0.001
   CollinearMargin: 0.000001

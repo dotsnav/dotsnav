@@ -18,7 +18,6 @@ namespace DotsNav.Samples.Code
     class Avoidance : MonoBehaviour
     {
         public DotsNavPlane Plane;
-        DotsNavNavmesh _navmesh;
 
         [Header("Agents")]
         public int AgentAmount;
@@ -35,32 +34,18 @@ namespace DotsNav.Samples.Code
 
         [Header("UI")]
         public RectTransform Help;
-        public Slider SpeedSlider;
-        public Color HighlightColor;
-        Color _restoreColor;
 
-        readonly Dictionary<ObstacleReference, List<Vector2>> _obstacles = new Dictionary<ObstacleReference, List<Vector2>>();
-        readonly List<Vector2> _added = new List<Vector2>();
-        DotsNavPathFindingAgent[] _agents;
-        float _lastPlacement;
-        bool _paused;
-        bool _step;
-        bool _add;
-        bool _lockHighlight;
         float2 _size;
         Random _r;
-        List<Vector2> _removed;
 
         void Start()
         {
             // Ensure gameobject conversion when loading a scene
             World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
 
-            _navmesh = Plane.GetComponent<DotsNavNavmesh>();
-            _size = _navmesh.Size;
+            _size = Plane.GetComponent<DotsNavNavmesh>().Size;
             FindObjectOfType<CameraController>().Initialize(_size);
             _r = new Random((uint) DateTime.Now.Ticks);
-            _agents = new DotsNavPathFindingAgent[AgentAmount];
 
             var placedStarts = new List<Circle>();
             var placedGoals = new List<Circle>();
@@ -68,7 +53,6 @@ namespace DotsNav.Samples.Code
             for (int i = 0; i < AgentAmount; i++)
             {
                 var agent = Instantiate(AgentPrefab);
-                _agents[i] = agent;
                 var r = AgentMinRadius + i * AgentRadiusRange / AgentAmount;
                 var dotsNavAgent = agent.GetComponent<DotsNavAgent>();
                 dotsNavAgent.Radius = r;
@@ -103,17 +87,6 @@ namespace DotsNav.Samples.Code
                 Insert();
         }
 
-        public void PausedButton()
-        {
-            _paused = !_paused;
-        }
-
-        public void StepButton()
-        {
-            _paused = true;
-            _step = true;
-        }
-
         void Insert()
         {
             var obstacle = ObstaclePrefabs[_r.NextInt(ObstaclePrefabs.Length)];
@@ -139,11 +112,7 @@ namespace DotsNav.Samples.Code
             for (var i = 0; i < vertices.Count; i++)
                 vertices[i] += (Vector2) (offset - min);
 
-            var id = _navmesh.InsertObstacle(vertices);
-            _obstacles.Add(id, vertices);
-
-            _added.Clear();
-            _added.AddRange(vertices);
+            Plane.InsertObstacle(vertices);
         }
 
         struct Circle

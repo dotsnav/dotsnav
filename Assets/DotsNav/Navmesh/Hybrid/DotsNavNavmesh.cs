@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using DotsNav.Data;
+using DotsNav.Core.Hybrid;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
-using Unity.Burst;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 
 namespace DotsNav.Navmesh.Hybrid
@@ -44,7 +40,7 @@ namespace DotsNav.Navmesh.Hybrid
     /// the destruction of the navmesh releasing its resources.
     /// </summary>
     [RequireComponent(typeof(DotsNavPlane))]
-    public class DotsNavNavmesh : EntityLifetimeBehaviour
+    public class DotsNavNavmesh : EntityLifetimeBehaviour, IPlaneComponent
     {
         /// <summary>
         /// Size of the navmesh to be created. Changing this value after initialization has no effect
@@ -77,113 +73,28 @@ namespace DotsNav.Navmesh.Hybrid
         /// </summary>
         public int Vertices { get; internal set; }
 
-        public bool IsInitialized => Vertices >= 8;
+        public bool IsInitialized => Vertices > 7;
 
         void OnValidate()
         {
             Size = math.abs(Size);
         }
 
-        /// <summary>
-        /// Queue insertion of an obstacle in world space
-        /// </summary>
-        public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices)
+        void IPlaneComponent.InsertObstacle(Entity obstacle, EntityManager em)
         {
-            var em = World.All[0].EntityManager;
-            Assert.IsTrue(em.Exists(Entity));
-            var obstacle = em.CreateEntity();
-            em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
-            var input = em.AddBuffer<VertexElement>(obstacle);
-            foreach (float2 vertex in vertices)
-                input.Add(vertex);
-            return new ObstacleReference(obstacle);
-        }
-
-        /// <summary>
-        /// Queue bulk insertion of permanant obstacles. Once inserted, these obstacles can not be removed.
-        /// Returns the total amount of inserted vertices excluding intersections
-        /// </summary>
-        /// <param name="amount">Amount of obstacles to insert</param>
-        /// <param name="adder">A Burst compatible struct implementing IObstacleAdder</param>
-        public int InsertObstacleBulk<T>(int amount, T adder) where T : struct, IObstacleAdder
-        {
-            var em = World.All[0].EntityManager;
-            Assert.IsTrue(em.Exists(Entity));
-            var obstacle = em.CreateEntity();
-            em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
-            em.AddBuffer<VertexElement>(obstacle);
-            var amounts = em.AddBuffer<VertexAmountElement>(obstacle);
-            var input = em.GetBuffer<VertexElement>(obstacle);
-            new PopulateBulkJob<T>
-                {
-                    Amount = amount,
-                    Adder = adder,
-                    Input = input,
-                    Amounts = amounts
-                }
-                .Run();
-            return input.Length;
-        }
-
-        [BurstCompile]
-        struct PopulateBulkJob<T> : IJob where T : struct, IObstacleAdder
-        {
-            public int Amount;
-            public T Adder;
-            public DynamicBuffer<VertexElement> Input;
-            public DynamicBuffer<VertexAmountElement> Amounts;
-
-            public void Execute()
-            {
-                for (int i = 0; i < Amount; i++)
-                {
-                    var s = Input.Length;
-                    Adder.Add(i, Input);
-                    Amounts.Add(Input.Length - s);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns true when point p is contained within the navmesh
-        /// </summary>
-        public bool Contains(Vector2 p) => Math.Contains(p, -Size / 2, Size / 2);
-
-        /// <summary>
-        /// Queue insertion of an obstacle in object space
-        /// </summary>
-        public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices, Vector2 position, float rotationDegrees = 0) =>
-            InsertObstacle(vertices, position, Vector2.one, rotationDegrees);
-
-        /// <summary>
-        /// Queue insertion of an obstacle in object space
-        /// </summary>
-        public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices, Vector2 position, Vector2 scale, float rotationDegrees = 0)
-        {
-            var em = World.All[0].EntityManager;
-            Assert.IsTrue(em.Exists(Entity));
-            var obstacle = em.CreateEntity();
-            em.AddComponentData(obstacle, new LocalToWorld {Value = float4x4.TRS(position.ToXxY(), quaternion.RotateY(math.radians(rotationDegrees)), ((float2)scale).xxy)});
-            em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
-            var input = em.AddBuffer<VertexElement>(obstacle);
-            foreach (float2 vertex in vertices)
-                input.Add(vertex);
-            return new ObstacleReference(obstacle);
-        }
-
-        /// <summary>
-        /// Queue removal of an obstacle
-        /// </summary>
-        public void RemoveObstacle(ObstacleReference toRemove)
-        {
-            World.All[0].EntityManager.DestroyEntity(toRemove.Value);
+            em.AddComponentData(obstacle, new NavmeshObstacleComponent {Navmesh = Entity});
         }
 
         /// <summary>
         /// Returns the native navmesh which exposes the triangulation. This structure is invalidated each update and
         /// the latest version should be obtained each cycle
         /// </summary>
-        public unsafe Navmesh GetNativeNavmesh() => *World.All[0].EntityManager.GetComponentData<NavmeshComponent>(Entity).Navmesh;
+        public unsafe Navmesh GetNativeNavmesh() => *World.EntityManager.GetComponentData<NavmeshComponent>(Entity).Navmesh;
+
+        /// <summary>
+        /// Returns true when point p is contained within the navmesh
+        /// </summary>
+        public bool Contains(Vector2 p) => Math.Contains(p, -Size / 2, Size / 2);
 
         void OnDrawGizmos()
         {

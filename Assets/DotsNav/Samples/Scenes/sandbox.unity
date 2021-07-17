@@ -1846,7 +1846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Runner: {fileID: 1548579197}
-  Navmesh: {fileID: 899543934}
+  Plane: {fileID: 899543936}
   AgentSizeZoomSpeed: 0.03
   MinAgentSize: 0.01
   MaxAgentSize: 5
