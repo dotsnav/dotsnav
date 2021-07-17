@@ -3,9 +3,14 @@ using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-    public void Demo()
+    public void Pathfinding()
     {
-        SceneManager.LoadScene("demo");
+        SceneManager.LoadScene("pathfinding");
+    }
+
+    public void Avoidance()
+    {
+        SceneManager.LoadScene("avoidance");
     }
 
     public void Sandbox()

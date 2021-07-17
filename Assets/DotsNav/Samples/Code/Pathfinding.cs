@@ -14,10 +14,10 @@ using Random = Unity.Mathematics.Random;
 
 namespace DotsNav.Samples.Code
 {
-    class Demo : MonoBehaviour
+    class Pathfinding : MonoBehaviour
     {
         public DotsNavPlane Plane;
-        DotsNavNavmesh Navmesh;
+        DotsNavNavmesh _navmesh;
 
         [Header("Agents")]
         public int AgentAmount;
@@ -69,7 +69,7 @@ namespace DotsNav.Samples.Code
                 {
                     _highlight.DrawColor = _restoreColor;
                     _highlight.DrawCorners = false;
-                    _highlight.DrawPath = Navmesh.DrawMode == DrawMode.Constrained;
+                    _highlight.DrawPath = _navmesh.DrawMode == DrawMode.Constrained;
                 }
                 _highlight = value;
                 if (_highlight != null)
@@ -85,9 +85,9 @@ namespace DotsNav.Samples.Code
 
         void Start()
         {
-            Navmesh = Plane.GetComponent<DotsNavNavmesh>();
+            _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _lineDrawer = GetComponent<LineDrawer>();
-            _size = Navmesh.Size;
+            _size = _navmesh.Size;
             FindObjectOfType<CameraController>().Initialize(_size);
             _r = new Random((uint) DateTime.Now.Ticks);
             _agents = new DotsNavPathFindingAgent[AgentAmount];
@@ -173,7 +173,7 @@ namespace DotsNav.Samples.Code
             for (var i = 0; i < vertices.Count; i++)
                 vertices[i] += (Vector2) (offset - min);
 
-            var id = Navmesh.InsertObstacle(vertices);
+            var id = _navmesh.InsertObstacle(vertices);
             _obstacles.Add(id, vertices);
 
             _added.Clear();
@@ -190,8 +190,8 @@ namespace DotsNav.Samples.Code
 
             if (Input.GetKeyDown(KeyCode.E))
             {
-                Navmesh.DrawMode = Navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
-                var drawAgents = Navmesh.DrawMode == DrawMode.Constrained;
+                _navmesh.DrawMode = _navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
+                var drawAgents = _navmesh.DrawMode == DrawMode.Constrained;
                 foreach (var agent in _agents)
                     agent.DrawPath = drawAgents || agent == Highlight;
             }
@@ -247,7 +247,7 @@ namespace DotsNav.Samples.Code
                 {
                     var ids = _obstacles.Keys.ToArray();
                     var toRemove = ids[_r.NextInt(ids.Length)];
-                    Navmesh.RemoveObstacle(toRemove);
+                    _navmesh.RemoveObstacle(toRemove);
                     _removed = _obstacles[toRemove];
                     _obstacles.Remove(toRemove);
                     _added.Clear();
@@ -286,7 +286,7 @@ namespace DotsNav.Samples.Code
                 }
             }
 
-            if (Navmesh.IsInitialized)
+            if (_navmesh.IsInitialized)
             {
                 _lineDrawer.DrawPoly(_added, AddedObstacleColor);
                 _lineDrawer.DrawPoly(_removed, RemovedObstacleColor);
