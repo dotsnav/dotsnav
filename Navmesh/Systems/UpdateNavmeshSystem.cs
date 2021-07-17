@@ -208,7 +208,7 @@ namespace DotsNav.Navmesh.Systems
                     Operations = insertions,
                     Removals = removals,
                     Keys = navmeshes.AsDeferredJobArray(),
-                    NavmeshLookup = GetComponentDataFromEntity<NavmeshComponent>(true),
+                    NavmeshLookup = GetComponentDataFromEntity<NavmeshComponent>(),
                     LocalToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true),
                     DestroyedLookup = GetBufferFromEntity<DestroyedTriangleElement>(true)
                 }
@@ -224,7 +224,7 @@ namespace DotsNav.Navmesh.Systems
             public NativeArray<Entity> Keys;
             [ReadOnly]
             public NativeMultiHashMap<Entity, Navmesh.Insertion> Operations;
-            [ReadOnly]
+            [NativeDisableContainerSafetyRestriction]
             public ComponentDataFromEntity<NavmeshComponent> NavmeshLookup;
             [NativeDisableContainerSafetyRestriction]
             public BufferFromEntity<DestroyedTriangleElement> DestroyedLookup;
