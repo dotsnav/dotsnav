@@ -43,7 +43,7 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// The direction needed to follow the path
         /// </summary>
-        public Vector2 Direction;
+        public Vector3 Direction;
 
         /// <summary>
         /// The state of the agent. Use FindPath and Deactivate to update.
