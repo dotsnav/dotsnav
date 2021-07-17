@@ -33,9 +33,13 @@ Alternatively, open the package manager, choose Add package from git URL and ent
 Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
 
 ### Planes
-Attach a DotsNavPlane behaviour to a gameobject. To create a navmesh attach a DotsNavNavmesh behaviour. The navmesh border will be drawn in the scene view. The value of ExpectedVerts determines the size of initial allocations.
+Attach a DotsNavPlane behaviour to a gameobject.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image21.png?raw=true)
+
+To create a navmesh attach a DotsNavNavmesh behaviour. The navmesh border will be drawn in the scene view. The value of ExpectedVerts determines the size of initial allocations.
+
+![](https://github.com/bassmit/images/blob/master/DotsNav/image28.png?raw=true)
 
 To enable local avoidance attach a DotsNavLocalAvoidance behaviour. Note that this behaviour does not require a navmesh and has no boundary.
 
