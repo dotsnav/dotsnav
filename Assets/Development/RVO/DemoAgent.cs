@@ -3,14 +3,18 @@ using UnityEngine;
 using DotsNav.Data;
 using DotsNav.LocalAvoidance.Data;
 using DotsNav.LocalAvoidance.Systems;
+using DotsNav.PathFinding.Data;
 using DotsNav.PathFinding.Systems;
 using DotsNav.Systems;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 class DemoAgent : MonoBehaviour, IConvertGameObjectToEntity
 {
     DotsNavLocalAvoidanceAgent _agent;
     public float PreferredSpeed;
+    public float BrakeSpeed;
 
     void Awake()
     {
@@ -24,7 +28,11 @@ class DemoAgent : MonoBehaviour, IConvertGameObjectToEntity
 
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
     {
-        dstManager.AddComponentData(entity, new PreferredSpeedComponent {Value = PreferredSpeed});
+        dstManager.AddComponentData(entity, new SteeringComponent
+        {
+            PreferredSpeed = PreferredSpeed,
+            BrakeSpeed = BrakeSpeed
+        });
     }
 }
 
@@ -37,15 +45,18 @@ class PreferredVelocitySystem : SystemBase
     {
         Entities
             .WithBurst()
-            .ForEach((DirectionComponent direction, PreferredSpeedComponent preferredSpeed, ref PreferredVelocityComponent preferredVelocity) =>
+            .ForEach((Translation translation, DirectionComponent direction, SteeringComponent steering, PathQueryComponent query, ref PreferredVelocityComponent preferredVelocity) =>
             {
-                preferredVelocity.Value = direction.Value * preferredSpeed.Value;
+                var dist = math.length(query.To - translation.Value);
+                var speed = math.min(dist * steering.BrakeSpeed, steering.PreferredSpeed);
+                preferredVelocity.Value = direction.Value * speed;
             })
             .ScheduleParallel();
     }
 }
 
-struct PreferredSpeedComponent : IComponentData
+struct SteeringComponent : IComponentData
 {
-    public float Value;
+    public float PreferredSpeed;
+    public float BrakeSpeed;
 }

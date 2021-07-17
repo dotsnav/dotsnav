@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PreferredSpeed: 8
+  BrakeSpeed: 4
 --- !u!114 &6714639268391541046
 MonoBehaviour:
   m_ObjectHideFlags: 0
