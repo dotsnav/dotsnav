@@ -49,7 +49,12 @@ namespace DotsNav.Hybrid
 
         void OnDestroy()
         {
-            var world = World.All[0];
+            var worlds = World.All;
+
+            if (worlds.Count == 0) // todo prevent silly exception
+                return;
+
+            var world = worlds[0];
             world.GetOrCreateSystem<FixedStepSimulationSystemGroup>().AddSystemToUpdateList(_dotsNavSystemGroup);
             world.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystem<EndFixedStepSimulationEntityCommandBufferSystem>();
         }
