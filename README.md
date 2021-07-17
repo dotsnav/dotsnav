@@ -194,6 +194,8 @@ DotsNav provides locally optimal search. First, a channel of connected triangles
 - Hierarchical path finding
 
 ## Bibliography
+- Reciprocal n-body Collision Avoidance, [Jur van den Berg, Stephen J. Guy, Ming Lin, Dinesh Manocha 2011](https://gamma.cs.unc.edu/ORCA/publications/ORCA.pdf)
+- Reciprocal Velocity Obstacles for Real-Time Multi-Agent Navigation, [Jur van den Berg, Ming C. Lin, Dinesh Manocha 2008](https://gamma.cs.unc.edu/RVO/icra2008.pdf)
 - Dynamic and Robust Local Clearance Triangulations, [Kallmann 2014](http://graphics.ucmerced.edu/papers/14-tog-lct.pdf)
 - Shortest Paths with Arbitrary Clearance from Navigation Meshes, [Kallmann 2010](http://graphics.ucmerced.edu/papers/10-sca-tripath.pdf)
 - Fully Dynamic Constrained Delaunay Triangulations, [Kallmann 2003](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.14.6477&rep=rep1&type=pdf)
