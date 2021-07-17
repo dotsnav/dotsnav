@@ -31,58 +31,25 @@ namespace DotsNav.Samples.Code
         public int ObstacleAmount;
         public float ObstacleMinScale;
         public float ObstacleScaleRange;
-        public float PlacementDelay;
         public DotsNavObstacle[] ObstaclePrefabs;
 
         [Header("UI")]
         public RectTransform Help;
         public Slider SpeedSlider;
-        public Color RemovedObstacleColor;
-        public Color AddedObstacleColor;
-        public Color OldPathColor;
-        public Color NewPathColor;
         public Color HighlightColor;
         Color _restoreColor;
 
         readonly Dictionary<ObstacleReference, List<Vector2>> _obstacles = new Dictionary<ObstacleReference, List<Vector2>>();
         readonly List<Vector2> _added = new List<Vector2>();
-        readonly List<DotsNavPathFindingAgent> _found = new List<DotsNavPathFindingAgent>();
         DotsNavPathFindingAgent[] _agents;
-        int[] _versions;
         float _lastPlacement;
         bool _paused;
         bool _step;
         bool _add;
         bool _lockHighlight;
-        float _previousSpeed;
         float2 _size;
         Random _r;
         List<Vector2> _removed;
-        LineDrawer _lineDrawer;
-
-        DotsNavPathFindingAgent _highlight;
-        DotsNavPathFindingAgent Highlight
-        {
-            get => _highlight;
-            set
-            {
-                if (_highlight != null)
-                {
-                    _highlight.DrawColor = _restoreColor;
-                    _highlight.DrawCorners = false;
-                    _highlight.DrawPath = _navmesh.DrawMode == DrawMode.Constrained;
-                }
-                _highlight = value;
-                if (_highlight != null)
-                {
-                    _restoreColor = _highlight.DrawColor;
-                    _highlight.DrawColor = HighlightColor;
-                    _highlight.DrawColor.a += 40;
-                    _highlight.DrawCorners = true;
-                    _highlight.DrawPath = true;
-                }
-            }
-        }
 
         void Start()
         {
@@ -90,13 +57,10 @@ namespace DotsNav.Samples.Code
             World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
 
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
-            _lineDrawer = GetComponent<LineDrawer>();
             _size = _navmesh.Size;
             FindObjectOfType<CameraController>().Initialize(_size);
             _r = new Random((uint) DateTime.Now.Ticks);
             _agents = new DotsNavPathFindingAgent[AgentAmount];
-            _versions = new int[AgentAmount];
-            _previousSpeed = SpeedSlider.value;
 
             var placedStarts = new List<Circle>();
             var placedGoals = new List<Circle>();
@@ -121,7 +85,6 @@ namespace DotsNav.Samples.Code
                 agent.transform.position = pos.ToXxY();
                 placedStarts.Add(new Circle{Position = pos, Radius = r});
 
-                var goal = agent.transform.Find("Goal");
                 cycles = 0;
 
                 do
@@ -129,7 +92,6 @@ namespace DotsNav.Samples.Code
                     pos = _size / 2 - new float2(r + _r.NextFloat() * (_size.x - 2 * r), r + _r.NextFloat() * (SpawnRectHeight - 2 * r));
                 } while (placedGoals.Any(p => math.length(p.Position - pos) < r + p.Radius) && ++cycles < 1000);
 
-                goal.position = pos.ToXxY();
                 placedGoals.Add(new Circle{Position = pos, Radius = r});
 
                 agent.FindPath(pos.ToXxY());
@@ -182,119 +144,6 @@ namespace DotsNav.Samples.Code
 
             _added.Clear();
             _added.AddRange(vertices);
-        }
-
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                SceneManager.LoadScene("menu");
-                return;
-            }
-
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                _navmesh.DrawMode = _navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
-                var drawAgents = _navmesh.DrawMode == DrawMode.Constrained;
-                foreach (var agent in _agents)
-                    agent.DrawPath = drawAgents || agent == Highlight;
-            }
-
-            if (Input.GetKeyDown(KeyCode.H))
-                Help.gameObject.SetActive(!Help.gameObject.activeSelf);
-
-            if (SpeedSlider.value != _previousSpeed)
-            {
-                _previousSpeed = SpeedSlider.value;
-                _paused = false;
-            }
-
-            if (!_lockHighlight)
-                Highlight = null;
-
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            var over = Physics.Raycast(ray.origin, ray.direction * 10, out var hit);
-            DotsNavPathFindingAgent highlight = null;
-            if (over)
-                highlight = hit.transform.parent.GetComponentInChildren<DotsNavPathFindingAgent>();
-
-            var mouseDown = Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject();
-
-            if (_lockHighlight)
-            {
-                if (mouseDown)
-                {
-                    if (highlight == null || highlight == Highlight)
-                        _lockHighlight = false;
-                    else
-                        Highlight = highlight;
-                }
-            }
-            else
-            {
-                if (mouseDown && over)
-                    _lockHighlight = true;
-                Highlight = highlight;
-            }
-
-            if (!_paused && Time.time - _lastPlacement > SpeedSlider.value * PlacementDelay || _step)
-            {
-                _lastPlacement = Time.time;
-                _step = false;
-
-                if (_add)
-                {
-                    Insert();
-                    _removed = null;
-                }
-                else
-                {
-                    var ids = _obstacles.Keys.ToArray();
-                    var toRemove = ids[_r.NextInt(ids.Length)];
-                    _navmesh.RemoveObstacle(toRemove);
-                    _removed = _obstacles[toRemove];
-                    _obstacles.Remove(toRemove);
-                    _added.Clear();
-                }
-
-                _add = !_add;
-                foreach (var agent in _found)
-                {
-                    if (agent == _highlight)
-                    {
-                        _restoreColor = OldPathColor;
-                        continue;
-                    }
-                    agent.DrawColor = OldPathColor;
-                }
-                _found.Clear();
-            }
-
-            if (_found.Count == 0)
-            {
-                for (int i = 0; i < _agents.Length; i++)
-                {
-                    var agent = _agents[i];
-                    if (_versions[i] < agent.Version)
-                    {
-                        _found.Add(agent);
-                        _versions[i] = agent.Version;
-                        if (agent == _highlight)
-                        {
-                            _restoreColor = NewPathColor;
-                            continue;
-                        }
-                        agent.DrawColor = NewPathColor;
-                        agent.DrawColor.a += 20;
-                    }
-                }
-            }
-
-            if (_navmesh.IsInitialized)
-            {
-                _lineDrawer.DrawPoly(_added, AddedObstacleColor);
-                _lineDrawer.DrawPoly(_removed, RemovedObstacleColor);
-            }
         }
 
         struct Circle
