@@ -90,6 +90,7 @@ namespace DotsNav.Navmesh.Hybrid
         public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices)
         {
             var em = World.All[0].EntityManager;
+            Assert.IsTrue(em.Exists(Entity));
             var obstacle = em.CreateEntity();
             em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
             var input = em.AddBuffer<VertexElement>(obstacle);
@@ -107,6 +108,7 @@ namespace DotsNav.Navmesh.Hybrid
         public int InsertObstacleBulk<T>(int amount, T adder) where T : struct, IObstacleAdder
         {
             var em = World.All[0].EntityManager;
+            Assert.IsTrue(em.Exists(Entity));
             var obstacle = em.CreateEntity();
             em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
             em.AddBuffer<VertexElement>(obstacle);
@@ -159,6 +161,7 @@ namespace DotsNav.Navmesh.Hybrid
         public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices, Vector2 position, Vector2 scale, float rotationDegrees = 0)
         {
             var em = World.All[0].EntityManager;
+            Assert.IsTrue(em.Exists(Entity));
             var obstacle = em.CreateEntity();
             em.AddComponentData(obstacle, new LocalToWorld {Value = float4x4.TRS(position.ToXxY(), quaternion.RotateY(math.radians(rotationDegrees)), ((float2)scale).xxy)});
             em.AddComponentData(obstacle, new NavmeshObstacleComponent{Navmesh = Entity});
