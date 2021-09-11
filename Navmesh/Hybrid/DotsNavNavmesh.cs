@@ -12,14 +12,14 @@ namespace DotsNav.Navmesh.Hybrid
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavNavmesh navmesh) =>
+            Entities.ForEach((DotsNavPlane plane, DotsNavNavmesh navmesh) =>
             {
                 var entity = GetPrimaryEntity(navmesh);
                 navmesh.Entity = entity;
                 navmesh.World = DstEntityManager.World;
                 DstEntityManager.AddComponentData(entity, new NavmeshComponent
                 (
-                    navmesh.Size,
+                    plane.Size,
                     navmesh.ExpectedVerts,
                     navmesh.MergePointDistance,
                     navmesh.CollinearMargin
@@ -28,8 +28,8 @@ namespace DotsNav.Navmesh.Hybrid
                 DstEntityManager.AddComponentData(entity, new NavmeshDrawComponent
                 {
                     DrawMode = navmesh.DrawMode,
-                    ConstrainedColor = navmesh.ConstrainedColor,
-                    UnconstrainedColor = navmesh.UnconstrainedColor
+                    ConstrainedColor = plane.ConstrainedColor,
+                    UnconstrainedColor = plane.UnconstrainedColor
                 });
             });
         }
@@ -42,11 +42,6 @@ namespace DotsNav.Navmesh.Hybrid
     [RequireComponent(typeof(DotsNavPlane))]
     public class DotsNavNavmesh : EntityLifetimeBehaviour, IPlaneComponent
     {
-        /// <summary>
-        /// Size of the navmesh to be created. Changing this value after initialization has no effect
-        /// </summary>
-        public Vector2 Size = new Vector2(1000, 1000);
-
         /// <summary>
         /// Determines the size of initial allocations. Changing this value after initialization has no effect
         /// </summary>
@@ -65,8 +60,7 @@ namespace DotsNav.Navmesh.Hybrid
 
         [Header("Debug")]
         public DrawMode DrawMode = DrawMode.Constrained;
-        public Color ConstrainedColor = Color.red;
-        public Color UnconstrainedColor = Color.white;
+
 
         /// <summary>
         /// The amount of vertices in the current triangulation
@@ -74,11 +68,6 @@ namespace DotsNav.Navmesh.Hybrid
         public int Vertices { get; internal set; }
 
         public bool IsInitialized => Vertices > 7;
-
-        void OnValidate()
-        {
-            Size = math.abs(Size);
-        }
 
         void IPlaneComponent.InsertObstacle(Entity obstacle, EntityManager em)
         {
@@ -90,24 +79,5 @@ namespace DotsNav.Navmesh.Hybrid
         /// the latest version should be obtained each cycle
         /// </summary>
         public unsafe Navmesh GetNativeNavmesh() => *World.EntityManager.GetComponentData<NavmeshComponent>(Entity).Navmesh;
-
-        /// <summary>
-        /// Returns true when point p is contained within the navmesh
-        /// </summary>
-        public bool Contains(Vector2 p) => Math.Contains(p, -Size / 2, Size / 2);
-
-        void OnDrawGizmos()
-        {
-            if (Application.isPlaying)
-                return;
-
-            float2 hs = Size / 2;
-            var color = ConstrainedColor;
-            DrawLine(-hs, hs * new float2(1, -1));
-            DrawLine(hs * new float2(1, -1), hs);
-            DrawLine(hs, hs * new float2(-1, 1));
-            DrawLine(hs * new float2(-1, 1), -hs);
-            void DrawLine(float2 a, float2 b) => Debug.DrawLine(a.ToXxY(), b.ToXxY(), color);
-        }
     }
 }

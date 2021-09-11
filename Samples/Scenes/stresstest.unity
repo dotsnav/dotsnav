@@ -260,13 +260,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cfc8a1f91f04e02810ce7a509e6353a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Size: {x: 14, y: 9}
   ExpectedVerts: 100000
   MergePointDistance: 0.001
   CollinearMargin: 0.000001
   DrawMode: 1
-  ConstrainedColor: {r: 0, g: 0.5686275, b: 0.8000001, a: 1}
-  UnconstrainedColor: {r: 0.1254902, g: 0.21176471, b: 0.3764706, a: 1}
 --- !u!4 &1107225107
 Transform:
   m_ObjectHideFlags: 0
@@ -293,6 +290,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be784399eb054a828f86ae60e19b2ac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Size: {x: 14, y: 9}
+  ConstrainedColor: {r: 0, g: 0.5686275, b: 0.8000001, a: 1}
+  UnconstrainedColor: {r: 0.1254902, g: 0.21176471, b: 0.3764706, a: 1}
 --- !u!1 &1585346200
 GameObject:
   m_ObjectHideFlags: 0

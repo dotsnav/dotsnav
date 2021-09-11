@@ -53,7 +53,7 @@ namespace DotsNav.Samples.Code
 
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _cameraController = FindObjectOfType<CameraController>();
-            _cameraController.Initialize(_navmesh.Size, .5f);
+            _cameraController.Initialize(Plane.Size, .5f);
             _lineDrawer = GetComponent<LineDrawer>();
             _camera = Camera.main;
             Help.gameObject.SetActive(!Application.isEditor);
@@ -87,7 +87,7 @@ namespace DotsNav.Samples.Code
                 var from = rb.GetStart();
                 var to = rb.GetGoal();
 
-                if (!_navmesh.Contains(from) || !_navmesh.Contains(to))
+                if (!Plane.Contains(from) || !Plane.Contains(to))
                     continue;
 
                 var pointSize = .1f * _cameraController.Zoom;
@@ -104,7 +104,7 @@ namespace DotsNav.Samples.Code
             var dbs = FindObjectsOfType<DiscCastBehaviour>();
             foreach (var db in dbs)
             {
-                if (!_navmesh.Contains(db.Centre))
+                if (!Plane.Contains(db.Centre))
                     continue;
                 using var result = _navmesh.CastDisc(db.Centre, db.Radius, false);
                 _lineDrawer.DrawCircle(db.Centre, new Vector2(0, db.Radius), 2 * Mathf.PI, result.CollisionDetected ? CastHitColor : CastColor, res:200);
@@ -121,7 +121,7 @@ namespace DotsNav.Samples.Code
             {
                 // Note that generally speaking it is recommended to use a larger navmesh
                 // with an inner bounding box to avoid having to adjust each obstacle
-                ClampObstacle(points, _navmesh.Size);
+                ClampObstacle(points, Plane.Size);
 
                 if (points.Count == 0)
                     continue;

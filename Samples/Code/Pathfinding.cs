@@ -92,7 +92,7 @@ namespace DotsNav.Samples.Code
 
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _lineDrawer = GetComponent<LineDrawer>();
-            _size = _navmesh.Size;
+            _size = Plane.Size;
             FindObjectOfType<CameraController>().Initialize(_size);
             _r = new Random((uint) DateTime.Now.Ticks);
             _agents = new DotsNavPathFindingAgent[AgentAmount];
