@@ -31,6 +31,7 @@
 
 using DotsNav.LocalAvoidance.Data;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
 namespace DotsNav.LocalAvoidance
@@ -46,22 +47,18 @@ namespace DotsNav.LocalAvoidance
             if (!prefVelocity.IsNumber() || math.all(prefVelocity == 0))
                 return 0;
 
-            var orcaLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
-            var projLines = new NativeArray<Line>(3 * agent.MaxNeighbours, Allocator.Temp);
-            var lineCount = CreateOrcaLines(pos, radius, velocity, neighbours, orcaLines, 1 / agent.TimeHorizon,
-                out var numObstLines, 1 / agent.TimeHorizonObst, obstacleNeighbours, invTimeStep);
-            var lineFail = LinearProgram2(orcaLines, maxSpeed, prefVelocity, false, out var newVelocity, lineCount);
-            if (lineFail < lineCount)
-                LinearProgram3(orcaLines, numObstLines, lineFail, maxSpeed, ref newVelocity, projLines, lineCount);
+            var orcaLines = new NativeList<Line>(Allocator.Temp);
+            CreateOrcaLines(pos, radius, velocity, neighbours, orcaLines, 1 / agent.TimeHorizon, out var numObstLines, 1 / agent.TimeHorizonObst, obstacleNeighbours, invTimeStep);
+            var lineFail = LinearProgram2(orcaLines, maxSpeed, prefVelocity, false, out var newVelocity);
+            if (lineFail < orcaLines.Length)
+                LinearProgram3(orcaLines, numObstLines, lineFail, maxSpeed, ref newVelocity);
             return newVelocity;
         }
 
-        static int CreateOrcaLines(float2 position, float radius, float2 velocity, NativeList<VelocityObstacle> neighbours,
-                                   NativeArray<Line> lines, float invTimeHorizon, out int numObstLines, float invTimeHorizonObst,
+        static void CreateOrcaLines(float2 position, float radius, float2 velocity, NativeList<VelocityObstacle> neighbours,
+                                   NativeList<Line> lines, float invTimeHorizon, out int numObstLines, float invTimeHorizonObst,
                                    NativeList<ObstacleDistance> obstacles, float invTimeStep)
         {
-            var lineCount = 0;
-
             /* Create obstacle ORCA lines. */
             for (var i = 0; i < obstacles.Length; ++i)
             {
@@ -77,7 +74,7 @@ namespace DotsNav.LocalAvoidance
                  */
                 var alreadyCovered = false;
 
-                for (var j = 0; j < lineCount; ++j)
+                for (var j = 0; j < lines.Length; ++j)
                 {
                     if (math.determinant(new float2x2(invTimeHorizonObst * relativePosition1 - lines[j].Point, lines[j].Direction)) - invTimeHorizonObst * radius >= -Epsilon && math.determinant(new float2x2(invTimeHorizonObst * relativePosition2 - lines[j].Point, lines[j].Direction)) - invTimeHorizonObst * radius >= -Epsilon)
                     {
@@ -111,7 +108,7 @@ namespace DotsNav.LocalAvoidance
                     {
                         line.Point = new float2(0.0f, 0.0f);
                         line.Direction = math.normalize(new float2(-relativePosition1.y, relativePosition1.x));
-                        lines[lineCount++] = line;
+                        lines.Add(line);
                     }
 
                     continue;
@@ -126,7 +123,7 @@ namespace DotsNav.LocalAvoidance
                     {
                         line.Point = new float2(0.0f, 0.0f);
                         line.Direction = math.normalize(new float2(-relativePosition2.y, relativePosition2.x));
-                        lines[lineCount++] = line;
+                        lines.Add(line);
                     }
 
                     continue;
@@ -136,7 +133,7 @@ namespace DotsNav.LocalAvoidance
                     /* Collision with obstacle segment. */
                     line.Point = new float2(0.0f, 0.0f);
                     line.Direction = -obstacle1->Direction;
-                    lines[lineCount++] = line;
+                    lines.Add(line);
 
                     continue;
                 }
@@ -255,7 +252,7 @@ namespace DotsNav.LocalAvoidance
 
                     line.Direction = new float2(unitW.y, -unitW.x);
                     line.Point = leftCutOff + radius * invTimeHorizonObst * unitW;
-                    lines[lineCount++] = line;
+                    lines.Add(line);
 
                     continue;
                 }
@@ -266,7 +263,7 @@ namespace DotsNav.LocalAvoidance
 
                     line.Direction = new float2(unitW.y, -unitW.x);
                     line.Point = rightCutOff + radius * invTimeHorizonObst * unitW;
-                    lines[lineCount++] = line;
+                    lines.Add(line);
 
                     continue;
                 }
@@ -284,7 +281,7 @@ namespace DotsNav.LocalAvoidance
                     /* Project on cut-off line. */
                     line.Direction = -obstacle1->Direction;
                     line.Point = leftCutOff + radius * invTimeHorizonObst * new float2(-line.Direction.y, line.Direction.x);
-                    lines[lineCount++] = line;
+                    lines.Add(line);
 
                     continue;
                 }
@@ -299,7 +296,7 @@ namespace DotsNav.LocalAvoidance
 
                     line.Direction = leftLegDirection;
                     line.Point = leftCutOff + radius * invTimeHorizonObst * new float2(-line.Direction.y, line.Direction.x);
-                    lines[lineCount++] = line;
+                    lines.Add(line);
 
                     continue;
                 }
@@ -312,10 +309,10 @@ namespace DotsNav.LocalAvoidance
 
                 line.Direction = -rightLegDirection;
                 line.Point = rightCutOff + radius * invTimeHorizonObst * new float2(-line.Direction.y, line.Direction.x);
-                lines[lineCount++] = line;
+                lines.Add(line);
             }
 
-            numObstLines = lineCount;
+            numObstLines = lines.Length;
 
             for (var i = 0; i < neighbours.Length; ++i)
             {
@@ -382,13 +379,11 @@ namespace DotsNav.LocalAvoidance
                 }
 
                 line.Point = velocity + 0.5f * u;
-                lines[lineCount++] = line;
+                lines.Add(line);
             }
-
-            return lineCount;
         }
 
-        static bool LinearProgram1(NativeArray<Line> lines, int lineNo, float radius, float2 optVelocity, bool directionOpt, ref float2 result)
+        static bool LinearProgram1(NativeList<Line> lines, int lineNo, float radius, float2 optVelocity, bool directionOpt, ref float2 result)
         {
             var dotProduct = math.dot(lines[lineNo].Point, lines[lineNo].Direction);
             var discriminant = Math.Square(dotProduct) + Math.Square(radius) - math.lengthsq(lines[lineNo].Point);
@@ -455,7 +450,7 @@ namespace DotsNav.LocalAvoidance
             return true;
         }
 
-        static int LinearProgram2(NativeArray<Line> lines, float radius, float2 optVelocity, bool directionOpt, out float2 result, int lineCount)
+        static int LinearProgram2(NativeList<Line> lines, float radius, float2 optVelocity, bool directionOpt, out float2 result)
         {
             if (directionOpt)
             {
@@ -481,7 +476,7 @@ namespace DotsNav.LocalAvoidance
                 }
             }
 
-            for (var i = 0; i < lineCount; ++i)
+            for (var i = 0; i < lines.Length; ++i)
             {
                 if (math.determinant(new float2x2(lines[i].Direction, lines[i].Point - result)) > 0.0f)
                 {
@@ -496,21 +491,20 @@ namespace DotsNav.LocalAvoidance
                 }
             }
 
-            return lineCount;
+            return lines.Length;
         }
 
-        static void LinearProgram3(NativeArray<Line> lines, int numObstLines, int beginLine, float radius, ref float2 result, NativeArray<Line> projLines, int orcaLines)
+        static void LinearProgram3(NativeList<Line> lines, int numObstLines, int beginLine, float radius, ref float2 result)
         {
             var distance = 0.0f;
 
-            for (var i = beginLine; i < orcaLines; ++i)
+            for (var i = beginLine; i < lines.Length; ++i)
             {
                 if (math.determinant(new float2x2(lines[i].Direction, lines[i].Point - result)) > distance)
                 {
-                    var lineCount = 0;
                     /* Result does not satisfy constraint of line i. */
-                    for (var ii = 0; ii < numObstLines; ++ii)
-                        projLines[lineCount++] = lines[ii];
+                    var projLines = new NativeList<Line>(numObstLines, Allocator.Temp);
+                    projLines.AddRange(lines.GetUnsafeReadOnlyPtr(), numObstLines);
 
                     for (var j = numObstLines; j < i; ++j)
                     {
@@ -535,11 +529,11 @@ namespace DotsNav.LocalAvoidance
                         }
 
                         line.Direction = math.normalize(lines[j].Direction - lines[i].Direction);
-                        projLines[lineCount++] = line;
+                        projLines.Add(line);
                     }
 
                     var tempResult = result;
-                    if (LinearProgram2(projLines, radius, new float2(-lines[i].Direction.y, lines[i].Direction.x), true, out result, lineCount) < lineCount)
+                    if (LinearProgram2(projLines, radius, new float2(-lines[i].Direction.y, lines[i].Direction.x), true, out result) < projLines.Length)
                     {
                         /*
                          * This should in principle not happen. The result is by
