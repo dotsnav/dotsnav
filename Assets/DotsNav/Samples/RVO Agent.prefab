@@ -63,7 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DrawGizmos: 0
-  DrawPath: 1
+  DrawPath: 0
   DrawCorners: 0
   DrawColor: {r: 0, g: 0, b: 0, a: 1}
 --- !u!114 &5843786958838245045
@@ -78,9 +78,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22a8dbb25b1346fdbeffe1c33d7dd07c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSpeed: 2
+  MaxSpeed: 3
   MaxNeighbours: 10
-  NeighbourDist: 1
+  NeighbourDist: 5
   TimeHorizon: 3
   TimeHorizonObst: 3
 --- !u!114 &1198927799591733719
@@ -95,7 +95,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068e3c499ea44e55a06fe36f97352f42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PreferredSpeed: 0.2
+  PreferredSpeed: 2
   BrakeSpeed: 4
 --- !u!114 &6714639268391541046
 MonoBehaviour:
