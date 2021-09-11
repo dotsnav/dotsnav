@@ -62,7 +62,7 @@ class SandboxDev : MonoBehaviour
         }
 
         _cameraController = FindObjectOfType<CameraController>();
-        _cameraController.Initialize(_navmesh.Size);
+        _cameraController.Initialize(Plane.Size);
         _lineDrawer = GetComponent<LineDrawer>();
         _camera = Camera.main;
         Help.gameObject.SetActive(!Application.isEditor);
@@ -97,7 +97,7 @@ class SandboxDev : MonoBehaviour
             var from = rb.GetStart();
             var to = rb.GetGoal();
 
-            if (!_navmesh.Contains(from) || !_navmesh.Contains(to))
+            if (!Plane.Contains(from) || !Plane.Contains(to))
                 continue;
 
             var pointSize = .1f * _cameraController.Zoom;
@@ -114,7 +114,7 @@ class SandboxDev : MonoBehaviour
         var dbs = FindObjectsOfType<DiscCastBehaviour>();
         foreach (var db in dbs)
         {
-            if (!_navmesh.Contains(db.Centre))
+            if (!Plane.Contains(db.Centre))
                 continue;
             using (var result = _navmesh.CastDisc(db.Centre, db.Radius, false))
                 _lineDrawer.DrawCircle(db.Centre, new Vector2(0, db.Radius), 2 * Mathf.PI, result.CollisionDetected ? CastHitColor : CastColor, res:200);
@@ -125,7 +125,7 @@ class SandboxDev : MonoBehaviour
     {
         foreach (var points in _points)
         {
-            ClampObstacle(points, _navmesh.Size);
+            ClampObstacle(points, Plane.Size);
 
             if (points.Count == 0)
                 continue;

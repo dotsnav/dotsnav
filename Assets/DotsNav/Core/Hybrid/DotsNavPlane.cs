@@ -24,6 +24,13 @@ namespace DotsNav.Hybrid
 
     public class DotsNavPlane : EntityLifetimeBehaviour
     {
+        /// <summary>
+        /// Size of the navmesh to be created. Changing this value after initialization has no effect
+        /// </summary>
+        public Vector2 Size = new Vector2(1000, 1000);
+        public Color ConstrainedColor = Color.red;
+        public Color UnconstrainedColor = Color.white;
+
         IPlaneComponent[] _components;
 
         protected override void Awake()
@@ -101,6 +108,30 @@ namespace DotsNav.Hybrid
                     Amounts.Add(Input.Length - s);
                 }
             }
+        }
+
+        void OnValidate()
+        {
+            Size = math.abs(Size);
+        }
+
+        /// <summary>
+        /// Returns true when point p is contained within the navmesh
+        /// </summary>
+        public bool Contains(Vector2 p) => Math.Contains(p, -Size / 2, Size / 2);
+
+        void OnDrawGizmos()
+        {
+            if (Application.isPlaying)
+                return;
+
+            float2 hs = Size / 2;
+            var color = ConstrainedColor;
+            DrawLine(-hs, hs * new float2(1, -1));
+            DrawLine(hs * new float2(1, -1), hs);
+            DrawLine(hs, hs * new float2(-1, 1));
+            DrawLine(hs * new float2(-1, 1), -hs);
+            void DrawLine(float2 a, float2 b) => Debug.DrawLine(a.ToXxY(), b.ToXxY(), color);
         }
     }
 }

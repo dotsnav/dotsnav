@@ -11,7 +11,7 @@ namespace DotsNav.LocalAvoidance.Hybrid
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavLocalAvoidance localAvoidance) =>
+            Entities.ForEach((DotsNavPlane plane, DotsNavLocalAvoidance localAvoidance) =>
             {
                 var entity = GetPrimaryEntity(localAvoidance);
                 localAvoidance.Entity = entity;
@@ -19,7 +19,7 @@ namespace DotsNav.LocalAvoidance.Hybrid
                 DstEntityManager.AddComponentData(entity, new ObstacleTreeComponent());
                 DstEntityManager.AddComponentData(entity, new DynamicTreeComponent());
                 if (localAvoidance.DrawObstacleTree)
-                    DstEntityManager.AddComponentData(entity, new DrawComponent {Color = localAvoidance.Color});
+                    DstEntityManager.AddComponentData(entity, new DrawComponent {Color = plane.ConstrainedColor});
             });
         }
     }
@@ -28,7 +28,6 @@ namespace DotsNav.LocalAvoidance.Hybrid
     public class DotsNavLocalAvoidance : EntityLifetimeBehaviour, IPlaneComponent
     {
         public bool DrawObstacleTree;
-        public Color Color = Color.red;
 
         void IPlaneComponent.InsertObstacle(Entity obstacle, EntityManager em)
         {

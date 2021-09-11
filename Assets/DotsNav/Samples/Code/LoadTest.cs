@@ -62,6 +62,7 @@ namespace DotsNav.Samples.Code
         void Load()
         {
             _plane = Instantiate(PlanePrefab);
+            _plane.GetComponent<DotsNavPlane>().Size = Size;
             _navmesh = _plane.GetComponent<DotsNavNavmesh>();
             _navmesh.DrawMode = _drawMode;
             _shouldInsert = true;

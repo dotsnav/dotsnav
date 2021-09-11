@@ -1,3 +1,4 @@
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.Systems;
@@ -12,11 +13,11 @@ namespace DotsNav.Navmesh.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((DotsNavNavmesh hybrid, ref NavmeshDrawComponent debug) =>
+                .ForEach((DotsNavPlane plane, DotsNavNavmesh hybrid, ref NavmeshDrawComponent debug) =>
                 {
                     debug.DrawMode = hybrid.DrawMode;
-                    debug.ConstrainedColor = hybrid.ConstrainedColor;
-                    debug.UnconstrainedColor = hybrid.UnconstrainedColor;
+                    debug.ConstrainedColor = plane.ConstrainedColor;
+                    debug.UnconstrainedColor = plane.UnconstrainedColor;
                 })
                 .Run();
         }

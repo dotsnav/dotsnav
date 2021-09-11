@@ -38,7 +38,7 @@ namespace DotsNav.Samples.Code
             World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
 
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
-            FindObjectOfType<CameraController>().Initialize(_navmesh.Size);
+            FindObjectOfType<CameraController>().Initialize(Plane.Size);
             _startTime = Time.time;
             _r = new Random((uint) Seed);
             UpdateSeedText();
@@ -113,11 +113,11 @@ namespace DotsNav.Samples.Code
             }
 
             var size = max - min;
-            var range = (float2) _navmesh.Size - size;
+            var range = (float2) Plane.Size - size;
             var offset = _r.NextFloat2(range);
 
             for (var i = 0; i < _points.Count; i++)
-                _points[i] += (Vector2) (offset - min - (float2) _navmesh.Size / 2);
+                _points[i] += (Vector2) (offset - min - (float2) Plane.Size / 2);
 
             _ids.Add(Plane.InsertObstacle(_points));
         }
