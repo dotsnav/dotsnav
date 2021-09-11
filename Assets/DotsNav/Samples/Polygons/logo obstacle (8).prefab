@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2943403095382978647}
   - component: {fileID: 2943403095382978646}
+  - component: {fileID: 5209256123706367420}
   m_Layer: 0
   m_Name: logo obstacle (8)
   m_TagString: Untagged
@@ -43,20 +44,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce853caf004f4726b62fefe38d7b0177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Plane: {fileID: 0}
   Close: 1
   Vertices:
-  - x: 0.9849348
-    y: -0.10457352
-  - x: 0.97792614
-    y: -0.11421046
-  - x: 0.7990183
-    y: -0.1141642
-  - x: 0.76577526
-    y: -0.082358554
-  - x: 0.76587754
-    y: -0.008197904
-  - x: 0.7728862
-    y: -0.0011891723
-  - x: 0.9849348
-    y: -0.001189172
+  - {x: 0.9849348, y: -0.10457352}
+  - {x: 0.97792614, y: -0.11421046}
+  - {x: 0.7990183, y: -0.1141642}
+  - {x: 0.76577526, y: -0.082358554}
+  - {x: 0.76587754, y: -0.008197904}
+  - {x: 0.7728862, y: -0.0011891723}
+  - {x: 0.9849348, y: -0.001189172}
   DrawGizmos: 1
+--- !u!114 &5209256123706367420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2943403095382978640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25c0800e6ddd4d958937eec645a74a88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
