@@ -11,6 +11,8 @@ namespace DotsNav.PathFinding.Systems
     [UpdateAfter(typeof(PathFinderSystem))]
     class AgentDirectionSystem : SystemBase
     {
+        // todo this system should be reconsidered in a broader context
+
         protected override void OnUpdate()
         {
             var ltwLookup = GetComponentDataFromEntity<LocalToWorld>(true);
@@ -23,7 +25,6 @@ namespace DotsNav.PathFinding.Systems
                     if (agent.State != PathQueryState.PathFound)
                         return;
 
-                    // todo find a way not to calculate this several times
                     var inv = math.inverse(ltwLookup[navmesh.Navmesh].Value);
                     var p = math.transform(inv, translation.Value).xz;
 
@@ -77,7 +78,7 @@ namespace DotsNav.PathFinding.Systems
                     float2 GetDirection(Angle angle)
                     {
                         var distToPath = math.distance(p, closest);
-                        var f = math.min(1, distToPath / (radius / 2));
+                        var f = math.min(1, distToPath / (radius * 2));
                         var angleToPath = Math.Angle(closest - p);
                         return Angle.Lerp(angle, angleToPath, f).ToVector();
                     }
