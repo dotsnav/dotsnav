@@ -33,17 +33,17 @@ Alternatively, open the package manager, choose Add package from git URL and ent
 Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
 
 ### Planes
-Attach a DotsNavPlane behaviour to a gameobject.
+Attach a DotsNavPlane behaviour to a gameobject. It's border will be drawn in the scene view.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image21.png?raw=true)
 
-To create a navmesh attach a DotsNavNavmesh behaviour. The navmesh border will be drawn in the scene view. The value of ExpectedVerts determines the size of initial allocations.
+To create a navmesh attach a DotsNavNavmesh behaviour. The value of ExpectedVerts determines the size of initial allocations.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image28.png?raw=true)
 
-To enable local avoidance attach a DotsNavLocalAvoidance behaviour. Note that this behaviour does not require a navmesh and has no boundary.
+<!--- To enable local avoidance attach a DotsNavLocalAvoidance behaviour. This behaviour does not require a navmesh.
 
-![](https://github.com/bassmit/images/blob/master/DotsNav/image22.png?raw=true)
+![](https://github.com/bassmit/images/blob/master/DotsNav/image22.png?raw=true) --->
     
 ### Pathfinder
 To enable path finding attach a DotsNavPathfinder behaviour to a gameobject. The pathfinder manages the resources required to search for paths on any number of threads, and only one pathfinder is allowed at any time.
@@ -51,13 +51,9 @@ To enable path finding attach a DotsNavPathfinder behaviour to a gameobject. The
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image23.png?raw=true) 
 
 ### Obstacles
-To create an obstacle add a DotsNavObstacle behaviour to a gameobject and assign the Plane field. When spawning obstacle prefabs make sure to assign the Plane immediately after instantiation.
+To create an obstacle add DotsNavObstacle and DotsNavNavmeshObstacle behaviours to a gameobject and assign the Plane field. When spawning obstacle prefabs make sure to assign the Plane immediately after instantiation.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image24.png?raw=true)
-
-Add DotsNavNavmeshObstacle and or DotsNavLocalAvoidanceObstacle behaviours as appropriate.
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image20.png?raw=true)
   
 Add a few vertices and move them around using the position handle. The edit mode colors can be set in the DotsNav tab in Preferences.
 
@@ -66,15 +62,10 @@ Add a few vertices and move them around using the position handle. The edit mode
 Alternatively an obstacle's Vertices array can be populated through script. Obstacle gameobjects can be scaled, rotated and used as prefabs. Obstacles are projected on to their respective planes when inserted.
 
 ### Agents
-To create an agent attach a DotsNavAgent behaviour to a gameobject and assign the Plane field. When spawning agent prefabs make sure to assign the Plane immediately after instantiation.
+To create an agent attach DotsNavAgent and DotsNavPathfindingAgent behaviours to a gameobject and assign the Plane field. When spawning agent prefabs make sure to assign the Plane immediately after instantiation. DotsNavPathfindingAgent has a Direction field which is updated each navmesh update.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image25.png?raw=true)
 
-Add DotsNavPathfindingAgent and or DotsNavLocalAvoidanceAgent behaviours as appropriate.
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image26.png?raw=true)
-
-Note that DotsNavPathfindingAgent and DotsNavLocalAvoidanceAgent have Direction and Velocity fields respectively. Currently no steering behaviours are provided, but a basic example can be seen in the avoidance sample scene.
   
 ### Conversion to DOTS
 Attach a Convert to Entity component all to planes, agents, obstacles and the pathfinder. When using monobehaviours to develop a project choose “Convert and Inject”. Obstacles and agents can then be removed by destroying the associated gameobject. Planes can be disposed of similarly.
@@ -94,10 +85,6 @@ Path queries can be enqueued using DotsNavAgent.FindPath.
 Next navmesh update a path will be calculated.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image9.png?raw=true)
-
-Each navmesh update the direction required to follow the path is calculated using the agent's position.
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image28.png?raw=true)
 
 Using the default settings, invalidated paths are recalculated automatically.
 
