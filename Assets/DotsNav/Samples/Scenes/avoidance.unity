@@ -555,7 +555,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ca77607fd64160a563afa8df978e6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Mode: 0
+  Mode: 1
 --- !u!4 &1403961018
 Transform:
   m_ObjectHideFlags: 0
@@ -722,6 +722,7 @@ MonoBehaviour:
   - {fileID: 5547837765248228189, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
   - {fileID: 6915082999526884430, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
   Help: {fileID: 2103250097}
+  Seed: 1
 --- !u!114 &1871500335
 MonoBehaviour:
   m_ObjectHideFlags: 0
