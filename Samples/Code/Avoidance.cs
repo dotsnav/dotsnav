@@ -37,6 +37,7 @@ namespace DotsNav.Samples.Code
 
         float2 _size;
         Random _r;
+        public int Seed;
 
         void Start()
         {
@@ -45,7 +46,8 @@ namespace DotsNav.Samples.Code
 
             _size = Plane.GetComponent<DotsNavPlane>().Size;
             FindObjectOfType<CameraController>().Initialize(_size);
-            _r = new Random((uint) DateTime.Now.Ticks);
+            // _r = new Random((uint) DateTime.Now.Ticks);
+            _r = new Random((uint) Seed);
 
             var placedStarts = new List<Circle>();
             var placedGoals = new List<Circle>();
