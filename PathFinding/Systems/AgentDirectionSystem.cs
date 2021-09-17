@@ -11,8 +11,6 @@ namespace DotsNav.PathFinding.Systems
     [UpdateAfter(typeof(PathFinderSystem))]
     class AgentDirectionSystem : SystemBase
     {
-        // todo this system should be reconsidered in a broader context
-
         protected override void OnUpdate()
         {
             var ltwLookup = GetComponentDataFromEntity<LocalToWorld>(true);
@@ -35,45 +33,41 @@ namespace DotsNav.PathFinding.Systems
                         return;
                     }
 
-                    var distSq = float.MaxValue;
-                    var closest = default(float2);
-                    Angle direction = 0f;
+                    var segment = path[0];
+                    var closest = Math.ClosestPointOnLineSegment(p, segment.From, segment.To);
+                    var dsq = math.distancesq(p, closest);
 
-                    for (int i = 0; i < path.Length; i++)
+                    while (path.Length > 1)
                     {
-                        var segment = path[i];
-                        var point = Math.ClosestPointOnLineSegment(p, segment.From, segment.To);
-                        Angle dir;
-
-                        if (math.all(point == segment.To) && i < path.Length - 1)
-                        {
-                            var corner = path[i + 1].Corner;
-                            var fromAngle = Math.Angle(segment.To - corner);
-                            var toAngle = Math.Angle(path[i + 1].From - corner);
-                            dir = Angle.Clamp(Math.Angle(p - corner), fromAngle, toAngle);
-                            point = corner + Math.Rotate(radius, dir);
-                            var left = Math.CcwFast(segment.From, segment.To, corner);
-                            dir += left ? -math.PI / 2 : math.PI / 2;
-                        }
-                        else
-                        {
-                            dir = Math.Angle(segment.To - segment.From);
-                        }
-
-                        var dsq = math.distancesq(p, point);
-
-                        if (dsq > distSq)
-                        {
-                            data.Value = GetDirection(direction);
-                            return;
-                        }
-
-                        closest = point;
-                        direction = dir;
-                        distSq = dsq;
+                        var segment1 = path[1];
+                        var point1 = Math.ClosestPointOnLineSegment(p, segment1.From, segment1.To);
+                        var dsq1 = math.distancesq(p, point1);
+                        if (dsq < dsq1)
+                            break;
+                        path.RemoveAt(0); // todo store segments in reverse order so we can easily pop them efficiently
+                        segment = segment1;
+                        closest = point1;
+                        dsq = dsq1;
                     }
 
-                    data.Value = GetDirection(Math.Angle(dest - p));
+                    Angle dir;
+
+                    if (math.all(closest == segment.To) && path.Length > 1)
+                    {
+                        var corner = path[1].Corner;
+                        var fromAngle = Math.Angle(segment.To - corner);
+                        var toAngle = Math.Angle(path[1].From - corner);
+                        dir = Angle.Clamp(Math.Angle(p - corner), fromAngle, toAngle);
+                        closest = corner + Math.Rotate(radius, dir);
+                        var left = Math.CcwFast(segment.From, segment.To, corner);
+                        dir += left ? -math.PI / 2 : math.PI / 2;
+                    }
+                    else
+                    {
+                        dir = Math.Angle(segment.To - segment.From);
+                    }
+
+                    data.Value = GetDirection(dir);
 
                     float2 GetDirection(Angle angle)
                     {
