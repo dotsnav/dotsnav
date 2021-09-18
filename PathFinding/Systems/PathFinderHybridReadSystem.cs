@@ -25,7 +25,6 @@ namespace DotsNav.PathFinding.Systems
                 .ForEach((DotsNavPathFindingAgent hybrid, ref PathQueryComponent agent, ref RadiusComponent radius, ref Translation translation, ref AgentDrawComponent drawData) =>
                 {
                     agent.State = hybrid.State;
-                    agent.From = hybrid.Start;
                     agent.To = hybrid.Goal;
                     var pos = hybrid.transform.position;
                     pos.y = 0;

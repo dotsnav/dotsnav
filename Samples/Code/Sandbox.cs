@@ -59,8 +59,9 @@ namespace DotsNav.Samples.Code
             Help.gameObject.SetActive(!Application.isEditor);
             _agent = FindObjectOfType<DotsNavPathFindingAgent>();
             var tr = _agent.transform;
-            _start = tr.Find("Start");
-            _goal = tr.Find("Goal");
+            _start = tr.parent;
+            _goal = _start.Find("Goal");
+            _goal.parent = null;
             var size = _start.localScale.x;
             var s = new Vector3(size, size, size);
             _goal.localScale = s;
@@ -74,7 +75,7 @@ namespace DotsNav.Samples.Code
             // Enqueue a path queries using FindPath. Checking start or goal changed
             // is omitted for clarity. Use Pathfinder recalculate flags to indicate which
             // states trigger automatic recalculation of an agent's path.
-            _agent.FindPath(_start.position, _goal.position);
+            _agent.FindPath(_goal.position);
 
             // Manually trigger navmesh and pathfinder update to ensure the visuals line up
             Runner.ProcessModifications();

@@ -80,6 +80,7 @@ namespace DotsNav.PathFinding.Systems
                     NavmeshElements = GetComponentDataFromEntity<NavmeshAgentComponent>(true),
                     Navmeshes = GetComponentDataFromEntity<NavmeshComponent>(true),
                     LTWLookup = GetComponentDataFromEntity<LocalToWorld>(true),
+                    TranslationLookup = GetComponentDataFromEntity<Translation>(true),
                     Queries = GetComponentDataFromEntity<PathQueryComponent>(),
                     Radii = GetComponentDataFromEntity<RadiusComponent>(true),
                     PathSegments = GetBufferFromEntity<PathSegmentElement>(),
@@ -114,6 +115,8 @@ namespace DotsNav.PathFinding.Systems
             public ComponentDataFromEntity<NavmeshComponent> Navmeshes;
             [ReadOnly]
             public ComponentDataFromEntity<LocalToWorld> LTWLookup;
+            [ReadOnly]
+            public ComponentDataFromEntity<Translation> TranslationLookup;
 
             public unsafe void Execute(int index)
             {
@@ -129,8 +132,8 @@ namespace DotsNav.PathFinding.Systems
 
                 var navmeshEntity = NavmeshElements[agent].Navmesh;
                 var ltw = math.inverse(LTWLookup[navmeshEntity].Value);
-                var navmesh = *Navmeshes[navmeshEntity].Navmesh; // todo just pass pointer?
-                query.State = instance.FindPath(math.transform(ltw, query.From).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, navmesh, out _);
+                var pos = TranslationLookup[agent];
+                query.State = instance.FindPath(math.transform(ltw, pos.Value).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, Navmeshes[navmeshEntity].Navmesh, out _);
                 if (query.State == PathQueryState.PathFound)
                     ++query.Version;
                 Queries[agent] = query;

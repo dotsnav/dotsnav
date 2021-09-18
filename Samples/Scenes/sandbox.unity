@@ -428,7 +428,7 @@ GameObject:
   - component: {fileID: 445355816}
   - component: {fileID: 445355814}
   m_Layer: 0
-  m_Name: Start
+  m_Name: Agent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -444,9 +444,11 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -2.005, y: 0, z: 0.548}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
-  m_Children: []
-  m_Father: {fileID: 532195504}
-  m_RootOrder: 0
+  m_Children:
+  - {fileID: 532195504}
+  - {fileID: 1023104224}
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &445355814
 SphereCollider:
@@ -560,7 +562,7 @@ GameObject:
   - component: {fileID: 532195506}
   - component: {fileID: 532195505}
   m_Layer: 0
-  m_Name: Agent
+  m_Name: Hybrid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -576,11 +578,9 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 445355813}
-  - {fileID: 1023104224}
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Children: []
+  m_Father: {fileID: 445355813}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &532195505
 MonoBehaviour:
@@ -1140,10 +1140,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1023104223}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.153, y: 0, z: 0.955}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_LocalPosition: {x: 4.260001, y: 0, z: 2.0350003}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 532195504}
+  m_Father: {fileID: 445355813}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &1023104225

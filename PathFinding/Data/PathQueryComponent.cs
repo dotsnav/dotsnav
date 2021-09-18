@@ -9,7 +9,6 @@ namespace DotsNav.PathFinding.Data
     /// </summary>
     public struct PathQueryComponent : IComponentData
     {
-        public float3 From;
         public float3 To;
 
         /// <summary>
