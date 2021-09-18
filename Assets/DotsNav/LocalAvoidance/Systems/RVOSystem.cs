@@ -12,7 +12,7 @@ namespace DotsNav.LocalAvoidance.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(DynamicTreeSystem))]
     [UpdateAfter(typeof(ObstacleTreeSystem))]
-    class RVOSystem : SystemBase
+    public class RVOSystem : SystemBase
     {
         protected override void OnUpdate()
         {
