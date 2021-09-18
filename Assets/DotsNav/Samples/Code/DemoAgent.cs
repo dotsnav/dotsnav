@@ -21,9 +21,9 @@ class DemoAgent : MonoBehaviour, IConvertGameObjectToEntity
         _agent = GetComponent<DotsNavLocalAvoidanceAgent>();
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        transform.position += _agent.Velocity * Time.fixedDeltaTime;
+        transform.position += _agent.Velocity * Time.deltaTime;
     }
 
     public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
