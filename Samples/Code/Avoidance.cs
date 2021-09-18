@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
+using DotsNav.LocalAvoidance.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Entities;
@@ -38,6 +39,9 @@ namespace DotsNav.Samples.Code
         float2 _size;
         Random _r;
         public int Seed;
+        public float PreferredSpeedMin;
+        public float PreferredSpeedRange;
+        public float MaxSpeedFactor;
 
         void Start()
         {
@@ -55,6 +59,11 @@ namespace DotsNav.Samples.Code
             for (int i = 0; i < AgentAmount; i++)
             {
                 var agent = Instantiate(AgentPrefab);
+
+                var preferredSpeed = _r.NextFloat(PreferredSpeedMin, PreferredSpeedRange);
+                agent.GetComponent<DemoAgent>().PreferredSpeed = preferredSpeed;
+                agent.GetComponent<DotsNavLocalAvoidanceAgent>().MaxSpeed = preferredSpeed * MaxSpeedFactor;
+
                 var r = AgentMinRadius + i * AgentRadiusRange / AgentAmount;
                 var dotsNavAgent = agent.GetComponent<DotsNavAgent>();
                 dotsNavAgent.Radius = r;

@@ -707,7 +707,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Plane: {fileID: 2081167528}
-  AgentAmount: 50
+  AgentAmount: 125
   AgentMinRadius: 0.05
   AgentRadiusRange: 0.1
   SpawnRectHeight: 1.5
@@ -722,7 +722,10 @@ MonoBehaviour:
   - {fileID: 5547837765248228189, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
   - {fileID: 6915082999526884430, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
   Help: {fileID: 2103250097}
-  Seed: 1
+  Seed: 2
+  PreferredSpeedMin: 1.2
+  PreferredSpeedRange: 0.3
+  MaxSpeedFactor: 1.2
 --- !u!114 &1871500335
 MonoBehaviour:
   m_ObjectHideFlags: 0
