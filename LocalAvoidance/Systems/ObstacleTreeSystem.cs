@@ -63,6 +63,9 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithNone<ObstacleTreeComponent>()
                 .ForEach((Entity entity, int entityInQueryIndex, TreeSystemStateComponent state) =>
                 {
+                    if (state.Tree.Count > 0)
+                        return;
+
                     state.Tree.Dispose();
                     b1.RemoveComponent<TreeSystemStateComponent>(entityInQueryIndex, entity);
                 })
