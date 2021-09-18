@@ -25,6 +25,8 @@ namespace DotsNav.BVH
             _tree = null;
         }
 
+        public int Count => _tree->Count;
+
         public readonly int CreateProxy(AABB aabb, T userData)
         {
             return _tree->CreateProxy(aabb, userData);

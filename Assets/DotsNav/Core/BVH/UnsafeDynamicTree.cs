@@ -45,6 +45,8 @@ namespace DotsNav.BVH
             _tree.Dispose();
         }
 
+        public int Count => _tree.Count;
+
         // Create a proxy in the tree as a leaf node. We return the index
         // of the node instead of a pointer so that we can grow
         // the node pool.
