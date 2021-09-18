@@ -81,8 +81,8 @@ MonoBehaviour:
   MaxSpeed: 2
   MaxNeighbours: 10
   NeighbourDist: 10
-  TimeHorizon: 1
-  TimeHorizonObst: 1
+  TimeHorizon: 0.2
+  TimeHorizonObst: 0.2
 --- !u!114 &1198927799591733719
 MonoBehaviour:
   m_ObjectHideFlags: 0
