@@ -8,6 +8,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace DotsNav.Systems
 {
@@ -56,6 +57,9 @@ namespace DotsNav.Systems
                 .WithNone<DynamicTreeComponent>()
                 .ForEach((Entity entity, int entityInQueryIndex, TreeSystemStateComponent state) =>
                 {
+                    if (state.Tree.Count > 0)
+                        return;
+
                     state.Tree.Dispose();
                     b1.RemoveComponent<TreeSystemStateComponent>(entityInQueryIndex, entity);
                 })
@@ -88,13 +92,16 @@ namespace DotsNav.Systems
                 })
                 .ScheduleParallel();
 
+            var destroyCmb = ecbSource.CreateCommandBuffer().AsParallelWriter();
+
             Entities
                 .WithName("Destroy")
                 .WithBurst()
                 .WithNone<DynamicTreeElementComponent>()
                 .WithStoreEntityQueryInField(ref _destroyQuery)
-                .ForEach((ElementSystemStateComponent state) =>
+                .ForEach((Entity entity, int entityInQueryIndex, ElementSystemStateComponent state) =>
                 {
+                    destroyCmb.RemoveComponent<ElementSystemStateComponent>(entityInQueryIndex, entity);
                     operationsWriter.Add(state.TreeRef, new TreeOperation(state.Id));
                 })
                 .ScheduleParallel();

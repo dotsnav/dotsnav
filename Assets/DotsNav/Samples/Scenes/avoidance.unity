@@ -722,8 +722,8 @@ MonoBehaviour:
   - {fileID: 5547837765248228189, guid: bd97cce3f3f27614ca5ec794c090e4e0, type: 3}
   - {fileID: 6915082999526884430, guid: 1d798cd1135b2e841b596592740032e9, type: 3}
   Help: {fileID: 2103250097}
-  PreferredSpeedMin: 1.2
-  PreferredSpeedRange: 0.3
+  PreferredSpeedMin: 0.6
+  PreferredSpeedRange: 0.5
   MaxSpeedFactor: 1.2
 --- !u!114 &1871500335
 MonoBehaviour:

@@ -41,6 +41,7 @@ namespace DotsNav.Samples.Code
         public float PreferredSpeedMin;
         public float PreferredSpeedRange;
         public float MaxSpeedFactor;
+        static bool Closed;
 
         void Start()
         {
@@ -58,7 +59,7 @@ namespace DotsNav.Samples.Code
             {
                 var agent = Instantiate(AgentPrefab);
 
-                var preferredSpeed = _r.NextFloat(PreferredSpeedMin, PreferredSpeedRange);
+                var preferredSpeed = _r.NextFloat(PreferredSpeedMin, PreferredSpeedMin + PreferredSpeedRange);
                 agent.GetComponent<DemoAgent>().PreferredSpeed = preferredSpeed;
                 agent.GetComponent<DotsNavLocalAvoidanceAgent>().MaxSpeed = preferredSpeed * MaxSpeedFactor;
 
@@ -90,7 +91,7 @@ namespace DotsNav.Samples.Code
                 agent.FindPath(pos.ToXxY());
             }
 
-            Help.gameObject.SetActive(!Application.isEditor);
+            Help.gameObject.SetActive(!Application.isEditor && !Closed);
 
             for (int i = 0; i < ObstacleAmount; i++)
                 Insert();
@@ -132,6 +133,19 @@ namespace DotsNav.Samples.Code
 
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.M))
+            {
+                SceneManager.LoadScene("menu");
+                Closed = false;
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.H))
+            {
+                Help.gameObject.SetActive(!Help.gameObject.activeSelf);
+                Closed = !Help.gameObject.activeSelf;
+            }
+
             if (Input.GetKeyDown(KeyCode.R))
             {
                 var em = World.All[0].EntityManager;
