@@ -33,7 +33,7 @@ Alternatively, open the package manager, choose Add package from git URL and ent
 Note that you will not be notified of updates to DotsNav, or other packages installed in this way.
 
 ### Planes
-Attach a DotsNavPlane behaviour to a gameobject. It's border will be drawn in the scene view.
+Attach a DotsNavPlane behaviour to a gameobject. Its border will be drawn in the scene view.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image21.png?raw=true)
 
