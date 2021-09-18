@@ -38,7 +38,6 @@ namespace DotsNav.Samples.Code
 
         float2 _size;
         Random _r;
-        public int Seed;
         public float PreferredSpeedMin;
         public float PreferredSpeedRange;
         public float MaxSpeedFactor;
@@ -50,8 +49,7 @@ namespace DotsNav.Samples.Code
 
             _size = Plane.GetComponent<DotsNavPlane>().Size;
             FindObjectOfType<CameraController>().Initialize(_size);
-            // _r = new Random((uint) DateTime.Now.Ticks);
-            _r = new Random((uint) Seed);
+             _r = new Random((uint) DateTime.Now.Ticks);
 
             var placedStarts = new List<Circle>();
             var placedGoals = new List<Circle>();
@@ -130,6 +128,16 @@ namespace DotsNav.Samples.Code
         {
             public float2 Position;
             public float Radius;
+        }
+
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                var em = World.All[0].EntityManager;
+                em.DestroyEntity(em.UniversalQuery);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
         }
     }
 }
