@@ -18,7 +18,7 @@ namespace DotsNav.PathFinding.Systems
             Entities
                 .WithBurst()
                 .WithReadOnly(ltwLookup)
-                .ForEach((PathQueryComponent agent, RadiusComponent radius, Translation translation, NavmeshAgentComponent navmesh, DynamicBuffer<PathSegmentElement> path, ref DirectionComponent data) =>
+                .ForEach((RadiusComponent radius, Translation translation, NavmeshAgentComponent navmesh, DynamicBuffer<PathSegmentElement> path, ref PathQueryComponent agent, ref DirectionComponent data) =>
                 {
                     if (agent.State != PathQueryState.PathFound)
                         return;
@@ -44,11 +44,15 @@ namespace DotsNav.PathFinding.Systems
                         var dsq1 = math.distancesq(p, point1);
                         if (dsq < dsq1)
                             break;
-                        path.RemoveAt(0); // todo store segments in reverse order so we can easily pop them efficiently
+                        // todo store segments in reverse order or keep an index?
+                        path.RemoveAt(0);
                         segment = segment1;
                         closest = point1;
                         dsq = dsq1;
                     }
+
+                    if (dsq > radius * radius)
+                        agent.State = PathQueryState.Invalidated;
 
                     Angle dir;
 
@@ -58,24 +62,15 @@ namespace DotsNav.PathFinding.Systems
                         var fromAngle = Math.Angle(segment.To - corner);
                         var toAngle = Math.Angle(path[1].From - corner);
                         dir = Angle.Clamp(Math.Angle(p - corner), fromAngle, toAngle);
-                        closest = corner + Math.Rotate(radius, dir);
                         var left = Math.CcwFast(segment.From, segment.To, corner);
                         dir += left ? -math.PI / 2 : math.PI / 2;
                     }
                     else
                     {
-                        dir = Math.Angle(segment.To - segment.From);
+                        dir = Math.Angle(segment.To - p);
                     }
 
-                    data.Value = GetDirection(dir);
-
-                    float2 GetDirection(Angle angle)
-                    {
-                        var distToPath = math.distance(p, closest);
-                        var f = math.min(1, distToPath / (radius * 2));
-                        var angleToPath = Math.Angle(closest - p);
-                        return Angle.Lerp(angle, angleToPath, f).ToVector();
-                    }
+                    data.Value = dir.ToVector();
                 })
                 .ScheduleParallel();
         }
