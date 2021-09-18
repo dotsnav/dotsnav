@@ -68,18 +68,18 @@ class SandboxDev : MonoBehaviour
         Help.gameObject.SetActive(!Application.isEditor);
         _agent = FindObjectOfType<DotsNavPathFindingAgent>();
 
+        var tr = _agent.transform;
+        _start = tr.parent;
+        _goal = _start.Find("Goal");
+        _goal.parent = null;
+
         if (Reverse)
         {
-            var start = _agent.transform.Find("Start");
-            var goal = _agent.transform.Find("Goal");
-            var tempPos = start.position;
-            start.position = goal.position;
-            goal.position = tempPos;
+            var tempPos = _start.position;
+            _start.position = _goal.position;
+            _goal.position = tempPos;
         }
 
-        var tr = _agent.transform;
-        _start = tr.Find("Start");
-        _goal = tr.Find("Goal");
         var size = _start.localScale.x;
         var s = new Vector3(size, size, size);
         _goal.localScale = s;
@@ -89,7 +89,7 @@ class SandboxDev : MonoBehaviour
     protected void Update()
     {
         ProcessInputAndUpdateUi();
-        _agent.FindPath(_start.position, _goal.position);
+        _agent.FindPath(_goal.position);
 
         var rbs = FindObjectsOfType<RaycastBehaviour>();
         foreach (var rb in rbs)

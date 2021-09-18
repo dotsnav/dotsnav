@@ -58,11 +58,6 @@ namespace DotsNav.PathFinding.Hybrid
         public int Version { get; internal set; }
 
         /// <summary>
-        /// The starting position used when finding paths. Use FindPath to update.
-        /// </summary>
-        public Vector3 Start { get; private set; }
-
-        /// <summary>
         /// The destination used when finding paths. Use FindPath to update.
         /// </summary>
         public Vector3 Goal { get; private set; }
@@ -90,16 +85,10 @@ namespace DotsNav.PathFinding.Hybrid
         public void Deactivate() => State = PathQueryState.Inactive;
 
         /// <summary>
-        /// Set goal and activate agent. Start is set to the agent's current position.
+        /// Set goal and activate agent
         /// </summary>
-        public void FindPath(Vector3 goal) => FindPath(transform.position, goal);
-
-        /// <summary>
-        /// Set start and goal and activate agent
-        /// </summary>
-        public void FindPath(Vector3 start, Vector3 goal)
+        public void FindPath(Vector3 goal)
         {
-            Start = start;
             Goal = goal;
             State = PathQueryState.Pending;
         }

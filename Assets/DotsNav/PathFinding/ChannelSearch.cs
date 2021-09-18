@@ -32,7 +32,7 @@ namespace DotsNav.PathFinding
             _validGoalEdges = new List<int>(allocator);
         }
 
-        public PathQueryState Search(float2 start, float2 goal, Navmesh.Navmesh navmesh, List<Gate> path, float radius, DynamicBuffer<TriangleElement> triangleIds, out int cost)
+        public PathQueryState Search(float2 start, float2 goal, Navmesh.Navmesh* navmesh, List<Gate> path, float radius, DynamicBuffer<TriangleElement> triangleIds, out int cost)
         {
             var open = _open;
             var closed = _closed;
@@ -42,18 +42,18 @@ namespace DotsNav.PathFinding
             var validGoalEdges = _validGoalEdges;
             cost = 80;
 
-            if (!navmesh.Contains(start))
+            if (!navmesh->Contains(start))
                 return PathQueryState.StartInvalid;
 
-            if (!navmesh.Contains(goal))
+            if (!navmesh->Contains(goal))
                 return PathQueryState.GoalInvalid;
 
-            var startEdge = navmesh.FindTriangleContainingPoint(start);
+            var startEdge = navmesh->FindTriangleContainingPoint(start);
             if (!EndpointValid(start, radius, startEdge))
                 return PathQueryState.StartInvalid;
             var startId = startEdge->TriangleId;
 
-            var goalEdge = navmesh.FindTriangleContainingPoint(goal);
+            var goalEdge = navmesh->FindTriangleContainingPoint(goal);
             if (!EndpointValid(goal, radius, goalEdge))
                 return PathQueryState.GoalInvalid;
             var goalId = goalEdge->TriangleId;
