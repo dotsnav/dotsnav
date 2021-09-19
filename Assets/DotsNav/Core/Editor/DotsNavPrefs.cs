@@ -12,6 +12,8 @@ namespace DotsNav
         public static Color GizmoColor;
         public static Color EditColor;
         public static Color FadeColor;
+        public static KeyCode VertexUp;
+        public static KeyCode VertexDown;
         static bool _loaded;
         static StringBuilder _sb;
 
@@ -20,10 +22,11 @@ namespace DotsNav
         {
             Init();
 
-            EditorGUILayout.LabelField("Colors");
-            GizmoColor = EditorGUILayout.ColorField("Gizmo", GizmoColor);
-            EditColor = EditorGUILayout.ColorField("Edit", EditColor);
-            FadeColor = EditorGUILayout.ColorField("Fade", FadeColor);
+            VertexUp = (KeyCode) EditorGUILayout.EnumPopup("Vertex Up", VertexUp);
+            VertexDown = (KeyCode) EditorGUILayout.EnumPopup("Vertex Down", VertexDown);
+            GizmoColor = EditorGUILayout.ColorField("Gizmo Color", GizmoColor);
+            EditColor = EditorGUILayout.ColorField("Edit Color", EditColor);
+            FadeColor = EditorGUILayout.ColorField("Fade Color", FadeColor);
 
             if (GUI.changed)
                 Store();
@@ -49,6 +52,8 @@ namespace DotsNav
                         GizmoColor = GetColor(data[0]);
                         EditColor = GetColor(data[1]);
                         FadeColor = GetColor(data[2]);
+                        VertexUp = GetKeyCode(data[3]);
+                        VertexDown = GetKeyCode(data[4]);
                     }
                     catch (Exception e)
                     {
@@ -64,11 +69,14 @@ namespace DotsNav
             }
         }
 
+
         static void SetDefaults()
         {
             GizmoColor = Color.red;
             EditColor = Color.red;
             FadeColor = Color.white;
+            VertexUp = KeyCode.M;
+            VertexDown = KeyCode.N;
         }
 
         static void Store()
@@ -77,7 +85,19 @@ namespace DotsNav
             Append(GizmoColor, _sb);
             Append(EditColor, _sb);
             Append(FadeColor, _sb);
+            Append(VertexUp, _sb);
+            Append(VertexDown, _sb);
             EditorPrefs.SetString(PrefName, _sb.ToString());
+        }
+
+        static void Append(KeyCode kc, StringBuilder sb)
+        {
+            sb.Append($"{kc.ToString()};");
+        }
+
+        static KeyCode GetKeyCode(string s)
+        {
+            return (KeyCode) Enum.Parse(typeof(KeyCode), s);
         }
 
         static void Append(Color color, StringBuilder sb)

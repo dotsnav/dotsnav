@@ -18,8 +18,8 @@ namespace DotsNav
         static Material _lineMat;
 
         static bool Key => Event.current.type == EventType.KeyDown;
-        static bool KeyUp => Key && Event.current.keyCode == KeyCode.M;
-        static bool KeyDown => Key && Event.current.keyCode == KeyCode.N;
+        static bool KeyUp => Key && Event.current.keyCode == DotsNavPrefs.VertexUp;
+        static bool KeyDown => Key && Event.current.keyCode == DotsNavPrefs.VertexDown;
 
         void OnSceneGUI()
         {
@@ -139,11 +139,11 @@ namespace DotsNav
             else
             {
                 GUILayout.Label($"{_vertexIndex}/{obstacle.Vertices.Length - 1}");
-                if (GUILayout.Button("↑ (M)", GUILayout.Width(Width)) || KeyUp)
+                if (GUILayout.Button($"↑ ({DotsNavPrefs.VertexUp})", GUILayout.Width(Width)) || KeyUp)
                     if (++_vertexIndex >= obstacle.Vertices.Length)
                         _vertexIndex = 0;
 
-                if (GUILayout.Button("↓ (N)", GUILayout.Width(Width)) || KeyDown)
+                if (GUILayout.Button($"↓ ({DotsNavPrefs.VertexDown})", GUILayout.Width(Width)) || KeyDown)
                     if (--_vertexIndex == -1)
                         _vertexIndex = math.max(0, obstacle.Vertices.Length - 1);
 
