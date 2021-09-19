@@ -47,8 +47,6 @@ namespace DotsNav.Samples.Code
                 var start = _vertices.Length;
                 foreach (var vertex in prefab.Vertices)
                     _vertices.Add(vertex);
-                if (prefab.Closed)
-                    _vertices.Add(_vertices[start]);
                 _startEnds.Add(new int2(start, _vertices.Length));
             }
 

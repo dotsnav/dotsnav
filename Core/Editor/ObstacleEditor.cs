@@ -159,7 +159,17 @@ namespace DotsNav
                 {
                     Undo.RecordObject(obstacle, "Edit obstacle");
                     Vector2 delta = math.mul(math.inverse(obstacle.transform.rotation), newPos - pos).xz;
-                    obstacle.Vertices[_vertexIndex] += delta;
+
+                    var l = obstacle.Vertices.Length - 1;
+                    if (obstacle.Close && (_vertexIndex == 0 || _vertexIndex == l))
+                    {
+                        obstacle.Vertices[0] += delta;
+                        obstacle.Vertices[l] += delta;
+                    }
+                    else
+                    {
+                        obstacle.Vertices[_vertexIndex] += delta;
+                    }
                 }
             }
 
@@ -170,8 +180,6 @@ namespace DotsNav
             Handles.color = DotsNavPrefs.EditColor;
             for (int i = 0; i < obstacle.Vertices.Length - 1; i++)
                 Handles.DrawLine(obstacle.GetVertexWorldSpace(i), obstacle.GetVertexWorldSpace(i + 1));
-            if (obstacle.Closed)
-                Handles.DrawLine(obstacle.GetVertexWorldSpace(obstacle.Vertices.Length - 1), obstacle.GetVertexWorldSpace(0));
             Handles.color = t;
 
             void CreateUp()

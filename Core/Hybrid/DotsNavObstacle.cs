@@ -20,9 +20,6 @@ namespace DotsNav.Hybrid
 
                 for (int i = 0; i < obstacle.Vertices.Length; i++)
                     values.Add((float2) obstacle.Vertices[i]);
-
-                if (obstacle.Closed)
-                    values.Add((float2) obstacle.Vertices[0]);
             });
         }
     }
@@ -30,14 +27,7 @@ namespace DotsNav.Hybrid
     public class DotsNavObstacle : EntityLifetimeBehaviour
     {
         public DotsNavPlane Plane;
-
-        [SerializeField]
-        bool Close = true;
-
-        /// <summary>
-        /// Indicates wether this obstacle should be closed by duplicating the first vertex as the last vertex
-        /// </summary>
-        public bool Closed => Close && Vertices.Length > 2;
+        public bool Close = true;
 
         /// <summary>
         /// The vertices of this obstacle in object space
@@ -50,7 +40,12 @@ namespace DotsNav.Hybrid
 #if UNITY_EDITOR
         void OnDrawGizmos()
         {
-            if (Application.isPlaying || !DrawGizmos || Selection.gameObjects.Contains(gameObject))
+            if (Application.isPlaying)
+                return;
+
+            OnValidate();
+
+            if (!DrawGizmos || Selection.gameObjects.Length > 1 && Selection.gameObjects.Contains(gameObject))
                 return;
 
             var t = Handles.color;
@@ -63,8 +58,6 @@ namespace DotsNav.Hybrid
                 Handles.DrawLine(a, b);
             }
 
-            if (Closed)
-                Handles.DrawLine(GetVertexWorldSpace(Vertices.Length - 1), GetVertexWorldSpace(0));
             Handles.color = t;
         }
 
@@ -74,6 +67,10 @@ namespace DotsNav.Hybrid
                 Vertices = new[] {new Vector2(-1, 0), new Vector2(1, 0)};
             else if (Vertices.Length == 1)
                 Vertices = new[] {Vertices[0], new Vector2(1, 0)};
+            else if (Vertices.Length > 2 && Close && math.any((float2)Vertices[0] != (float2)Vertices[Vertices.Length - 1]))
+                Vertices = Vertices.Append(Vertices[0]).ToArray();
+            else if (Vertices.Length > 3 && !Close && math.all((float2) Vertices[0] == (float2) Vertices[Vertices.Length - 1]))
+                Vertices = Vertices.Take(Vertices.Length - 1).ToArray();
         }
 #endif
         public float3 GetVertexWorldSpace(int i) => math.transform(transform.localToWorldMatrix, Vertices[i].ToXxY());
