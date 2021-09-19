@@ -79,8 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxSpeed: 1.2
-  MaxNeighbours: 10
-  NeighbourDist: 10
+  MaxNeighbours: 2
+  NeighbourDist: 2
   TimeHorizon: 0.2
   TimeHorizonObst: 0.2
 --- !u!114 &1198927799591733719
