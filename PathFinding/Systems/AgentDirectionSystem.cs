@@ -23,6 +23,12 @@ namespace DotsNav.PathFinding.Systems
                     if (agent.State != PathQueryState.PathFound)
                         return;
 
+                    if (data.QueryVersion < agent.Version)
+                    {
+                        data.SegmentIndex = 0;
+                        data.QueryVersion = agent.Version;
+                    }
+
                     var inv = math.inverse(ltwLookup[navmesh.Navmesh].Value);
                     var p = math.transform(inv, translation.Value).xz;
 
@@ -33,34 +39,36 @@ namespace DotsNav.PathFinding.Systems
                         return;
                     }
 
-                    var segment = path[0];
+                    var segment = path[data.SegmentIndex];
                     var closest = Math.ClosestPointOnLineSegment(p, segment.From, segment.To);
                     var dsq = math.distancesq(p, closest);
 
-                    while (path.Length > 1)
+                    while (data.SegmentIndex < path.Length - 1)
                     {
-                        var segment1 = path[1];
+                        var segment1 = path[data.SegmentIndex + 1];
                         var point1 = Math.ClosestPointOnLineSegment(p, segment1.From, segment1.To);
                         var dsq1 = math.distancesq(p, point1);
+
                         if (dsq < dsq1)
                             break;
-                        // todo store segments in reverse order or keep an index?
-                        path.RemoveAt(0);
+
+                        ++data.SegmentIndex;
                         segment = segment1;
                         closest = point1;
                         dsq = dsq1;
                     }
 
+                    // todo at the very least user should be able to control this
                     if (dsq > radius * radius)
                         agent.State = PathQueryState.Invalidated;
 
                     Angle dir;
 
-                    if (math.all(closest == segment.To) && path.Length > 1)
+                    if (math.all(closest == segment.To) && data.SegmentIndex < path.Length - 1)
                     {
-                        var corner = path[1].Corner;
+                        var corner = path[data.SegmentIndex + 1].Corner;
                         var fromAngle = Math.Angle(segment.To - corner);
-                        var toAngle = Math.Angle(path[1].From - corner);
+                        var toAngle = Math.Angle(path[data.SegmentIndex + 1].From - corner);
                         dir = Angle.Clamp(Math.Angle(p - corner), fromAngle, toAngle);
                         var left = Math.CcwFast(segment.From, segment.To, corner);
                         dir += left ? -math.PI / 2 : math.PI / 2;
