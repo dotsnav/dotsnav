@@ -18,7 +18,7 @@
 ## Introduction
 DotsNav is a fully dynamic and robust planar navmesh Unity package built on DOTS. It is fast enough to add and remove many obstacles each frame, supports agents of any size, and can be used through monobehaviours without prior knowledge of DOTS.
 
-To support further development consider becoming a [sponsor](https://github.com/sponsors/bassmit), for contract work contact me on [Discord](https://discordapp.com/users/bassmit#3079) or at bas@bassmit.info.
+To support further development consider becoming a [sponsor](https://github.com/sponsors/bassmit).
 
 ## Getting Started
 ### Installation
