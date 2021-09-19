@@ -56,8 +56,6 @@ class SandboxDev : MonoBehaviour
             var l  = new List<Vector2>();
             for (int i = 0; i < obstacle.Vertices.Length; i++)
                 l.Add(obstacle.GetVertexWorldSpace(i).xz);
-            if (obstacle.Closed)
-                l.Add(obstacle.GetVertexWorldSpace(0).xz);
             _toDump.Add(l);
         }
 
@@ -317,8 +315,6 @@ class SandboxDev : MonoBehaviour
                 var points = new List<Vector2>();
                 foreach (var vert in verts)
                     points.Add(DemoMath.Rotate(vert * _prefabSize, _prefabRotation) + mousePos);
-                if (obstacle.Closed)
-                    points.Add(points[0]);
                 _points.Add(points);
             }
 

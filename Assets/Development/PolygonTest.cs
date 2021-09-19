@@ -67,12 +67,9 @@ unsafe class PolygonTest : MonoBehaviour
         for (int i = 0; i < Amount; i++)
         {
             var p = Prefabs[r.NextInt(Prefabs.Length)];
-            var scale = (1 - ScaleOffset + r.NextFloat() * 2 * ScaleOffset);
+            var scale = 1 - ScaleOffset + r.NextFloat() * 2 * ScaleOffset;
             var rot = r.NextFloat(2 * math.PI);
-
             var vertices = p.Vertices.Select(f => Math.Rotate((float2)(scale * f), rot)).ToList();
-            if (p.Closed)
-                vertices.Add(vertices[0]);
 
             var min = new float2(float.MaxValue);
             var max = new float2(float.MinValue);

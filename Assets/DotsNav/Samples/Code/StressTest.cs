@@ -100,8 +100,6 @@ namespace DotsNav.Samples.Code
             _points.Clear();
             foreach (var f in p.Vertices)
                 _points.Add(DemoMath.Rotate(scale * f, rot));
-            if (p.Closed)
-                _points.Add(_points[0]);
 
             var min = new float2(float.MaxValue);
             var max = new float2(float.MinValue);

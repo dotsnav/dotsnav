@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce853caf004f4726b62fefe38d7b0177, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Plane: {fileID: 0}
   Close: 1
   Vertices:
   - {x: -0.64604926, y: -1.7580304}
@@ -53,6 +54,7 @@ MonoBehaviour:
   - {x: 0.885, y: 1.6580305}
   - {x: 0.69499993, y: 1.7580309}
   - {x: -0.885, y: -1.4919696}
+  - {x: -0.64604926, y: -1.7580304}
   DrawGizmos: 1
 --- !u!114 &2320352044584952568
 MonoBehaviour:
@@ -78,7 +80,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75b63d2f25a64b718e133d144aef27f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LocalAvoidance: {fileID: 0}
 --- !u!114 &3266074384779086409
 MonoBehaviour:
   m_ObjectHideFlags: 0
