@@ -9,7 +9,7 @@ namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(PathFinderSystem))]
-    class AgentDirectionSystem : SystemBase
+    public class AgentDirectionSystem : SystemBase
     {
         protected override void OnUpdate()
         {
@@ -41,7 +41,7 @@ namespace DotsNav.PathFinding.Systems
 
                     var segment = path[data.SegmentIndex];
                     var closest = Math.ClosestPointOnLineSegment(p, segment.From, segment.To);
-                    var dsq = math.distancesq(p, closest);
+                    data.DistanceFromPathSquared = math.distancesq(p, closest);
 
                     while (data.SegmentIndex < path.Length - 1)
                     {
@@ -49,18 +49,14 @@ namespace DotsNav.PathFinding.Systems
                         var point1 = Math.ClosestPointOnLineSegment(p, segment1.From, segment1.To);
                         var dsq1 = math.distancesq(p, point1);
 
-                        if (dsq < dsq1)
+                        if (data.DistanceFromPathSquared < dsq1)
                             break;
 
                         ++data.SegmentIndex;
                         segment = segment1;
                         closest = point1;
-                        dsq = dsq1;
+                        data.DistanceFromPathSquared = dsq1;
                     }
-
-                    // todo at the very least user should be able to control this
-                    if (dsq > radius * radius)
-                        agent.State = PathQueryState.Invalidated;
 
                     Angle dir;
 

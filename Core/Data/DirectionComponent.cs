@@ -9,6 +9,7 @@ namespace DotsNav.Data
     public struct DirectionComponent : IComponentData
     {
         public float2 Value;
+        public float DistanceFromPathSquared;
         internal int QueryVersion;
         internal int SegmentIndex;
         public static implicit operator float2(DirectionComponent e) => e.Value;
