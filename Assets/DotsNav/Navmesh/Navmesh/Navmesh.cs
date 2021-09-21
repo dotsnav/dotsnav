@@ -1,8 +1,6 @@
 using System;
 using DotsNav.Collections;
-using DotsNav.Data;
 using DotsNav.Navmesh.Data;
-using DotsNav.Navmesh.Systems;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
@@ -148,7 +146,7 @@ namespace DotsNav.Navmesh
 
         public bool Contains(float2 p) => Math.Contains(p, -Extent, Extent);
 
-        internal void Load<T>(T enumerator, DynamicBuffer<DestroyedTriangleElement> destroyed, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
+        internal void Load<T>(T enumerator, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
             DestroyedTriangles.Clear();
 
@@ -176,10 +174,10 @@ namespace DotsNav.Navmesh
                 }
             }
 
-            GlobalRefine(destroyed);
+            GlobalRefine();
         }
 
-        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, DynamicBuffer<DestroyedTriangleElement> destroyed, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
+        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
             DestroyedTriangles.Clear();
 
@@ -222,7 +220,7 @@ namespace DotsNav.Navmesh
                 }
             }
 
-            LocalRefinement(destroyed);
+            LocalRefinement();
         }
 
         /// <summary>
