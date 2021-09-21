@@ -46,6 +46,7 @@ namespace DotsNav.PathFinding.Systems
 
             Entities
                 .WithBurst()
+                .WithName("GatherAgentsToRecalculate")
                 .WithReadOnly(destroyed)
                 .ForEach((Entity entity, int nativeThreadIndex, NavmeshAgentComponent navmesh, ref PathQueryComponent query, ref DynamicBuffer<TriangleElement> triangles) =>
                 {
