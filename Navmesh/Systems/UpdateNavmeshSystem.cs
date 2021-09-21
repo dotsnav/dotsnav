@@ -203,6 +203,14 @@ namespace DotsNav.Navmesh.Systems
                 })
                 .Schedule();
 
+            Entities
+                .WithBurst()
+                .ForEach((ref DynamicBuffer<DestroyedTriangleElement> destroyed) =>
+                {
+                    destroyed.Clear();
+                })
+                .ScheduleParallel();
+
             Dependency = new TreeOperationJob
                 {
                     Operations = insertions,
@@ -254,7 +262,6 @@ namespace DotsNav.Navmesh.Systems
                 {
                     var removals = Removals.GetValuesForKey(entity);
                     navmesh.Navmesh->Update(insertions, removals, ltwInv);
-                    destroyedTriangles.Clear();
                 }
 
                 var tris = navmesh.Navmesh->DestroyedTriangles.GetEnumerator();
