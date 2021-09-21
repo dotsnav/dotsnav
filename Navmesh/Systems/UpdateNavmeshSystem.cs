@@ -248,13 +248,19 @@ namespace DotsNav.Navmesh.Systems
 
                 if (navmesh.Navmesh->IsEmpty)
                 {
-                    navmesh.Navmesh->Load(insertions, destroyedTriangles, ltwInv);
+                    navmesh.Navmesh->Load(insertions, ltwInv);
                 }
                 else
                 {
                     var removals = Removals.GetValuesForKey(entity);
-                    navmesh.Navmesh->Update(insertions, removals, destroyedTriangles, ltwInv);
+                    navmesh.Navmesh->Update(insertions, removals, ltwInv);
+                    destroyedTriangles.Clear();
                 }
+
+                var tris = navmesh.Navmesh->DestroyedTriangles.GetEnumerator();
+                while (tris.MoveNext())
+                    destroyedTriangles.Add(tris.Current);
+                destroyedTriangles.Reinterpret<int>().AsNativeArray().Sort();
             }
         }
 

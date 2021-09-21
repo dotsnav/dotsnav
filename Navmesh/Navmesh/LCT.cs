@@ -1,6 +1,4 @@
-using DotsNav.Navmesh.Data;
 using Unity.Collections;
-using Unity.Entities;
 using Unity.Mathematics;
 
 namespace DotsNav.Navmesh
@@ -383,7 +381,7 @@ namespace DotsNav.Navmesh
                 RemoveIfEligible((Vertex*) i.Current);
         }
 
-        void LocalRefinement(DynamicBuffer<DestroyedTriangleElement> destroyed)
+        void LocalRefinement()
         {
             var verts = V.GetEnumerator();
             while (verts.MoveNext())
@@ -406,11 +404,6 @@ namespace DotsNav.Navmesh
                     }
                 }
             }
-
-            var tris = DestroyedTriangles.GetEnumerator();
-            while (tris.MoveNext())
-                destroyed.Add(tris.Current);
-            destroyed.Reinterpret<int>().AsNativeArray().Sort();
         }
 
         bool TriDisturbed(Edge* tri, out Vertex* vRef)
@@ -540,7 +533,7 @@ namespace DotsNav.Navmesh
             return false;
         }
 
-        void GlobalRefine(DynamicBuffer<DestroyedTriangleElement> destroyed)
+        void GlobalRefine()
         {
             var disturbances = new NativeList<Disturbance>(Allocator.Temp);
             var e = GetEdgeEnumerator(true);
@@ -551,7 +544,7 @@ namespace DotsNav.Navmesh
             V.Clear();
             for (int i = 0; i < disturbances.Length; i++)
                 V.TryAdd((IntPtr) disturbances[i].Vertex);
-            LocalRefinement(destroyed);
+            LocalRefinement();
         }
     }
 }
