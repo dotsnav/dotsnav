@@ -28,7 +28,7 @@ If [OpenUpm](https://openupm.com/packages/com.dotsnav.dotsnav/) is not installed
     
 To add DotsNav to a Unity project, open a prompt in the project root and run:
 
-    openupm add com.dotsnav.dotsnav
+    openupm add com.bassmit.dotsnav
 
 ### Planes
 Attach a DotsNavPlane behaviour to a gameobject. Its border will be drawn in the scene view.
