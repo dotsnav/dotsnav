@@ -1,10 +1,9 @@
 using DotsNav.Collections;
-using DotsNav.Assertions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     readonly unsafe struct QuadTree
     {
@@ -12,7 +11,7 @@ namespace DotsNav
         readonly Allocator _allocator;
         [NativeDisableUnsafePtrRestriction]
         readonly QuadTreeNode* _root;
-        readonly PersistentStore<QuadTreeNode> _nodes;
+        readonly BlockPool<QuadTreeNode> _nodes;
         readonly Stack<IntPtr> _chunks;
 
         public QuadTree(float size, int initialCapacity, int bucketSize, Allocator allocator) : this()
@@ -23,8 +22,12 @@ namespace DotsNav
             _chunks = new Stack<IntPtr>(buckets, allocator);
             for (int i = 0; i < buckets; i++) 
                 _chunks.Push((IntPtr) Malloc());
-            _nodes = new PersistentStore<QuadTreeNode>((int) (1.3334f * buckets), allocator);
-            _root = _nodes.Set(new QuadTreeNode(0, size / 2, GetChunk(), null));
+
+            const int blockSize = 128;
+            var capacity = 1.3334f * buckets;
+            var initialBlocks = (int) math.ceil(capacity / blockSize);
+            _nodes = new BlockPool<QuadTreeNode>(blockSize, initialBlocks, allocator);
+            _root = _nodes.GetElementPointer(new QuadTreeNode(0, size / 2, GetChunk(), null));
         }
 
         Vertex** GetChunk()
@@ -34,7 +37,7 @@ namespace DotsNav
             return Malloc();
         }
 
-        Vertex** Malloc() => (Vertex**) Util.Malloc<IntPtr>(_bucketSize, _allocator);
+        Vertex** Malloc() => (Vertex**) Mem.Malloc<IntPtr>(_bucketSize, _allocator);
 
         public Vertex* FindClosest(float2 p, float rangeSq = float.MaxValue)
         {
@@ -118,10 +121,10 @@ namespace DotsNav
             {
                 var hs = node->HalfSize / 2;
                 var o = node->Origin;
-                node->BL = _nodes.Set(new QuadTreeNode(o - hs, hs, node->Data, node));
-                node->TL = _nodes.Set(new QuadTreeNode(o + new float2(-hs, hs), hs, GetChunk(), node));
-                node->BR = _nodes.Set(new QuadTreeNode(o + new float2(hs, -hs), hs, GetChunk(), node));
-                node->TR = _nodes.Set(new QuadTreeNode(o + hs, hs, GetChunk(), node));
+                node->BL = _nodes.GetElementPointer(new QuadTreeNode(o - hs, hs, node->Data, node));
+                node->TL = _nodes.GetElementPointer(new QuadTreeNode(o + new float2(-hs, hs), hs, GetChunk(), node));
+                node->BR = _nodes.GetElementPointer(new QuadTreeNode(o + new float2(hs, -hs), hs, GetChunk(), node));
+                node->TR = _nodes.GetElementPointer(new QuadTreeNode(o + hs, hs, GetChunk(), node));
                 node->Count = 0;
 
                 for (int i = 0; i < _bucketSize; i++)

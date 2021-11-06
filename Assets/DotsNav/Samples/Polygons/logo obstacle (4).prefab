@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1247435521046305173
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1247435521046305170}
+  - component: {fileID: 1247435521046305171}
+  - component: {fileID: 523719925328671016}
+  m_Layer: 0
+  m_Name: logo obstacle (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1247435521046305170
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247435521046305173}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1247435521046305171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247435521046305173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce853caf004f4726b62fefe38d7b0177, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Plane: {fileID: 0}
+  Close: 1
+  Vertices:
+  - {x: -0.43211657, y: 0.14623736}
+  - {x: -0.43211657, y: -0.16988225}
+  - {x: -0.43958727, y: -0.17733954}
+  - {x: -0.52647656, y: -0.17715077}
+  - {x: -0.5341214, y: -0.16915728}
+  - {x: -0.5348356, y: 0.14616066}
+  - {x: -0.57955635, y: 0.15089874}
+  - {x: -0.5866177, y: 0.15854855}
+  - {x: -0.5866858, y: 0.19021717}
+  - {x: -0.5792088, y: 0.1996323}
+  - {x: -0.5300121, y: 0.19963226}
+  - {x: -0.51713735, y: 0.3191078}
+  - {x: -0.5088991, y: 0.3279345}
+  - {x: -0.43840694, y: 0.32734603}
+  - {x: -0.43134555, y: 0.3196962}
+  - {x: -0.4321411, y: 0.20059559}
+  - {x: -0.3459663, y: 0.20080584}
+  - {x: -0.33772802, y: 0.19315603}
+  - {x: -0.33772802, y: 0.1578492}
+  - {x: -0.34333852, y: 0.15072672}
+  - {x: -0.43211657, y: 0.14623736}
+  DrawGizmos: 1
+--- !u!114 &523719925328671016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247435521046305173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25c0800e6ddd4d958937eec645a74a88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

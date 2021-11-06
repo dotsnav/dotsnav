@@ -1,7 +1,7 @@
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     public unsafe partial struct Navmesh
     {

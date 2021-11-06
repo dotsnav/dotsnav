@@ -1,0 +1,65 @@
+﻿using Unity.Mathematics;
+
+namespace DotsNav.BVH
+{
+    public struct AABB
+    {
+        // Verify that the bounds are sorted.
+        bool IsValid()
+        {
+            var d = UpperBound - LowerBound;
+            var valid = d.x >= 0.0f && d.y >= 0.0f;
+            valid = valid && math.all(math.isfinite(LowerBound)) && math.all(math.isfinite(UpperBound));
+            return valid;
+        }
+
+        // Get the center of the AABB.
+        internal float2 GetCenter() => 0.5f * (LowerBound + UpperBound);
+
+        // Get the extents of the AABB (half-widths).
+        internal float2 GetExtents() => 0.5f * (UpperBound - LowerBound);
+
+        // Get the perimeter length
+        internal float GetPerimeter()
+        {
+            var wx = UpperBound.x - LowerBound.x;
+            var wy = UpperBound.y - LowerBound.y;
+            return 2.0f * (wx + wy);
+        }
+
+        // Combine an AABB into this one.
+        void Combine(AABB aabb)
+        {
+            LowerBound = math.min(LowerBound, aabb.LowerBound);
+            UpperBound = math.max(UpperBound, aabb.UpperBound);
+        }
+
+        // Combine two AABBs into this one.
+        internal void Combine(AABB aabb1, AABB aabb2)
+        {
+            LowerBound = math.min(aabb1.LowerBound, aabb2.LowerBound);
+            UpperBound = math.max(aabb1.UpperBound, aabb2.UpperBound);
+        }
+
+        // Does this aabb contain the provided AABB.
+        internal bool Contains(AABB aabb)
+        {
+            var result = true;
+            result = result && LowerBound.x <= aabb.LowerBound.x;
+            result = result && LowerBound.y <= aabb.LowerBound.y;
+            result = result && aabb.UpperBound.x <= UpperBound.x;
+            result = result && aabb.UpperBound.y <= UpperBound.y;
+            return result;
+        }
+
+        public float2 LowerBound;
+
+        //< the lower vertex
+        public float2 UpperBound; //< the upper vertex
+
+        public override string ToString() => $"AABB: {LowerBound:0.00}, {UpperBound:0.00}";
+
+        public static AABB FromRadius(float2 centre, float radius) => new AABB {LowerBound = centre - radius, UpperBound = centre + radius};
+        public static AABB FromOpposingCorners(float2 a, float2 b) => new AABB {LowerBound = math.min(a, b), UpperBound = math.max(a, b)};
+    }
+}

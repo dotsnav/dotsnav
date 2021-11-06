@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Unity.Burst;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// Throws InfiniteLoopException after specied amount of calls to Register since the last call to Reset.

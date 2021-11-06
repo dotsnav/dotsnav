@@ -57,7 +57,7 @@ public class FunnelTest : MonoBehaviour
         }
 
         var end = End.position.xz();
-        var ll = new DotsNav.Collections.List<Gate>(64, Allocator.Persistent);
+        var ll = new List<Gate>(64, Allocator.Persistent);
         foreach (var portal in l) 
             ll.Add(portal);
 

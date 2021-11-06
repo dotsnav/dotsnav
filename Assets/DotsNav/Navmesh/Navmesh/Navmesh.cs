@@ -1,31 +1,29 @@
+using System;
 using DotsNav.Collections;
-using DotsNav.Data;
-using DotsNav.Assertions;
+using DotsNav.Navmesh.Data;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
-    /// Provides access to edges and vertices in the triangulation. This component is created and destroyed automatically, see NavmeshData
+    /// Provides access to edges and vertices in the triangulation
     /// </summary>
-    public unsafe partial struct Navmesh : ISystemStateComponentData
+    public unsafe partial struct Navmesh
     {
         const int CrepMinCapacity = 4; // todo what's a good number, shrink when reusing?
 
-        public float2 Max;
-        public float2 Min => -Max;
-        public float2 Size => 2 * Max;
+        public float2 Extent;
         public int Vertices => _verticesSeq.Length;
 
         float _e;
         float _collinearMargin;
 
         UnsafeHashMap<Entity, IntPtr> _constraints;
-        PersistentStore<Vertex> _vertices;
-        PersistentStore<QuadEdge> _quadEdges;
+        BlockPool<Vertex> _vertices;
+        BlockPool<QuadEdge> _quadEdges;
         UnsafeList<IntPtr> _verticesSeq;
 
         HashSet<IntPtr> V;
@@ -38,7 +36,7 @@ namespace DotsNav
         PtrStack<Vertex> _open;
         UnsafeList<IntPtr> _vlist;
         UnsafeList<IntPtr> _elist;
-        Stack<UnsafeList> _creps;
+        Stack<UnsafeList<Entity>> _creps;
         internal HashSet<int> DestroyedTriangles;
         Deque<IntPtr> _refinementQueue;
 
@@ -50,20 +48,21 @@ namespace DotsNav
         int NextEdgeId => ++_edgeId;
         int NextTriangleId => ++_triangleId;
         internal bool IsEmpty => Vertices == 8;
-        internal bool IsInitialized => Vertices > 0;
 
-        internal void Allocate(NavmeshComponent component)
+        internal Navmesh(NavmeshComponent component)
         {
             Assert.IsTrue(math.all(component.Size > 0));
             Assert.IsTrue(component.ExpectedVerts > 0);
 
-            Max = component.Size / 2;
+            Extent = component.Size / 2;
             _e = component.MergePointsDistance;
             _collinearMargin = component.CollinearMargin;
 
-            _vertices = new PersistentStore<Vertex>(component.ExpectedVerts, Allocator.Persistent);
+            const int blockSize = 128;
+            var initialBlocks = (int) math.ceil((float) component.ExpectedVerts / blockSize);
+            _vertices = new BlockPool<Vertex>(blockSize, initialBlocks, Allocator.Persistent);
             _verticesSeq = new UnsafeList<IntPtr>(component.ExpectedVerts, Allocator.Persistent);
-            _quadEdges = new PersistentStore<QuadEdge>(3 * component.ExpectedVerts, Allocator.Persistent);
+            _quadEdges = new BlockPool<QuadEdge>(3 * blockSize, initialBlocks, Allocator.Persistent);
             _constraints = new UnsafeHashMap<Entity, IntPtr>(component.ExpectedVerts, Allocator.Persistent);
             V = new HashSet<IntPtr>(16, Allocator.Persistent);
             C = new HashSet<IntPtr>(16, Allocator.Persistent);
@@ -74,19 +73,23 @@ namespace DotsNav
             _open = new PtrStack<Vertex>(64, Allocator.Persistent);
             _vlist = new UnsafeList<IntPtr>(64, Allocator.Persistent);
             _elist = new UnsafeList<IntPtr>(64, Allocator.Persistent);
-            _creps = new Stack<UnsafeList>(2*component.ExpectedVerts, Allocator.Persistent);
+            _creps = new Stack<UnsafeList<Entity>>(2*component.ExpectedVerts, Allocator.Persistent);
             for (int i = 0; i < 2 * component.ExpectedVerts; i++)
-                _creps.Push(new UnsafeList(UnsafeUtility.SizeOf<int>(), UnsafeUtility.AlignOf<int>(), CrepMinCapacity, Allocator.Persistent));
+                _creps.Push(new UnsafeList<Entity>(CrepMinCapacity, Allocator.Persistent));
             DestroyedTriangles = new HashSet<int>(64, Allocator.Persistent);
             _refinementQueue = new Deque<IntPtr>(24, Allocator.Persistent);
+
+            _mark = default;
+            _edgeId = default;
+            _triangleId = default;
 
             BuildBoundingBoxes();
         }
 
         void BuildBoundingBoxes()
         {
-            var bmin = Min - 1;
-            var bmax = Max + 1;
+            var bmin = -Extent - 1;
+            var bmax = Extent + 1;
 
             var bottomLeft = CreateVertex(bmin);
             var bottomRight = CreateVertex(new float2(bmax.x, bmin.y));
@@ -110,8 +113,8 @@ namespace DotsNav
 
             Connect(right, bottom);
 
-            var bounds = stackalloc float2[] {Min, new float2(Max.x, Min.y), Max, new float2(Min.x, Max.y), Min};
-            Insert(bounds, 0, 5, Entity.Null);
+            var bounds = stackalloc float2[] {-Extent, new float2(Extent.x, -Extent.y), Extent, new float2(-Extent.x, Extent.y), -Extent};
+            Insert(bounds, 0, 5, Entity.Null, float4x4.identity);
         }
 
         internal void Dispose()
@@ -141,129 +144,89 @@ namespace DotsNav
             _refinementQueue.Dispose();
         }
 
-        public bool Contains(float2 p) => Math.Contains(p, Min, Max);
+        public bool Contains(float2 p) => Math.Contains(p, -Extent, Extent);
 
-        internal void Load(NativeList<float2> vertices, NativeList<int> amounts, NativeList<Entity> entities, DynamicBuffer<DestroyedTriangleElement> destroyed, BufferFromEntity<VertexElement> vertexInputLookup, BufferFromEntity<VertexAmountElement> vertexAmountLookup, NativeArray<Entity> bufferEntities, ComponentDataFromEntity<ObstacleBlobComponent> bulkBlobs, NativeArray<Entity> blobEntities)
+        internal void Load<T>(T enumerator, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
             DestroyedTriangles.Clear();
 
-            if (vertices.Length == 0 && bufferEntities.Length == 0)
-                return;
-
+            while (enumerator.MoveNext())
             {
-                var start = 0;
-                var ptr = (float2*) vertices.GetUnsafeReadOnlyPtr();
-                for (int i = 0; i < amounts.Length; i++)
+                var op = enumerator.Current;
+                var ltw = math.mul(ltwInv, op.Ltw);
+
+                switch (op.Type)
                 {
-                    var amount = amounts[i];
-                    Insert(ptr, start, amount, entities[i]);
-                    start += amount;
+                    case InsertionType.Insert:
+                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, ltw);
+                        break;
+                    case InsertionType.BulkInsert:
+                        var start = 0;
+                        for (int i = 0; i < op.Amount; i++)
+                        {
+                            var amount = op.Amounts[i];
+                            Insert(op.Vertices, start, amount, Entity.Null, ltw);
+                            start += amount;
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
-            for (int i = 0; i < bufferEntities.Length; i++)
-            {
-                var e = bufferEntities[i];
-                var verts = vertexInputLookup[e];
-                var amountsBuffer = vertexAmountLookup[e];
-
-                var start = 0;
-                var ptr = (float2*) verts.GetUnsafeReadOnlyPtr();
-                for (int j = 0; j < amountsBuffer.Length; j++)
-                {
-                    var amount = amountsBuffer[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                }
-            }
-
-            for (int i = 0; i < blobEntities.Length; i++)
-            {
-                var e = blobEntities[i];
-                ref var blob = ref bulkBlobs[e].BlobRef.Value;
-                var ptr = (float2*) blob.Vertices.GetUnsafePtr();
-                var start = 0;
-                for (int j = 0; j < blob.Amounts.Length; j++)
-                {
-                    var amount = blob.Amounts[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                }
-            }
-
-            GlobalRefine(destroyed);
+            GlobalRefine();
         }
 
-        internal void Update(NativeList<float2> vertices, NativeList<int> amounts, NativeList<Entity> entities, NativeQueue<Entity> toRemove, DynamicBuffer<DestroyedTriangleElement> destroyed, BufferFromEntity<VertexElement> vertexInputLookup, BufferFromEntity<VertexAmountElement> vertexAmountLookup, NativeArray<Entity> bufferEntities, ComponentDataFromEntity<ObstacleBlobComponent> bulkBlobs, NativeArray<Entity> blobEntities)
+        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
             DestroyedTriangles.Clear();
-
-            if (vertices.Length == 0 && toRemove.Count == 0)
-                return;
 
             V.Clear();
 
-            if (toRemove.Count > 0)
+            var removed = false;
+            while (removals.MoveNext())
             {
-                while (toRemove.TryDequeue(out var r))
-                    RemoveConstraint(r);
-
+                RemoveConstraint(removals.Current);
+                removed = true;
+            }
+            if (removed)
                 RemoveRefinements();
-            }
 
-            C.Clear();
-
+            while (enumerator.MoveNext())
             {
-                var start = 0;
-                var ptr = (float2*) vertices.GetUnsafeReadOnlyPtr();
-                for (int i = 0; i < amounts.Length; i++)
+                var op = enumerator.Current;
+                var ltw = math.mul(ltwInv, op.Ltw);
+
+                switch (op.Type)
                 {
-                    var amount = amounts[i];
-                    Insert(ptr, start, amount, entities[i]);
-                    start += amount;
-                    SearchDisturbances();
+                    case InsertionType.Insert:
+                        C.Clear();
+                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, ltw);
+                        SearchDisturbances();
+                        break;
+                    case InsertionType.BulkInsert:
+                        var start = 0;
+                        for (int i = 0; i < op.Amount; i++)
+                        {
+                            var amount = op.Amounts[i];
+                            C.Clear();
+                            Insert(op.Vertices, start, amount, Entity.Null, ltw);
+                            start += amount;
+                            SearchDisturbances();
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
-            for (int i = 0; i < bufferEntities.Length; i++)
-            {
-                var e = bufferEntities[i];
-                var verts = vertexInputLookup[e];
-                var amountsBuffer = vertexAmountLookup[e];
-
-                var start = 0;
-                var ptr = (float2*) verts.GetUnsafeReadOnlyPtr();
-                for (int j = 0; j < amountsBuffer.Length; j++)
-                {
-                    var amount = amountsBuffer[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                    SearchDisturbances();
-                }
-            }
-
-            for (int i = 0; i < blobEntities.Length; i++)
-            {
-                var e = blobEntities[i];
-                ref var blob = ref bulkBlobs[e].BlobRef.Value;
-                var ptr = (float2*) blob.Vertices.GetUnsafePtr();
-                var start = 0;
-                for (int j = 0; j < blob.Amounts.Length; j++)
-                {
-                    var amount = blob.Amounts[j];
-                    Insert(ptr, start, amount, Entity.Null);
-                    start += amount;
-                    SearchDisturbances();
-                }
-            }
-
-            LocalRefinement(destroyed);
+            LocalRefinement();
         }
 
         /// <summary>
         /// Allows enumeration of all edges in the navmesh
         /// </summary>
         /// <param name="sym">Set to true to enumerate symetric edges, i.e. enumerate edge(x,y) and edge(y,x)</param>
-        public EdgeEnumerator GetEdgeEnumerator(bool sym = false) => new EdgeEnumerator(_verticesSeq, Max, sym);
+        public EdgeEnumerator GetEdgeEnumerator(bool sym = false) => new EdgeEnumerator(_verticesSeq, Extent, sym);
     }
 }

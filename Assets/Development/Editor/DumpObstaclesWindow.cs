@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.Collections.Generic;
+using DotsNav;
 using DotsNav.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Entities;
@@ -22,7 +23,7 @@ class DumpObstaclesWindow : EditorWindow
 
             var agentgo = new GameObject("Agent");
             var a = agentgo.transform;
-            var agent = agentgo.AddComponent<DotsNavAgent>();
+            var agent = agentgo.AddComponent<DotsNavPathFindingAgent>();
             agent.DrawCorners = true;
             agent.DrawGizmos = false;
             agentgo.AddComponent<ConvertToEntity>().ConversionMode = ConvertToEntity.Mode.ConvertAndInjectGameObject;

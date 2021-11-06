@@ -1,11 +1,23 @@
-﻿using UnityEngine;
+﻿using Unity.Entities;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Menu : MonoBehaviour
 {
-    public void Demo()
+    void Start()
     {
-        SceneManager.LoadScene("demo");
+        var em = World.All[0].EntityManager;
+        em.DestroyEntity(em.UniversalQuery);
+    }
+
+    public void Pathfinding()
+    {
+        SceneManager.LoadScene("pathfinding");
+    }
+
+    public void Avoidance()
+    {
+        SceneManager.LoadScene("avoidance");
     }
 
     public void Sandbox()

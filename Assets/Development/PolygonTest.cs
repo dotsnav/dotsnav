@@ -1,14 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using DotsNav;
-using DotsNav.Data;
 using DotsNav.Hybrid;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Hybrid;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using Navmesh = DotsNav.Navmesh;
+using Navmesh = DotsNav.Navmesh.Navmesh;
 using Random = Unity.Mathematics.Random;
 
 unsafe class PolygonTest : MonoBehaviour
@@ -23,7 +24,8 @@ unsafe class PolygonTest : MonoBehaviour
     public bool Remove;
     public bool BurstRemove = true;
     public bool BurstSafetyChecks = true;
-    public DotsNav.Hybrid.DotsNavNavmesh Navmesh;
+    public DotsNavRunner Runner;
+    public DotsNavNavmesh Navmesh;
     int _i;
     List<Entity> _ids;
     public bool Track;
@@ -65,12 +67,9 @@ unsafe class PolygonTest : MonoBehaviour
         for (int i = 0; i < Amount; i++)
         {
             var p = Prefabs[r.NextInt(Prefabs.Length)];
-            var scale = (1 - ScaleOffset + r.NextFloat() * 2 * ScaleOffset);
+            var scale = 1 - ScaleOffset + r.NextFloat() * 2 * ScaleOffset;
             var rot = r.NextFloat(2 * math.PI);
-
             var vertices = p.Vertices.Select(f => Math.Rotate((float2)(scale * f), rot)).ToList();
-            if (p.Closed)
-                vertices.Add(vertices[0]);
 
             var min = new float2(float.MaxValue);
             var max = new float2(float.MinValue);
@@ -115,8 +114,8 @@ unsafe class PolygonTest : MonoBehaviour
         for (int i = 0; i < Amount; i++)
             _entities.Add(em.CreateEntity());
 
-        var navmeshes = new NativeArray<Navmesh>(1, Allocator.TempJob);
-        navmeshes[0] = em.GetComponentData<Navmesh>(Navmesh.Entity);
+        var navmeshes = new NativeArray<NavmeshComponent>(1, Allocator.TempJob);
+        navmeshes[0] = em.GetComponentData<NavmeshComponent>(Navmesh.Entity);
         var toRemove = new NativeQueue<Entity>(Allocator.TempJob);
 
         new InsertValidateJob
@@ -145,7 +144,7 @@ unsafe class PolygonTest : MonoBehaviour
     void Warmup()
     {
         var em = World.All[0].EntityManager;
-        var navmeshes = new NativeArray<Navmesh>(1, Allocator.TempJob);
+        var navmeshes = new NativeArray<NavmeshComponent>(1, Allocator.TempJob);
         var l = new NativeList<float2>(Allocator.TempJob);
         var a = new NativeList<int>(Allocator.TempJob);
         var e = new NativeList<Entity>(Allocator.TempJob);
@@ -182,9 +181,9 @@ unsafe class PolygonTest : MonoBehaviour
     void RunRemove()
     {
         BurstCompiler.Options.EnableBurstCompilation = BurstRemove;
-        var navmeshes = new NativeArray<Navmesh>(1, Allocator.TempJob);
+        var navmeshes = new NativeArray<NavmeshComponent>(1, Allocator.TempJob);
         var em = World.All[0].EntityManager;
-        navmeshes[0] = em.GetComponentData<Navmesh>(Navmesh.Entity);
+        navmeshes[0] = em.GetComponentData<NavmeshComponent>(Navmesh.Entity);
         var toRemove = new NativeQueue<Entity>(Allocator.TempJob);
 
         new RemoveValidateJob
@@ -206,7 +205,7 @@ unsafe class PolygonTest : MonoBehaviour
 
     void Update()
     {
-        Navmesh.ProcessModifications();
+        Runner.ProcessModifications();
         if (!_runTest)
             RunTest();
 
@@ -219,7 +218,7 @@ unsafe class PolygonTest : MonoBehaviour
         if (Track)
         {
             var em = World.All[0].EntityManager;
-            var edges = em.GetComponentData<Navmesh>(Navmesh.Entity).GetEdgeEnumerator();
+            var edges = em.GetComponentData<NavmeshComponent>(Navmesh.Entity).Navmesh->GetEdgeEnumerator();
                 while (edges.MoveNext())
                     foreach (var c in edges.Current->Constraints)
                         ids.Add(c);

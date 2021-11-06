@@ -1,10 +1,9 @@
-using DotsNav.Assertions;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     public unsafe partial struct Navmesh
     {
@@ -383,15 +382,14 @@ namespace DotsNav
             return result;
         }
 
-        UnsafeList GetCrep(UnsafeList source)
+        UnsafeList<Entity> GetCrep(UnsafeList<Entity> source)
         {
             var l = GetCrep();
-            for (int i = 0; i < source.Length; i++)
-                l.Add(source.Read<Entity>(i));
+            l.AddRange(source);
             return l;
         }
 
-        UnsafeList GetCrep() => _creps.Count > 0 ? _creps.Pop() : new UnsafeList(UnsafeUtility.SizeOf<Entity>(), UnsafeUtility.AlignOf<Entity>(), CrepMinCapacity, Allocator.Persistent);
+        UnsafeList<Entity> GetCrep() => _creps.Count > 0 ? _creps.Pop() : new UnsafeList<Entity>(CrepMinCapacity, Allocator.Persistent);
 
         Vertex* InsertPointInFace(float2 p, Edge* edge)
         {
@@ -734,7 +732,7 @@ namespace DotsNav
             C.TryAdd((IntPtr) connection);
         }
 
-        void Connect(Vertex* a, Vertex* b, UnsafeList crep)
+        void Connect(Vertex* a, Vertex* b, UnsafeList<Entity> crep)
         {
             var connection = GetConnection(a, b);
             if (connection == null)
@@ -779,7 +777,7 @@ namespace DotsNav
 
         static readonly FixedString128 PointOutsideNavmeshMessage = "Trying to add a point outside the navmesh";
 
-        void Insert(float2* points, int start, int amount, Entity cid)
+        void Insert(float2* points, int start, int amount, Entity cid, float4x4 ltw)
         {
             Vertex* lastVert = null;
             var end = start + amount;
@@ -787,7 +785,7 @@ namespace DotsNav
 
             for (var i = start; i < end; i++)
             {
-                var c = points[i];
+                var c = Math.Mul2D(ltw, points[i]);
                 Assert.IsTrue(_verticesSeq.Length < 5 || Contains(c), PointOutsideNavmeshMessage);
                 var vert = InsertPoint(c);
                 Assert.IsTrue(vert != null);
@@ -980,7 +978,7 @@ namespace DotsNav
             InsertSegmentNoConstraints(a, b, crep);
         }
 
-        void InsertSegmentNoConstraints(Vertex* a, Vertex* b, UnsafeList crep)
+        void InsertSegmentNoConstraints(Vertex* a, Vertex* b, UnsafeList<Entity> crep)
         {
             var c = GetConnection(a, b);
 
@@ -1039,7 +1037,7 @@ namespace DotsNav
 
         Edge* CreateEdge(Vertex* a, Vertex* b)
         {
-            var q = _quadEdges.Set(new QuadEdge {Crep = GetCrep(), Id = NextEdgeId});
+            var q = _quadEdges.GetElementPointer(new QuadEdge {Crep = GetCrep(), Id = NextEdgeId});
 
             q->Edge0 = new Edge(q, 0);
             q->Edge1 = new Edge(q, 1);
@@ -1082,7 +1080,7 @@ namespace DotsNav
 
         Vertex* CreateVertex(float2 p)
         {
-            var v = _vertices.Set(new Vertex {Point = p, SeqPos = _verticesSeq.Length});
+            var v = _vertices.GetElementPointer(new Vertex {Point = p, SeqPos = _verticesSeq.Length});
             _verticesSeq.Add((IntPtr) v);
             _qt.Insert(v);
             return v;

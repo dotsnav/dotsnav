@@ -2,7 +2,6 @@
 using Unity.Mathematics;
 using UnityEngine;
 using DotsNav;
-using DotsNav.Assertions;
 
 [ExecuteInEditMode]
 public class CircleSegmentIntersection : MonoBehaviour

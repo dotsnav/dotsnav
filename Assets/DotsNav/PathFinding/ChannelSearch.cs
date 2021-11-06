@@ -2,8 +2,8 @@ using System;
 using System.Diagnostics;
 using DotsNav.Collections;
 using DotsNav.Drawing;
+using DotsNav.Navmesh;
 using DotsNav.PathFinding.Data;
-using RobustGeometricPredicates;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -32,7 +32,7 @@ namespace DotsNav.PathFinding
             _validGoalEdges = new List<int>(allocator);
         }
 
-        public AgentState Search(float2 start, float2 goal, Navmesh navmesh, List<Gate> path, float radius, DynamicBuffer<TriangleElement> triangleIds, out int cost)
+        public PathQueryState Search(float2 start, float2 goal, Navmesh.Navmesh* navmesh, List<Gate> path, float radius, DynamicBuffer<TriangleElement> triangleIds, out int cost)
         {
             var open = _open;
             var closed = _closed;
@@ -42,20 +42,20 @@ namespace DotsNav.PathFinding
             var validGoalEdges = _validGoalEdges;
             cost = 80;
 
-            if (!navmesh.Contains(start))
-                return AgentState.StartInvalid;
+            if (!navmesh->Contains(start))
+                return PathQueryState.StartInvalid;
 
-            if (!navmesh.Contains(goal))
-                return AgentState.GoalInvalid;
+            if (!navmesh->Contains(goal))
+                return PathQueryState.GoalInvalid;
 
-            var startEdge = navmesh.FindTriangleContainingPoint(start);
+            var startEdge = navmesh->FindTriangleContainingPoint(start);
             if (!EndpointValid(start, radius, startEdge))
-                return AgentState.StartInvalid;
+                return PathQueryState.StartInvalid;
             var startId = startEdge->TriangleId;
 
-            var goalEdge = navmesh.FindTriangleContainingPoint(goal);
+            var goalEdge = navmesh->FindTriangleContainingPoint(goal);
             if (!EndpointValid(goal, radius, goalEdge))
-                return AgentState.GoalInvalid;
+                return PathQueryState.GoalInvalid;
             var goalId = goalEdge->TriangleId;
 
             var foundDisturbance = false;
@@ -104,7 +104,7 @@ namespace DotsNav.PathFinding
                     }
 
                     triangleIds.Add(startId);
-                    return AgentState.PathFound;
+                    return PathQueryState.PathFound;
                 }
             }
 
@@ -112,7 +112,7 @@ namespace DotsNav.PathFinding
             GetValidGoalEdges(_validGoalEdges);
 
             if (_validGoalEdges.Length == 0)
-                return AgentState.NoPath;
+                return PathQueryState.NoPath;
 
             ExpandInitial(startEdge->Sym);
             ExpandInitial(startEdge->LNext->Sym);
@@ -145,7 +145,7 @@ namespace DotsNav.PathFinding
                     AddEndpointEdges(start, e, false);
 
                     path.Reverse();
-                    return AgentState.PathFound;
+                    return PathQueryState.PathFound;
                 }
 
                 closed.TryAdd(id);
@@ -188,7 +188,7 @@ namespace DotsNav.PathFinding
                 }
             }
 
-            return AgentState.NoPath;
+            return PathQueryState.NoPath;
 
             void AddEndpointEdges(float2 endpoint, Edge* edge, bool reverse)
             {
@@ -363,7 +363,7 @@ namespace DotsNav.PathFinding
                 var sgi = Math.ProjectLine(e->Org->Point, e->Dest->Point, v);
                 opposite = (float2) (sgi + math.normalize(sgi - v) * d);
 
-                var c = Navmesh.TryGetConstraint(math.length(opposite - v), v, e->Sym);
+                var c = Navmesh.Navmesh.TryGetConstraint(math.length(opposite - v), v, e->Sym);
 
                 if (c == null)
                     return false;

@@ -1,29 +1,25 @@
-using System.Collections.Generic;
-using DotsNav.Assertions;
-using DotsNav.Data;
-using DotsNav.Systems;
-using Unity.Burst;
+using DotsNav.Core.Hybrid;
+using DotsNav.Drawing;
+using DotsNav.Hybrid;
+using DotsNav.Navmesh.Data;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace DotsNav.Hybrid
+namespace DotsNav.Navmesh.Hybrid
 {
     class NavmeshConversionSystem : GameObjectConversionSystem
     {
         protected override void OnUpdate()
         {
-            Entities.ForEach((DotsNavNavmesh navmesh) =>
+            Entities.ForEach((DotsNavPlane plane, DotsNavNavmesh navmesh) =>
             {
                 var entity = GetPrimaryEntity(navmesh);
                 navmesh.Entity = entity;
                 navmesh.World = DstEntityManager.World;
                 DstEntityManager.AddComponentData(entity, new NavmeshComponent
                 (
-                    navmesh.Size,
+                    plane.Size,
                     navmesh.ExpectedVerts,
                     navmesh.MergePointDistance,
                     navmesh.CollinearMargin
@@ -32,36 +28,20 @@ namespace DotsNav.Hybrid
                 DstEntityManager.AddComponentData(entity, new NavmeshDrawComponent
                 {
                     DrawMode = navmesh.DrawMode,
-                    ConstrainedColor = navmesh.ConstrainedColor,
-                    UnconstrainedColor = navmesh.UnconstrainedColor
+                    ConstrainedColor = plane.ConstrainedColor,
+                    UnconstrainedColor = plane.UnconstrainedColor
                 });
-
             });
         }
     }
 
     /// <summary>
-    /// Determines when queued updates should be processed
-    /// </summary>
-    public enum UpdateMode { Update, FixedUpdate, Manual }
-
-    /// <summary>
     /// Creates a navmesh on startup and can then be used to insert and destroy obstacles. Destroying this object triggers
     /// the destruction of the navmesh releasing its resources.
     /// </summary>
-    public class DotsNavNavmesh : EntityLifetimeBehaviour
+    [RequireComponent(typeof(DotsNavPlane))]
+    public class DotsNavNavmesh : EntityLifetimeBehaviour, IPlaneComponent
     {
-        /// <summary>
-        /// Size of the navmesh to be created. The navmesh will be centered around the origin.
-        /// Changing this value after initialization has no effect
-        /// </summary>
-        public Vector2 Size = new Vector2(50, 50);
-
-        /// <summary>
-        /// Determines when queued updates should be processed. When using manual also set // todo
-        /// </summary>
-        public UpdateMode UpdateMode;
-
         /// <summary>
         /// Determines the size of initial allocations. Changing this value after initialization has no effect
         /// </summary>
@@ -78,190 +58,26 @@ namespace DotsNav.Hybrid
         /// </summary>
         public float CollinearMargin = 1e-6f;
 
-        [FormerlySerializedAs("DebugDrawMode")]
         [Header("Debug")]
         public DrawMode DrawMode = DrawMode.Constrained;
-        public Color ConstrainedColor = Color.red;
-        public Color UnconstrainedColor = Color.white;
 
-        DotsNavSystemGroup _dotsNavSystemGroup;
-
-        static bool _created;
 
         /// <summary>
         /// The amount of vertices in the current triangulation
         /// </summary>
         public int Vertices { get; internal set; }
 
-        public bool IsInitialized => Vertices >= 8;
+        public bool IsInitialized => Vertices > 7;
 
-        protected override void Awake()
+        void IPlaneComponent.InsertObstacle(Entity obstacle, EntityManager em)
         {
-            if (_created)
-            {
-                Debug.LogError("Only one navmesh is allowed");
-                DestroyImmediate(this);
-            }
-
-            _created = true;
-
-            base.Awake();
-
-            if (Injected)
-            {
-                var world = World.All[0];
-                _dotsNavSystemGroup = world.GetOrCreateSystem<DotsNavSystemGroup>();
-                world.GetOrCreateSystem<FixedStepSimulationSystemGroup>().RemoveSystemFromUpdateList(_dotsNavSystemGroup);
-                world.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystem<EndDotsNavEntityCommandBufferSystem>();
-            }
-        }
-
-        protected override void OnDestroy()
-        {
-            base.OnDestroy();
-            _created = false;
-        }
-
-        /// <summary>
-        /// Call to trigger the insertion and removal of obstacles and path finder update
-        /// </summary>
-        public void ProcessModifications()
-        {
-            Assert.IsTrue(UpdateMode == UpdateMode.Manual, $"Manually updating navmesh requires UpdateMode to be Manual");
-            ProcessModificationsInternal();
-        }
-
-        void Update()
-        {
-            if (UpdateMode == UpdateMode.Update)
-                ProcessModificationsInternal();
-        }
-
-        void FixedUpdate()
-        {
-            if (UpdateMode == UpdateMode.FixedUpdate)
-                ProcessModificationsInternal();
-        }
-
-        void ProcessModificationsInternal()
-        {
-            _dotsNavSystemGroup.Update();
-        }
-
-        void OnValidate()
-        {
-            Size = math.abs(Size);
-        }
-
-        /// <summary>
-        /// Queue insertion of an obstacle in world space
-        /// </summary>
-        public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices)
-        {
-            var em = World.All[0].EntityManager;
-            var obstacle = em.CreateEntity();
-            em.AddComponentData(obstacle, new ObstacleComponent());
-            var input = em.AddBuffer<VertexElement>(obstacle);
-            foreach (float2 vertex in vertices)
-                input.Add(vertex);
-            return new ObstacleReference(obstacle);
-        }
-
-        /// <summary>
-        /// Queue bulk insertion of permanant obstacles. Once inserted, these obstacles can not be removed.
-        /// Returns the total amount of inserted vertices excluding intersections
-        /// </summary>
-        /// <param name="amount">Amount of obstacles to insert</param>
-        /// <param name="adder">A Burst compatible struct implementing IObstacleAdder</param>
-        public int InsertObstacleBulk<T>(int amount, T adder) where T : struct, IObstacleAdder
-        {
-            var em = World.All[0].EntityManager;
-            var obstacle = em.CreateEntity();
-            em.AddBuffer<VertexElement>(obstacle);
-            var amounts = em.AddBuffer<VertexAmountElement>(obstacle);
-            var input = em.GetBuffer<VertexElement>(obstacle);
-            new PopulateBulkJob<T>
-                {
-                    Amount = amount,
-                    Adder = adder,
-                    Input = input,
-                    Amounts = amounts
-                }
-                .Run();
-            return input.Length;
-        }
-
-        [BurstCompile]
-        struct PopulateBulkJob<T> : IJob where T : struct, IObstacleAdder
-        {
-            public int Amount;
-            public T Adder;
-            public DynamicBuffer<VertexElement> Input;
-            public DynamicBuffer<VertexAmountElement> Amounts;
-
-            public void Execute()
-            {
-                for (int i = 0; i < Amount; i++)
-                {
-                    var s = Input.Length;
-                    Adder.Add(i, Input);
-                    Amounts.Add(Input.Length - s);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns true when point p is contained within the navmesh
-        /// </summary>
-        public bool Contains(Vector2 p) => Math.Contains(p, -Size / 2, Size / 2);
-
-        /// <summary>
-        /// Queue insertion of an obstacle in object space
-        /// </summary>
-        public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices, Vector2 position, float rotationDegrees = 0) =>
-            InsertObstacle(vertices, position, Vector2.one, rotationDegrees);
-
-        /// <summary>
-        /// Queue insertion of an obstacle in object space
-        /// </summary>
-        public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices, Vector2 position, Vector2 scale, float rotationDegrees = 0)
-        {
-            var em = World.All[0].EntityManager;
-            var obstacle = em.CreateEntity();
-            em.AddComponentData(obstacle, new LocalToWorld {Value = float4x4.TRS(position.ToXxY(), quaternion.RotateY(math.radians(rotationDegrees)), ((float2)scale).xxy)});
-            em.AddComponentData(obstacle, new ObstacleComponent());
-            var input = em.AddBuffer<VertexElement>(obstacle);
-            foreach (float2 vertex in vertices)
-                input.Add(vertex);
-            return new ObstacleReference(obstacle);
-        }
-
-        /// <summary>
-        /// Queue removal of an obstacle
-        /// </summary>
-        public void RemoveObstacle(ObstacleReference toRemove)
-        {
-            World.All[0].EntityManager.DestroyEntity(toRemove.Value);
+            em.AddComponentData(obstacle, new NavmeshObstacleComponent {Navmesh = Entity});
         }
 
         /// <summary>
         /// Returns the native navmesh which exposes the triangulation. This structure is invalidated each update and
         /// the latest version should be obtained each cycle
         /// </summary>
-        public Navmesh GetNativeNavmesh() => World.All[0].EntityManager.GetComponentData<Navmesh>(Entity);
-
-        void OnDrawGizmos()
-        {
-            if (Application.isPlaying)
-                return;
-
-            float2 hs = Size / 2;
-            var color = ConstrainedColor;
-            DrawLine(-hs, hs * new float2(1, -1));
-            DrawLine(hs * new float2(1, -1), hs);
-            DrawLine(hs, hs * new float2(-1, 1));
-            DrawLine(hs * new float2(-1, 1), -hs);
-            void DrawLine(float2 a, float2 b) => Debug.DrawLine(a.ToXxY(), b.ToXxY(), color);
-        }
+        public unsafe Navmesh GetNativeNavmesh() => *World.EntityManager.GetComponentData<NavmeshComponent>(Entity).Navmesh;
     }
 }

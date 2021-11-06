@@ -1,17 +1,18 @@
 #if UNITY_EDITOR
+using DotsNav.PathFinding.Hybrid;
 using UnityEditor;
 using UnityEngine;
 
-namespace DotsNav.PathFinding.Hybrid
+namespace DotsNav.PathFinding
 {
-    [CustomEditor(typeof(DotsNavAgent), editorForChildClasses: true)]
+    [CustomEditor(typeof(DotsNavPathFindingAgent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
-    class AgentEditor : Editor
+    class AgentEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             GUI.enabled = false;
-            GUILayout.Label($"State: {((DotsNavAgent)target).State}");
+            GUILayout.Label($"State: {((DotsNavPathFindingAgent)target).State}");
             GUI.enabled = true;
             DrawDefaultInspector();
         }

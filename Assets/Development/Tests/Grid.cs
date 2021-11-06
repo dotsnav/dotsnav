@@ -1,5 +1,5 @@
 using System;
-using DotsNav.Assertions;
+using DotsNav;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;

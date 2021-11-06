@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-namespace DotsNav.Data
+namespace DotsNav.Navmesh.Data
 {
     /// <summary>
     /// Ids of destroyed triangles are output to a DynamicBuffer&lt;DestroyedTriangleElement&gt; each navmesh update

@@ -1,17 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotsNav;
 using DotsNav.CollisionDetection.Hybrid;
+using DotsNav.Core.Hybrid;
+using DotsNav.Drawing;
 using DotsNav.Hybrid;
+using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
+using DotsNav.Samples.Code;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 class SandboxDev : MonoBehaviour
 {
-    public DotsNavNavmesh Navmesh;
+    public DotsNavPlane Plane;
+    DotsNavNavmesh _navmesh;
     public float AgentSizeZoomSpeed;
     public float MinAgentSize;
     public float MaxAgentSize;
@@ -36,7 +40,7 @@ class SandboxDev : MonoBehaviour
     float _prefabRotation;
     Camera _camera;
     Vector2 _previousMouse;
-    DotsNavAgent _agent;
+    DotsNavPathFindingAgent _agent;
     Transform _start;
     Transform _goal;
     LineDrawer _lineDrawer;
@@ -45,45 +49,45 @@ class SandboxDev : MonoBehaviour
 
     void Awake()
     {
+        _navmesh = Plane.GetComponent<DotsNavNavmesh>();
+
         foreach (var obstacle in FindObjectsOfType<DotsNavObstacle>())
         {
             var l  = new List<Vector2>();
             for (int i = 0; i < obstacle.Vertices.Length; i++)
-                l.Add(obstacle.GetVertex(i));
-            if (obstacle.Closed)
-                l.Add(obstacle.GetVertex(0));
+                l.Add(obstacle.GetVertexWorldSpace(i).xz);
             _toDump.Add(l);
         }
 
         _cameraController = FindObjectOfType<CameraController>();
-        _cameraController.Initialize(Navmesh.Size);
+        _cameraController.Initialize(Plane.Size);
         _lineDrawer = GetComponent<LineDrawer>();
         _camera = Camera.main;
         Help.gameObject.SetActive(!Application.isEditor);
-        _agent = FindObjectOfType<DotsNavAgent>();
+        _agent = FindObjectOfType<DotsNavPathFindingAgent>();
+
+        var tr = _agent.transform;
+        _start = tr.parent;
+        _goal = _start.Find("Goal");
+        _goal.parent = null;
 
         if (Reverse)
         {
-            var start = _agent.transform.Find("Start");
-            var goal = _agent.transform.Find("Goal");
-            var tempPos = start.position;
-            start.position = goal.position;
-            goal.position = tempPos;
+            var tempPos = _start.position;
+            _start.position = _goal.position;
+            _goal.position = tempPos;
         }
 
-        var tr = _agent.transform;
-        _start = tr.Find("Start");
-        _goal = tr.Find("Goal");
         var size = _start.localScale.x;
         var s = new Vector3(size, size, size);
         _goal.localScale = s;
-        _agent.Radius = size / 2;
+        _agent.GetComponent<DotsNavAgent>().Radius = size / 2;
     }
 
     protected void Update()
     {
         ProcessInputAndUpdateUi();
-        _agent.FindPath(_start.position.xz(), _goal.position.xz());
+        _agent.FindPath(_goal.position);
 
         var rbs = FindObjectsOfType<RaycastBehaviour>();
         foreach (var rb in rbs)
@@ -91,12 +95,12 @@ class SandboxDev : MonoBehaviour
             var from = rb.GetStart();
             var to = rb.GetGoal();
 
-            if (!Navmesh.Contains(from) || !Navmesh.Contains(to))
+            if (!Plane.Contains(from) || !Plane.Contains(to))
                 continue;
 
             var pointSize = .1f * _cameraController.Zoom;
 
-            using (var result = Navmesh.CastSegment(from, to, true))
+            using (var result = _navmesh.CastSegment(from, to, true))
             {
                 _lineDrawer.DrawLine(from, to, result.CollisionDetected ? CastHitColor : CastColor);
                 var hits = result.Hits;
@@ -108,9 +112,9 @@ class SandboxDev : MonoBehaviour
         var dbs = FindObjectsOfType<DiscCastBehaviour>();
         foreach (var db in dbs)
         {
-            if (!Navmesh.Contains(db.Centre))
+            if (!Plane.Contains(db.Centre))
                 continue;
-            using (var result = Navmesh.CastDisc(db.Centre, db.Radius, false))
+            using (var result = _navmesh.CastDisc(db.Centre, db.Radius, false))
                 _lineDrawer.DrawCircle(db.Centre, new Vector2(0, db.Radius), 2 * Mathf.PI, result.CollisionDetected ? CastHitColor : CastColor, res:200);
         }
     }
@@ -119,11 +123,11 @@ class SandboxDev : MonoBehaviour
     {
         foreach (var points in _points)
         {
-            ClampObstacle(points, Navmesh.Size);
+            ClampObstacle(points, Plane.Size);
 
             if (points.Count == 0)
                 continue;
-            var obstacleReference = Navmesh.InsertObstacle(points);
+            var obstacleReference = Plane.InsertObstacle(points);
             _obstacles.Add(obstacleReference);
             _toDump.Add(new List<Vector2>(points));
         }
@@ -139,7 +143,7 @@ class SandboxDev : MonoBehaviour
             var w = UnityEditor.EditorWindow.GetWindow<DumpObstaclesWindow>();
             w.ToDump = _toDump;
 
-            var agent = FindObjectOfType<DotsNavAgent>().transform;
+            var agent = FindObjectOfType<DotsNavPathFindingAgent>().transform;
             var s = agent.Find("Start").transform;
             w.Start = s.position.xz();
             w.Goal = agent.Find("Goal").transform.position.xz();
@@ -311,8 +315,6 @@ class SandboxDev : MonoBehaviour
                 var points = new List<Vector2>();
                 foreach (var vert in verts)
                     points.Add(DemoMath.Rotate(vert * _prefabSize, _prefabRotation) + mousePos);
-                if (obstacle.Closed)
-                    points.Add(points[0]);
                 _points.Add(points);
             }
 
@@ -352,7 +354,7 @@ class SandboxDev : MonoBehaviour
                 var s = new Vector3(size, size, size);
                 _start.localScale = s;
                 _goal.localScale = s;
-                _agent.Radius = size / 2;
+                _agent.GetComponent<DotsNavAgent>().Radius = size / 2;
             }
 
             if (_target != null && Input.GetMouseButton(0) && !Input.GetMouseButtonDown(0) && mouseDelta != Vector2.zero)
@@ -361,13 +363,13 @@ class SandboxDev : MonoBehaviour
 
 
         if (Input.GetKeyDown(KeyCode.E))
-            Navmesh.DrawMode = Navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
+            _navmesh.DrawMode = _navmesh.DrawMode == DrawMode.Constrained ? DrawMode.Both : DrawMode.Constrained;
         if (Input.GetKeyDown(KeyCode.H))
             Help.gameObject.SetActive(!Help.gameObject.activeSelf);
 
         if ((Input.GetKey(KeyCode.T) || Input.GetKeyDown(KeyCode.R)) && _obstacles.Count > 0)
         {
-            Navmesh.RemoveObstacle(_obstacles.Last());
+            Plane.RemoveObstacle(_obstacles.Last());
             _obstacles.RemoveAt(_obstacles.Count - 1);
         }
 
