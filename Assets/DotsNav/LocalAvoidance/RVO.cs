@@ -40,19 +40,15 @@ namespace DotsNav.LocalAvoidance
     {
         const float Epsilon = 0.00001f;
 
-        public static float2 CalculateNewVelocity(RVOSettingsComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
-                                                  NativeList<ObstacleDistance> obstacleNeighbours, float invTimeStep, float2 prefVelocity, float2 velocity, float maxSpeed)
+        public static void CalculateNewVelocity(RVOSettingsComponent agent, float2 pos, float radius, NativeList<VelocityObstacle> neighbours,
+                                                  NativeList<ObstacleDistance> obstacleNeighbours, float invTimeStep, float2 prefVelocity, float2 velocity, float maxSpeed, ref float2 newVelocity)
         {
-            Assert.IsTrue(prefVelocity.IsNumber());
-            if (!prefVelocity.IsNumber() || math.all(prefVelocity == 0))
-                return 0;
-
+            Assert.IsTrue(math.all(prefVelocity.IsNumber()));
             var orcaLines = new NativeList<Line>(Allocator.Temp);
             CreateOrcaLines(pos, radius, velocity, neighbours, orcaLines, 1 / agent.TimeHorizon, out var numObstLines, 1 / agent.TimeHorizonObst, obstacleNeighbours, invTimeStep);
-            var lineFail = LinearProgram2(orcaLines, maxSpeed, prefVelocity, false, out var newVelocity);
+            var lineFail = LinearProgram2(orcaLines, maxSpeed, prefVelocity, false, ref newVelocity);
             if (lineFail < orcaLines.Length)
                 LinearProgram3(orcaLines, numObstLines, lineFail, maxSpeed, ref newVelocity);
-            return newVelocity;
         }
 
         static void CreateOrcaLines(float2 position, float radius, float2 velocity, NativeList<VelocityObstacle> neighbours,
@@ -450,7 +446,7 @@ namespace DotsNav.LocalAvoidance
             return true;
         }
 
-        static int LinearProgram2(NativeList<Line> lines, float radius, float2 optVelocity, bool directionOpt, out float2 result)
+        static int LinearProgram2(NativeList<Line> lines, float radius, float2 optVelocity, bool directionOpt, ref float2 result)
         {
             if (directionOpt)
             {
@@ -533,7 +529,7 @@ namespace DotsNav.LocalAvoidance
                     }
 
                     var tempResult = result;
-                    if (LinearProgram2(projLines, radius, new float2(-lines[i].Direction.y, lines[i].Direction.x), true, out result) < projLines.Length)
+                    if (LinearProgram2(projLines, radius, new float2(-lines[i].Direction.y, lines[i].Direction.x), true, ref result) < projLines.Length)
                     {
                         /*
                          * This should in principle not happen. The result is by
