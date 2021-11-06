@@ -46,13 +46,13 @@ namespace DotsNav.LocalAvoidance.Systems
                     var ltw = localToWorldLookup[agentTree.Tree].Value;
                     var inv = math.inverse(ltw);
                     var pos = math.transform(inv, translation.Value).xz;
-                    var neighbours = GetNeighbours(agent, agentTree, pos, velocityObstacleLookup);
+                    var neighbours = ComputeNeighbours(agent, agentTree, pos, velocityObstacleLookup);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(16, Allocator.Temp);
                     var obstacleDist = agent.TimeHorizonObst * maxSpeed.Value + radius;
                     var ext = obstacleDist / 2;
                     var aabb = new AABB {LowerBound = pos - ext, UpperBound = pos + ext};
                     obstacleTreeLookup[obstacleTree.Tree].TreeRef.Query(new ObstacleCollector(pos, obstacleDist, obstacleNeighbours), aabb);
-                    RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value, ref velocity.Value);
+                    RVO.ComputeNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value, ref velocity.Value);
                     velocity.WorldSpace = math.rotate(ltw, velocity.Value.ToXxY());
                 })
                 .ScheduleParallel();
@@ -68,15 +68,15 @@ namespace DotsNav.LocalAvoidance.Systems
                     var ltw = localToWorldLookup[agentTree.Tree].Value;
                     var inv = math.inverse(ltw);
                     var pos = math.transform(inv, translation.Value).xz;
-                    var neighbours = GetNeighbours(agent, agentTree, pos, velocityObstacleLookup);
+                    var neighbours = ComputeNeighbours(agent, agentTree, pos, velocityObstacleLookup);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
-                    RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value, ref velocity.Value);
+                    RVO.ComputeNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value, ref velocity.Value);
                     velocity.WorldSpace = math.rotate(ltw, velocity.Value.ToXxY());
                 })
                 .ScheduleParallel();
         }
 
-        static NativeList<VelocityObstacle> GetNeighbours(RVOSettingsComponent agent, DynamicTreeElementComponent agentTree, float2 pos, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
+        static NativeList<VelocityObstacle> ComputeNeighbours(RVOSettingsComponent agent, DynamicTreeElementComponent agentTree, float2 pos, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
         {
             var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
             var ext = agent.NeighbourDist / 2;
