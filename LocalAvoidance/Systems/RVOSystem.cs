@@ -52,7 +52,7 @@ namespace DotsNav.LocalAvoidance.Systems
                     var ext = obstacleDist / 2;
                     var aabb = new AABB {LowerBound = pos - ext, UpperBound = pos + ext};
                     obstacleTreeLookup[obstacleTree.Tree].TreeRef.Query(new ObstacleCollector(pos, obstacleDist, obstacleNeighbours), aabb);
-                    velocity.Value = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value);
+                    RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value, ref velocity.Value);
                     velocity.WorldSpace = math.rotate(ltw, velocity.Value.ToXxY());
                 })
                 .ScheduleParallel();
@@ -70,7 +70,7 @@ namespace DotsNav.LocalAvoidance.Systems
                     var pos = math.transform(inv, translation.Value).xz;
                     var neighbours = GetNeighbours(agent, agentTree, pos, velocityObstacleLookup);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
-                    velocity.Value = RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value);
+                    RVO.CalculateNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value, ref velocity.Value);
                     velocity.WorldSpace = math.rotate(ltw, velocity.Value.ToXxY());
                 })
                 .ScheduleParallel();
