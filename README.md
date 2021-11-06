@@ -40,6 +40,7 @@ To create a navmesh attach a DotsNavNavmesh behaviour. The value of ExpectedVert
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image28.png?raw=true)
 
 To enable local avoidance attach a DotsNavLocalAvoidance behaviour. This behaviour does not require a navmesh.
+
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image22.png?raw=true)
     
 ### Pathfinder
@@ -91,10 +92,6 @@ Path queries can be enqueued using DotsNavAgent.FindPath.
 Next navmesh update a path will be calculated.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image9.png?raw=true)
-
-Each navmesh update the direction required to follow the path is calculated using the agent's position.
-
-![](https://github.com/bassmit/images/blob/master/DotsNav/image28.png?raw=true)
 
 Using the default settings, invalidated paths are recalculated automatically.
 
