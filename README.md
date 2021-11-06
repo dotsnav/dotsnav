@@ -2,7 +2,7 @@
   <img src="https://github.com/bassmit/images/blob/master/DotsNav/title.png?raw=true">
 </p>
 <p align="center">
-  <a href="https://vimeo.com/505612775">Video (v0.1)</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://drive.google.com/uc?export=download&id=1Z7bYa7unqLYBCRxgVJnd1EG94Xhdvb4L">Demo</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://discord.gg/3kq4bhwY7w">Discord</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/sponsors/bassmit">Sponsor</a>
+  <a href="https://vimeo.com/505612775">Video (v0.1)</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://vimeo.com/608336630">Video (avoidance)</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://drive.google.com/uc?export=download&id=1Z7bYa7unqLYBCRxgVJnd1EG94Xhdvb4L">Demo</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://discord.gg/3kq4bhwY7w">Discord</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://github.com/sponsors/bassmit">Sponsor</a>
 </p>
 <p align="center">
 
