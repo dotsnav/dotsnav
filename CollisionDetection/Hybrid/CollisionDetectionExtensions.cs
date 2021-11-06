@@ -1,4 +1,4 @@
-using DotsNav.Hybrid;
+using DotsNav.Navmesh.Hybrid;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;

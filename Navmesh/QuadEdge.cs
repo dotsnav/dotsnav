@@ -1,7 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Entities;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// Represents an undirected edge in the navmesh. For more information see:
@@ -15,7 +16,7 @@ namespace DotsNav
         public Edge Edge1;
         public Edge Edge2;
         public Edge Edge3;
-        public UnsafeList Crep;
+        public UnsafeList<Entity> Crep;
         public int Mark;
         public int Id;
         public bool RefineFailed;

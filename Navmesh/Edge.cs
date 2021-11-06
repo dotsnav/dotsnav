@@ -1,7 +1,6 @@
-using DotsNav.Assertions;
 using Unity.Entities;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     /// <summary>
     /// A directed edge in the triangulation. Traversal operators assume counter clockwise rotation,
@@ -92,10 +91,10 @@ namespace DotsNav
             set => QuadEdge->Mark = value;
         }
 
-        public ReadOnly<Entity> Constraints => new ReadOnly<Entity>((Entity*) QuadEdge->Crep.Ptr, QuadEdge->Crep.Length);
+        public ReadOnly<Entity> Constraints => new ReadOnly<Entity>(QuadEdge->Crep.Ptr, QuadEdge->Crep.Length);
         public bool Constrained => QuadEdge->Crep.Length > 0;
         public bool IsConstrainedBy(Entity id) => QuadEdge->Crep.Contains(id);
-        public bool ConstraintsEqual(Edge* edge) => QuadEdge->Crep.SequenceEqual<Entity>(edge->QuadEdge->Crep);
+        public bool ConstraintsEqual(Edge* edge) => QuadEdge->Crep.SequenceEqual(edge->QuadEdge->Crep);
 
         internal void AddConstraint(Entity id) => QuadEdge->Crep.InsertSorted(id);
         internal void RemoveConstraint(Entity id) => QuadEdge->Crep.Remove(id);

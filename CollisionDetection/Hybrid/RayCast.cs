@@ -1,5 +1,6 @@
 using Unity.Mathematics;
 using System;
+using DotsNav.Navmesh;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -30,7 +31,7 @@ namespace DotsNav.CollisionDetection.Hybrid
     struct RayCastJob : IJob
     {
         public RayCast Input;
-        public Navmesh Navmesh;
+        public Navmesh.Navmesh Navmesh;
 
         public void Execute()
         {

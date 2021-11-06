@@ -1,26 +1,36 @@
 using DotsNav.Data;
-using DotsNav.PathFinding;
 using DotsNav.PathFinding.Data;
+using DotsNav.Systems;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 
-namespace DotsNav.Systems
+namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(PathFinderSystem))]
-    class AgentDirectionSystem : SystemBase
+    public class AgentDirectionSystem : SystemBase
     {
         protected override void OnUpdate()
         {
+            var ltwLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+
             Entities
                 .WithBurst()
-                .ForEach((AgentComponent agent, Translation translation, DynamicBuffer<PathSegmentElement> path, ref AgentDirectionComponent data) =>
+                .WithReadOnly(ltwLookup)
+                .ForEach((RadiusComponent radius, Translation translation, NavmeshAgentComponent navmesh, DynamicBuffer<PathSegmentElement> path, ref PathQueryComponent agent, ref DirectionComponent data) =>
                 {
-                    if (agent.State != AgentState.PathFound)
+                    if (agent.State != PathQueryState.PathFound)
                         return;
 
-                    var p = translation.Value.xz;
+                    if (data.QueryVersion < agent.Version)
+                    {
+                        data.SegmentIndex = 0;
+                        data.QueryVersion = agent.Version;
+                    }
+
+                    var inv = math.inverse(ltwLookup[navmesh.Navmesh].Value);
+                    var p = math.transform(inv, translation.Value).xz;
 
                     var dest = path[path.Length - 1].To;
                     if (math.all(p == dest))
@@ -29,53 +39,42 @@ namespace DotsNav.Systems
                         return;
                     }
 
-                    var distSq = float.MaxValue;
-                    var closest = default(float2);
-                    Angle direction = 0f;
+                    var segment = path[data.SegmentIndex];
+                    var closest = Math.ClosestPointOnLineSegment(p, segment.From, segment.To);
+                    data.DistanceFromPathSquared = math.distancesq(p, closest);
 
-                    for (int i = 0; i < path.Length; i++)
+                    while (data.SegmentIndex < path.Length - 1)
                     {
-                        var segment = path[i];
-                        var point = Math.ClosestPointOnLineSegment(p, segment.From, segment.To);
-                        Angle dir;
+                        var segment1 = path[data.SegmentIndex + 1];
+                        var point1 = Math.ClosestPointOnLineSegment(p, segment1.From, segment1.To);
+                        var dsq1 = math.distancesq(p, point1);
 
-                        if (math.all(point == segment.To) && i < path.Length - 1)
-                        {
-                            var corner = path[i + 1].Corner;
-                            var fromAngle = Math.Angle(segment.To - corner);
-                            var toAngle = Math.Angle(path[i + 1].From - corner);
-                            dir = Angle.Clamp(Math.Angle(p - corner), fromAngle, toAngle);
-                            point = corner + Math.Rotate(agent.Radius, dir);
-                            var left = Math.CcwFast(segment.From, segment.To, corner);
-                            dir += left ? -math.PI / 2 : math.PI / 2;
-                        }
-                        else
-                        {
-                            dir = Math.Angle(segment.To - segment.From);
-                        }
+                        if (data.DistanceFromPathSquared < dsq1)
+                            break;
 
-                        var dsq = math.distancesq(p, point);
-
-                        if (dsq > distSq)
-                        {
-                            data.Value = GetDirection(direction);
-                            return;
-                        }
-
-                        closest = point;
-                        direction = dir;
-                        distSq = dsq;
+                        ++data.SegmentIndex;
+                        segment = segment1;
+                        closest = point1;
+                        data.DistanceFromPathSquared = dsq1;
                     }
 
-                    data.Value = GetDirection(Math.Angle(dest - p));
+                    Angle dir;
 
-                    float2 GetDirection(Angle angle)
+                    if (math.all(closest == segment.To) && data.SegmentIndex < path.Length - 1)
                     {
-                        var distToPath = math.distance(p, closest);
-                        var f = math.min(1, distToPath / (agent.Radius / 2));
-                        var angleToPath = Math.Angle(closest - p);
-                        return Angle.Lerp(angle, angleToPath, f).ToVector();
+                        var corner = path[data.SegmentIndex + 1].Corner;
+                        var fromAngle = Math.Angle(segment.To - corner);
+                        var toAngle = Math.Angle(path[data.SegmentIndex + 1].From - corner);
+                        dir = Angle.Clamp(Math.Angle(p - corner), fromAngle, toAngle);
+                        var left = Math.CcwFast(segment.From, segment.To, corner);
+                        dir += left ? -math.PI / 2 : math.PI / 2;
                     }
+                    else
+                    {
+                        dir = Math.Angle(segment.To - p);
+                    }
+
+                    data.Value = dir.ToVector();
                 })
                 .ScheduleParallel();
         }

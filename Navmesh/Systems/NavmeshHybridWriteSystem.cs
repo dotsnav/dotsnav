@@ -1,17 +1,19 @@
+using DotsNav.Navmesh.Data;
+using DotsNav.Systems;
 using Unity.Entities;
 
-namespace DotsNav.Systems
+namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
     class NavmeshHybridWriteSystem : SystemBase
     {
-        protected override void OnUpdate()
+        protected override unsafe void OnUpdate()
         {
             Entities
                 .WithoutBurst()
-                .ForEach((Hybrid.DotsNavNavmesh hybrid, Navmesh navmesh) =>
+                .ForEach((Hybrid.DotsNavNavmesh hybrid, NavmeshComponent navmesh) =>
                 {
-                    hybrid.Vertices = navmesh.Vertices;
+                    hybrid.Vertices = navmesh.Navmesh->Vertices;
 #if UNITY_EDITOR
                     UnityEditor.EditorUtility.SetDirty(hybrid);
 #endif

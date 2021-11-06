@@ -1,10 +1,9 @@
 using DotsNav.Collections;
-using DotsNav.Assertions;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 
-namespace DotsNav
+namespace DotsNav.Navmesh
 {
     readonly struct EdgeSearch
     {

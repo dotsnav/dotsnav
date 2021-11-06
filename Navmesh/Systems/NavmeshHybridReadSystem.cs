@@ -1,7 +1,10 @@
-using DotsNav.Data;
+using DotsNav.Hybrid;
+using DotsNav.Navmesh.Data;
+using DotsNav.Navmesh.Hybrid;
+using DotsNav.Systems;
 using Unity.Entities;
 
-namespace DotsNav.Systems
+namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderFirst = true)]
     class NavmeshHybridReadSystem : SystemBase
@@ -10,11 +13,11 @@ namespace DotsNav.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((Hybrid.DotsNavNavmesh hybrid, ref NavmeshDrawComponent debug) =>
+                .ForEach((DotsNavPlane plane, DotsNavNavmesh hybrid, ref NavmeshDrawComponent debug) =>
                 {
                     debug.DrawMode = hybrid.DrawMode;
-                    debug.ConstrainedColor = hybrid.ConstrainedColor;
-                    debug.UnconstrainedColor = hybrid.UnconstrainedColor;
+                    debug.ConstrainedColor = plane.ConstrainedColor;
+                    debug.UnconstrainedColor = plane.UnconstrainedColor;
                 })
                 .Run();
         }

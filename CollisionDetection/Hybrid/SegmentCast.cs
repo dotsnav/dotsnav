@@ -1,3 +1,4 @@
+using DotsNav.Navmesh;
 using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections;
@@ -11,7 +12,7 @@ namespace DotsNav.CollisionDetection.Hybrid
     struct SegmentCastJob : IJob
     {
         public SegmentCast Input;
-        public Navmesh Navmesh;
+        public Navmesh.Navmesh Navmesh;
 
         public void Execute()
         {
