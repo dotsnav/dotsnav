@@ -115,8 +115,8 @@ Obstacles can be removed by destroying a previously spawned gameobject, or by ca
 When using monobehaviour conversion use “Convert and Destroy”.
 
 ![](https://github.com/bassmit/images/blob/master/DotsNav/image14.png?raw=true)
-
-Note that you can use the DOTS Editor to inspect these and entities in the sample scenes to get a better understanding of the components involved.
+  
+You can use the DOTS Editor to inspect the entities in the sample scenes to get a better understanding of the components involved.
 
 ### API
 All public APIs expose read-only operations. Write operations are triggered by creating entities with appropriate archetypes, or updating component data.
@@ -142,7 +142,7 @@ The following archetypes trigger obstacle insertion:
   - DynamicBuffer&lt;VertexElement&gt;, DynamicBuffer&lt;VertexAmountElement&gt;
   - ObstacleBlobComponent
 
-Note that any obstacle requires a NavmeshObstacleComponent and or a ObstacleTreeElementComponent. Obstacles with static archetypes are destroyed after insertion. To destroy dynamic obstacles destroy their associated entity.
+Note that any obstacle requires a NavmeshObstacleComponent and or a ObstacleTreeElementComponent. Entities with static obstacle archetypes are destroyed after insertion. To destroy dynamic obstacles destroy their associated entity.
 
 ### Agents
 General components:
