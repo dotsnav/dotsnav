@@ -181,6 +181,8 @@ DotsNav's insertion and removal algorithms are guaranteed to succeed and guarant
 Due to the nature of the algorithms involved exact geometric predicates are required for a robust implementation. DotsNav relies on adaptive predicates, only when regular floating point calculations do not provide sufficient precision is the costly exact calculation performed. The predicates are [available separately](https://github.com/bassmit/robustgeometricpredicates).
 
 DotsNav provides locally optimal search. First, a channel of connected triangles with enough clearance is found using A*. The optimal path given this channel is then found using the funnel algorithm. While channels found are often optimal they are not guaranteed to be. An algorithm to find the optimal channel exists, but can easily require several orders of magnitude more time to execute and is not currently implemented.
+  
+DotsNav uses the RVO2 algorithm to implement local avoidance. While the triangulation accepts any sequence of inputs, RVO2 only supports closed and counter clockwise wound obstacles. 
 
 ## Known Issues
 - Performance appears to be significantly worse and less consistent from frame to frame in a build as compared to in the editor.
