@@ -12,6 +12,7 @@
 - [Getting Started with DOTS](https://github.com/dotsnav/dotsnav/blob/master/README.md#getting-started-with-dots)
 - [Technical Information](https://github.com/dotsnav/dotsnav/blob/master/README.md#technical-information)
 - [Known Issues](https://github.com/dotsnav/dotsnav/blob/master/README.md#known-issues)
+- [Contributing](https://github.com/dotsnav/dotsnav/blob/master/README.md#contributing)
 - [Bibliography](https://github.com/dotsnav/dotsnav/blob/master/README.md#bibliography)
 - [Acknowledgements](https://github.com/dotsnav/dotsnav/blob/master/README.md#acknowledgements)
 
@@ -190,6 +191,9 @@ DotsNav uses the RVO2 algorithm to implement local avoidance. While the triangul
 - Local avoidance agent settings are fragile and require trial and error to find configurations yielding acceptable results.
 - Synchronizing gameobjects and entities can almost certainly be improved, as no research has gone in to the intended mechanisms for doing so.
 - Summary comments have not been thoroughly checked, please raise an issue or create a pull request to correct any errors you may find.
+
+## Contributing
+Contributions to DotsNav are very much appreciated and pull requests will be considered promptly. To develop the package while using it in a different Unity project clone a fork of DotsNav, check out the dev branch, and add the package using the "from disk" option in your main Unity project. Changes made to the package will then trigger a reimport in the main project automatically. Once pushed you can open a pull request against DotsNav.
 
 ## Bibliography
 - Reciprocal n-body Collision Avoidance, [Jur van den Berg, Stephen J. Guy, Ming Lin, Dinesh Manocha 2011](https://gamma.cs.unc.edu/ORCA/publications/ORCA.pdf)
