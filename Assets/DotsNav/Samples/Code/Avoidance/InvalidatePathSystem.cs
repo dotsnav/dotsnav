@@ -15,7 +15,7 @@ class InvalidatePathSystem : SystemBase
             .WithBurst()
             .ForEach((DirectionComponent direction, RadiusComponent radius, ref PathQueryComponent query) =>
             {
-                if (direction.DistanceFromPathSquared > radius * radius)
+                if (direction.DistanceFromPathSquared > radius.Value * radius.Value)
                     query.State = PathQueryState.Invalidated;
             })
             .ScheduleParallel();

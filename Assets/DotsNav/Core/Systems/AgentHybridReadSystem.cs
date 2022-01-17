@@ -15,6 +15,7 @@ namespace DotsNav.Systems
                 .ForEach((DotsNavAgent monoAgent, ref RadiusComponent radius) =>
                 {
                     radius.Value = monoAgent.Radius;
+                    radius.Priority = monoAgent.Priority;
                 })
                 .Run();
         }
