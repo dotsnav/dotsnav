@@ -11,7 +11,7 @@ using Unity.Transforms;
 namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup))]
-    class DrawAgentSystem : SystemBase
+    partial class DrawAgentSystem : SystemBase
     {
         protected override void OnUpdate()
         {

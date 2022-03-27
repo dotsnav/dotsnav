@@ -9,7 +9,7 @@ namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(PathFinderSystem))]
-    public class AgentDirectionSystem : SystemBase
+    public partial class AgentDirectionSystem : SystemBase
     {
         protected override void OnUpdate()
         {

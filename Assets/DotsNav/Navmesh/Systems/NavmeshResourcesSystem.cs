@@ -7,7 +7,7 @@ namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderFirst = true)]
     [AlwaysUpdateSystem]
-    unsafe class NavmeshResourcesSystem : SystemBase
+    unsafe partial class NavmeshResourcesSystem : SystemBase
     {
         protected override void OnUpdate()
         {

@@ -6,7 +6,7 @@ using Unity.Entities;
 namespace DotsNav.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderFirst = true)]
-    class AgentHybridReadSystem : SystemBase
+    partial class AgentHybridReadSystem : SystemBase
     {
         protected override void OnUpdate()
         {

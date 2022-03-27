@@ -7,7 +7,7 @@ using Unity.Entities;
 
 [UpdateInGroup(typeof(DotsNavSystemGroup))]
 [UpdateAfter(typeof(AgentDirectionSystem))]
-class InvalidatePathSystem : SystemBase
+partial class InvalidatePathSystem : SystemBase
 {
     protected override void OnUpdate()
     {

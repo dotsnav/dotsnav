@@ -8,7 +8,7 @@ using Unity.Entities;
 namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
-    class PathFinderHybridWriteSystem : SystemBase
+    partial class PathFinderHybridWriteSystem : SystemBase
     {
         protected override void OnUpdate()
         {

@@ -5,7 +5,7 @@ using Unity.Entities;
 namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
-    class NavmeshHybridWriteSystem : SystemBase
+    partial class NavmeshHybridWriteSystem : SystemBase
     {
         protected override unsafe void OnUpdate()
         {

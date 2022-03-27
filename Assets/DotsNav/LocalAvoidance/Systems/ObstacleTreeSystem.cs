@@ -13,7 +13,7 @@ using Unity.Transforms;
 namespace DotsNav.LocalAvoidance.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    public unsafe class ObstacleTreeSystem : SystemBase
+    public unsafe partial class ObstacleTreeSystem : SystemBase
     {
         NativeMultiHashMap<ObstacleTree, TreeOperation> _operations;
         NativeList<ObstacleTree> _trees;

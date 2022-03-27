@@ -5,7 +5,7 @@ using Unity.Entities;
 namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    class PathFinderResourceSystem : SystemBase
+    partial class PathFinderResourceSystem : SystemBase
     {
         EntityCommandBufferSystem _ecbSource;
 

@@ -16,7 +16,7 @@ namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     [UpdateAfter(typeof(UpdateNavmeshSystem))]
-    public class PathFinderSystem : SystemBase
+    public partial class PathFinderSystem : SystemBase
     {
         NativeList<Entity> _buffer;
         NativeQueue<Entity> _queue;
