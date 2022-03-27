@@ -135,7 +135,7 @@ namespace DotsNav.Samples.Code
                 {
                     var r = new Random((uint) Seed);
                     _plane.InsertObstacleBulk(Amount, new ObstacleAdder(ScaleOffset, Size, r, _vertices, _startEnds));
-                    Output.text = $"Loaded {Amount} obstacles and {_startEnds[_startEnds.Length - 1].y} vertices\nPress R to reload";
+                    Output.text = $"Inserted {Amount} random obstacles\nPress R to reload";
                     _shouldInsert = false;
                     _delayed = false;
                 }
