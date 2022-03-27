@@ -18,7 +18,7 @@ namespace DotsNav
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void IsTrue(bool b, FixedString128 s)
+        public static void IsTrue(bool b, FixedString128Bytes s)
         {
             if (!b)
             {

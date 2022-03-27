@@ -71,7 +71,7 @@ namespace DotsNav.Collections
             NativeSortExtension.Sort((T*) _list->Ptr, Length, c);
         }
 
-        public void Sort<T>() where T : struct, IComparable<T>
+        public void Sort<T>() where T : unmanaged, IComparable<T>
         {
             _list->Sort<T>();
         }

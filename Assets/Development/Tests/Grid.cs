@@ -6,7 +6,7 @@ using Unity.Mathematics;
 using Math = DotsNav.Math;
 
 // todo recycle lists when empty
-public readonly unsafe struct Grid<T> where T : struct, Grid<T>.IElement<T>
+public readonly unsafe struct Grid<T> where T : unmanaged, Grid<T>.IElement<T>
 {
     readonly int2 _gridSize;
     readonly float2 _cellSize;

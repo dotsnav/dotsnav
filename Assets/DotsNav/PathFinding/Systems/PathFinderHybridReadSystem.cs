@@ -8,7 +8,7 @@ using Unity.Transforms;
 namespace DotsNav.PathFinding.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderFirst = true)]
-    class PathFinderHybridReadSystem : SystemBase
+    partial class PathFinderHybridReadSystem : SystemBase
     {
         protected override void OnUpdate()
         {
