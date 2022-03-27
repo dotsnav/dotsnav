@@ -11,7 +11,7 @@ using UnityEngine;
 namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup))]
-    class DrawNavmeshSystem : SystemBase
+    partial class DrawNavmeshSystem : SystemBase
     {
         protected override unsafe void OnUpdate()
         {

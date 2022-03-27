@@ -5,7 +5,7 @@ using Unity.Entities;
 namespace DotsNav.Navmesh.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    class DestroyBulkInsertionEntitiesSystem : SystemBase
+    partial class DestroyBulkInsertionEntitiesSystem : SystemBase
     {
         protected override void OnUpdate()
         {

@@ -8,7 +8,7 @@ using Unity.Transforms;
 namespace DotsNav.LocalAvoidance.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderFirst = true)]
-    class LocalAvoidanceHybridReadSystem : SystemBase
+    partial class LocalAvoidanceHybridReadSystem : SystemBase
     {
         protected override void OnUpdate()
         {

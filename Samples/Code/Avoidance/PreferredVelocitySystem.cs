@@ -11,7 +11,7 @@ using Unity.Transforms;
 [UpdateInGroup(typeof(DotsNavSystemGroup))]
 [UpdateAfter(typeof(PathFinderSystem))]
 [UpdateBefore(typeof(RVOSystem))]
-class PreferredVelocitySystem : SystemBase
+partial class PreferredVelocitySystem : SystemBase
 {
     protected override void OnUpdate()
     {

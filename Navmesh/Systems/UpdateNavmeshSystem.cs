@@ -16,7 +16,7 @@ namespace DotsNav.Navmesh.Systems
     /// Queued insertion and removal of obstacles are processed by this system
     /// </summary>
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    public unsafe class UpdateNavmeshSystem : SystemBase
+    public unsafe partial class UpdateNavmeshSystem : SystemBase
     {
         NativeList<Entity> _navmeshes;
         NativeMultiHashMap<Entity, Navmesh.Insertion> _insertions;

@@ -10,7 +10,7 @@ using Unity.Transforms;
 namespace DotsNav.LocalAvoidance.Systems
 {
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup))]
-    class DrawObstacleTreeSystem : SystemBase
+    partial class DrawObstacleTreeSystem : SystemBase
     {
         protected override void OnCreate()
         {

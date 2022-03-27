@@ -6,7 +6,7 @@ using Unity.Entities;
 namespace DotsNav.LocalAvoidance.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup), OrderLast = true)]
-    class LocalAvoidanceHybridWriteSystem : SystemBase
+    partial class LocalAvoidanceHybridWriteSystem : SystemBase
     {
         protected override void OnUpdate()
         {

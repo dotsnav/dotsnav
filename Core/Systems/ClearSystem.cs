@@ -4,7 +4,7 @@ using Unity.Entities;
 namespace DotsNav.Systems
 {
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup), OrderFirst = true)]
-    class ClearSystem : SystemBase
+    partial class ClearSystem : SystemBase
     {
         protected override void OnUpdate()
         {

@@ -775,7 +775,7 @@ namespace DotsNav.Navmesh
             return false;
         }
 
-        static readonly FixedString128 PointOutsideNavmeshMessage = "Trying to add a point outside the navmesh";
+        static readonly FixedString128Bytes PointOutsideNavmeshMessage = "Trying to add a point outside the navmesh";
 
         void Insert(float2* points, int start, int amount, Entity cid, float4x4 ltw)
         {
