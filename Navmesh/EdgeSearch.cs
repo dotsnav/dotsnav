@@ -74,7 +74,7 @@ namespace DotsNav.Navmesh
                             e);
 
                         steps.Add(newStep);
-                        open.InsertOrLowerKey(newStep);
+                        open.Insert(newStep);
                     }
 
                     e = e->ONext;

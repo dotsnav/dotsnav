@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 
 namespace DotsNav.Collections
 {
@@ -10,31 +9,19 @@ namespace DotsNav.Collections
     struct PriorityQueue<T> where T : unmanaged, PriorityQueue<T>.IElement
     {
         internal List<T> _data;
-        UnsafeHashMap<int, int> _index;
 
         public PriorityQueue(int intialCapacity, Allocator allocator = Allocator.Persistent)
         {
             Assert.IsTrue(intialCapacity > 1, "capacity must be larger than 1");
             _data = new List<T>(intialCapacity, allocator);
-            _index = new UnsafeHashMap<int, int>(intialCapacity, allocator);
             Clear();
         }
 
         public T Top => _data[0];
         public int Count => _data.Length;
-        public bool Contains(int id) => _index.ContainsKey(id);
-
-        public void InsertOrLowerKey(T n)
-        {
-            if (!_index.TryGetValue(n.Id, out var i))
-                Insert(n);
-            else if (n.CompareTo(_data[i]) < 0)
-                Percolate(i, n);
-        }
 
         public void Insert(T n)
         {
-            Assert.IsTrue(!_index.ContainsKey(n.Id), "duplicate element inserted");
             _data.Resize(_data.Length + 1);
             Percolate(_data.Length - 1, n);
         }
@@ -47,27 +34,17 @@ namespace DotsNav.Collections
                 Trickle(0, _data.TakeLast());
             else
                 _data.Clear();
-            _index.Remove(top.Id);
             return top;
-        }
-
-        public void Remove(int id)
-        {
-            Assert.IsTrue(_index.ContainsKey(id), "unknown id");
-            Trickle(_index[id], _data.TakeLast());
-            _index.Remove(id);
         }
 
         public void Clear()
         {
             _data.Clear();
-            _index.Clear();
         }
 
         public void Dispose()
         {
             _data.Dispose();
-            _index.Dispose();
         }
 
         void Trickle(int i, T n)
@@ -82,7 +59,6 @@ namespace DotsNav.Collections
 
                 var e = _data[child];
                 _data[i] = e;
-                _index[e.Id] = i;
                 i = child;
                 child = Left(i);
             }
@@ -98,13 +74,11 @@ namespace DotsNav.Collections
             {
                 var e = _data[parent];
                 _data[i] = e;
-                _index[e.Id] = i;
                 i = parent;
                 parent = Parent(i);
             }
 
             _data[i] = n;
-            _index[n.Id] = i;
         }
 
         static int Parent(int i) => (i - 1) >> 1;
