@@ -139,15 +139,15 @@ namespace DotsNav.Systems
                 .ScheduleParallel();
 
             var trees = _trees;
-            var set = new HashSet<DynamicTree<Entity>>(32, Allocator.TempJob);
 
             Job
                 .WithBurst()
                 .WithCode(() =>
                 {
+                    var set = new NativeHashSet<DynamicTree<Entity>>(32, Allocator.Temp);
                     var enumerator = operations.GetKeyArray(Allocator.Temp);
                     for (int i = 0; i < enumerator.Length; i++)
-                        set.TryAdd(enumerator[i]);
+                        set.Add(enumerator[i]);
                     trees.Clear();
                     var e2 = set.GetEnumerator();
                     while (e2.MoveNext())
