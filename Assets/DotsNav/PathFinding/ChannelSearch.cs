@@ -184,7 +184,7 @@ namespace DotsNav.PathFinding
                     );
 
                     steps.Add(newStep);
-                    open.InsertOrLowerKey(newStep);
+                    open.Insert(newStep);
                 }
             }
 
@@ -290,7 +290,7 @@ namespace DotsNav.PathFinding
                 );
 
                 steps.Add(newStep);
-                open.InsertOrLowerKey(newStep);
+                open.Insert(newStep);
             }
 
             bool EndpointDisturbed(Edge* edge, float2 endpoint)
