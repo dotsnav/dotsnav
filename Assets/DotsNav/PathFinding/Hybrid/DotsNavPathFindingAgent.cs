@@ -96,7 +96,7 @@ namespace DotsNav.PathFinding.Hybrid
         /// <summary>
         /// Recalculate path using agent's current position and goal
         /// </summary>
-        void FindPath() => FindPath(Goal);
+        public void FindPath() => FindPath(Goal);
 
 #if UNITY_EDITOR
         void OnDrawGizmos()
