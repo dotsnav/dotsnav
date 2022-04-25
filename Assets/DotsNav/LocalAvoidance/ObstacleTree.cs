@@ -54,7 +54,7 @@ namespace DotsNav.LocalAvoidance
             Assert.IsTrue(amount > 1);
             Assert.IsTrue(key != Entity.Null);
             Assert.IsTrue(!Map.ContainsKey(key));
-            Assert.IsTrue(math.all(vertices[0] == vertices[amount - 1]));
+            Assert.IsTrue(amount > 2 && math.all(vertices[0] == vertices[amount - 1]), "Obstacle needs to be counter cockwise wound and closed");
 
             Obstacle* first = default;
             Obstacle* previous = default;

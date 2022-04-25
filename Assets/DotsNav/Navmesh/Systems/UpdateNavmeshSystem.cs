@@ -182,19 +182,19 @@ namespace DotsNav.Navmesh.Systems
                 .ScheduleParallel();
 
             var navmeshes = _navmeshes;
-            var set = new HashSet<Entity>(32, Allocator.TempJob);
 
             Job
                 .WithBurst()
                 .WithCode(() =>
                 {
+                    var set = new NativeHashSet<Entity>(32, Allocator.Temp);
                     var ops = insertions.GetKeyArray(Allocator.Temp);
                     for (int i = 0; i < ops.Length; i++)
-                        set.TryAdd(ops[i]);
+                        set.Add(ops[i]);
 
                     ops = removals.GetKeyArray(Allocator.Temp);
                     for (int i = 0; i < ops.Length; i++)
-                        set.TryAdd(ops[i]);
+                        set.Add(ops[i]);
 
                     navmeshes.Clear();
                     var keys = set.GetEnumerator();
