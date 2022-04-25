@@ -155,28 +155,30 @@ namespace DotsNav.LocalAvoidance.Systems
             // With LocalToWorld
             Entities
                 .WithBurst()
+                .WithAll<LocalToWorld>()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
                 .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery4)
-                .ForEach((Entity entity, LocalToWorld ltw, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
+                .ForEach((Entity entity, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), localToWorldLookup[entity].Value);
                     operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                 })
                 .ScheduleParallel();
 
             Entities
                 .WithBurst()
+                .WithAll<LocalToWorld>()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
                 .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery5)
-                .ForEach((Entity entity, LocalToWorld ltw, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
+                .ForEach((Entity entity, VertexBlobComponent vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), localToWorldLookup[entity].Value);
                     ref var v = ref vertices.BlobRef.Value.Vertices;
                     operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) v.GetUnsafePtr(), v.Length));
                 })
@@ -184,26 +186,28 @@ namespace DotsNav.LocalAvoidance.Systems
 
             Entities
                 .WithBurst()
+                .WithAll<LocalToWorld>()
                 .WithReadOnly(treeLookup)
                 .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery6)
-                .ForEach((LocalToWorld ltw, DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, ObstacleTreeElementComponent element) =>
+                .ForEach((Entity entity, DynamicBuffer<VertexElement> v, DynamicBuffer<VertexAmountElement> a, ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), localToWorldLookup[entity].Value);
                     operationsWriter.Add(tree, new TreeOperation(transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
                 })
                 .ScheduleParallel();
 
             Entities
                 .WithBurst()
+                .WithAll<LocalToWorld>()
                 .WithReadOnly(treeLookup)
                 .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery7)
-                .ForEach((LocalToWorld ltw, ObstacleBlobComponent blob, ObstacleTreeElementComponent element) =>
+                .ForEach((Entity entity, ObstacleBlobComponent blob, ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), ltw.Value);
+                    var transform = math.mul(math.inverse(localToWorldLookup[element.Tree].Value), localToWorldLookup[entity].Value);
                     ref var v = ref blob.BlobRef.Value.Vertices;
                     ref var a = ref blob.BlobRef.Value.Amounts;
                     operationsWriter.Add(tree, new TreeOperation(transform, (float2*) v.GetUnsafePtr(), (int*) a.GetUnsafePtr(), a.Length));
