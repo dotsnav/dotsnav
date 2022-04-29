@@ -1,10 +1,10 @@
 {
   "name": "com.bassmit.dotsnav",
   "displayName": "DotsNav",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "unity": "2020.3",
   "dependencies": {
-    "com.unity.entities": "0.50.0-preview.24"
+    "com.unity.entities": "0.50.1-preview.2"
   },
   "description": "A fully dynamic and robust planar navmesh\nFor contract work contact me at bas@bassmit.info or add me on Discord bassmit#3079\nTo support further development consider becoming a sponsor: https://github.com/sponsors/bassmit",
   "author" : {
