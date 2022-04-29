@@ -25,7 +25,6 @@ using DotsNav.Collections;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
-using Debug = UnityEngine.Debug;
 
 namespace DotsNav.BVH
 {

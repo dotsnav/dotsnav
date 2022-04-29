@@ -1,6 +1,5 @@
 ﻿using DotsNav.Data;
 using DotsNav.Hybrid;
-using DotsNav.Systems;
 using Unity.Entities;
 
 namespace DotsNav.Systems

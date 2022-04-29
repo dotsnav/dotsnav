@@ -1,4 +1,3 @@
-using DotsNav.Navmesh;
 using DotsNav.Navmesh.Data;
 using Unity.Burst;
 using Unity.Collections;

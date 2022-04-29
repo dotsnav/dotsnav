@@ -1,4 +1,3 @@
-using DotsNav.Collections;
 using DotsNav.Data;
 using DotsNav.Navmesh.Data;
 using DotsNav.Systems;

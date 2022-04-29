@@ -1,6 +1,5 @@
 ﻿using System;
 using DotsNav.BVH;
-using DotsNav.Collections;
 using DotsNav.Data;
 using Unity.Burst;
 using Unity.Collections;
@@ -8,7 +7,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DotsNav.Systems
 {
