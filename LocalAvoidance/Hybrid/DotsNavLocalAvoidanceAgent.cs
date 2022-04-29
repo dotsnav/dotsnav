@@ -1,9 +1,7 @@
-﻿using System;
-using DotsNav.Data;
+﻿using DotsNav.Data;
 using DotsNav.Hybrid;
 using DotsNav.LocalAvoidance.Data;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace DotsNav.LocalAvoidance.Hybrid

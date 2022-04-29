@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.LocalAvoidance.Hybrid;
-using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Random = Unity.Mathematics.Random;
 
 namespace DotsNav.Samples.Code

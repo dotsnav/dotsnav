@@ -2,12 +2,8 @@ using System;
 using System.Collections.Generic;
 using DotsNav.Data;
 using DotsNav.Hybrid;
-using DotsNav.Navmesh.Data;
-using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Data;
-using DotsNav.PathFinding.Systems;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace DotsNav.PathFinding.Hybrid
