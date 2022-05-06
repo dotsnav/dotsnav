@@ -3,6 +3,7 @@ Library/
 Temp/
 Logs/
 UserSettings/
+ProfileAnalyzer/
 
 # Windows
 Thumbs.db*
