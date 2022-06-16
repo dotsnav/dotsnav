@@ -21,7 +21,7 @@ namespace DotsNav.Navmesh
         float _e;
         float _collinearMargin;
 
-        UnsafeHashMap<Entity, IntPtr> _constraints;
+        UnsafeParallelHashMap<Entity, IntPtr> _constraints;
         BlockPool<Vertex> _vertices;
         BlockPool<QuadEdge> _quadEdges;
         UnsafeList<IntPtr> _verticesSeq;
@@ -63,7 +63,7 @@ namespace DotsNav.Navmesh
             _vertices = new BlockPool<Vertex>(blockSize, initialBlocks, Allocator.Persistent);
             _verticesSeq = new UnsafeList<IntPtr>(component.ExpectedVerts, Allocator.Persistent);
             _quadEdges = new BlockPool<QuadEdge>(3 * blockSize, initialBlocks, Allocator.Persistent);
-            _constraints = new UnsafeHashMap<Entity, IntPtr>(component.ExpectedVerts, Allocator.Persistent);
+            _constraints = new UnsafeParallelHashMap<Entity, IntPtr>(component.ExpectedVerts, Allocator.Persistent);
             V = new HashSet<IntPtr>(16, Allocator.Persistent);
             C = new HashSet<IntPtr>(16, Allocator.Persistent);
             _edgeSearch = new EdgeSearch(100, 100, Allocator.Persistent);
@@ -177,7 +177,7 @@ namespace DotsNav.Navmesh
             GlobalRefine();
         }
 
-        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
+        internal void Update<T>(T enumerator, NativeParallelMultiHashMap<Entity, Entity>.Enumerator removals, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
             DestroyedTriangles.Clear();
 

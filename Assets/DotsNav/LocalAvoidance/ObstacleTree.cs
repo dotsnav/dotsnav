@@ -13,7 +13,7 @@ namespace DotsNav.LocalAvoidance
         struct Control
         {
             public Tree<IntPtr> Tree;
-            public UnsafeHashMap<Entity, IntPtr> Map;
+            public UnsafeParallelHashMap<Entity, IntPtr> Map;
             public BlockPool<Obstacle> ObstaclePool;
             public readonly Allocator Allocator;
 
@@ -22,13 +22,13 @@ namespace DotsNav.LocalAvoidance
                 Allocator = allocator;
                 Tree = new Tree<IntPtr>(allocator);
                 ObstaclePool = new BlockPool<Obstacle>(128, 1, allocator);
-                Map = new UnsafeHashMap<Entity, IntPtr>(128, allocator);
+                Map = new UnsafeParallelHashMap<Entity, IntPtr>(128, allocator);
             }
         }
 
         Control* _control;
         ref Tree<IntPtr> Tree => ref _control->Tree;
-        ref UnsafeHashMap<Entity, IntPtr> Map => ref _control->Map;
+        ref UnsafeParallelHashMap<Entity, IntPtr> Map => ref _control->Map;
         ref BlockPool<Obstacle> ObstaclePool => ref _control->ObstaclePool;
 
         public bool IsCreated => _control != null;
