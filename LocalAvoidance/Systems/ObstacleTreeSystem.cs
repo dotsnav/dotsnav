@@ -14,7 +14,7 @@ namespace DotsNav.LocalAvoidance.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     public unsafe partial class ObstacleTreeSystem : SystemBase
     {
-        NativeMultiHashMap<ObstacleTree, TreeOperation> _operations;
+        NativeParallelMultiHashMap<ObstacleTree, TreeOperation> _operations;
         NativeList<ObstacleTree> _trees;
         EntityQuery _insertQuery0;
         EntityQuery _insertQuery1;
@@ -28,7 +28,7 @@ namespace DotsNav.LocalAvoidance.Systems
 
         protected override void OnCreate()
         {
-            _operations = new NativeMultiHashMap<ObstacleTree, TreeOperation>(64, Allocator.Persistent);
+            _operations = new NativeParallelMultiHashMap<ObstacleTree, TreeOperation>(64, Allocator.Persistent);
             _trees = new NativeList<ObstacleTree>(Allocator.Persistent);
         }
 
@@ -231,7 +231,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    var set = new NativeHashSet<ObstacleTree>(32, Allocator.Temp);
+                    var set = new NativeParallelHashSet<ObstacleTree>(32, Allocator.Temp);
                     var enumerator = operations.GetKeyArray(Allocator.Temp);
                     for (int i = 0; i < enumerator.Length; i++)
                         set.Add(enumerator[i]);
@@ -259,7 +259,7 @@ namespace DotsNav.LocalAvoidance.Systems
             [ReadOnly]
             public NativeArray<ObstacleTree> Keys;
             [ReadOnly]
-            public NativeMultiHashMap<ObstacleTree, TreeOperation> Operations;
+            public NativeParallelMultiHashMap<ObstacleTree, TreeOperation> Operations;
 
             public EntityCommandBuffer.ParallelWriter Ecb;
 
