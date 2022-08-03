@@ -10,17 +10,18 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.collections": {
-      "version": "1.3.1",
+      "version": "1.4.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.burst": "1.6.6",
+        "com.unity.nuget.mono-cecil": "1.11.4",
         "com.unity.test-framework": "1.1.31"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.entities": {
-      "version": "0.51.0-preview.32",
+      "version": "0.51.1-preview.21",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -28,15 +29,15 @@
         "com.unity.properties": "1.7.0-preview",
         "com.unity.properties.ui": "1.7.0-preview",
         "com.unity.serialization": "1.7.0-preview.1",
-        "com.unity.collections": "1.3.1",
+        "com.unity.collections": "1.4.0",
+        "com.unity.jobs": "0.70.0-preview.7",
         "com.unity.mathematics": "1.2.6",
         "com.unity.modules.assetbundle": "1.0.0",
         "com.unity.modules.unitywebrequest": "1.0.0",
         "com.unity.test-framework.performance": "2.8.0-preview",
         "com.unity.nuget.mono-cecil": "1.10.1",
-        "com.unity.jobs": "0.51.0-preview.32",
         "com.unity.scriptablebuildpipeline": "1.19.2",
-        "com.unity.platforms": "0.51.0-preview.31",
+        "com.unity.platforms": "0.51.1-preview.21",
         "com.unity.roslyn": "0.2.2-preview",
         "com.unity.profiling.core": "1.0.0"
       },
@@ -75,14 +76,11 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.jobs": {
-      "version": "0.51.0-preview.32",
+      "version": "0.70.0-preview.7",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.burst": "1.6.6",
-        "com.unity.collections": "1.3.1",
-        "com.unity.mathematics": "1.2.6",
-        "com.unity.nuget.mono-cecil": "1.10.1"
+        "com.unity.collections": "1.4.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -94,8 +92,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.nuget.mono-cecil": {
-      "version": "1.10.1",
-      "depth": 1,
+      "version": "1.11.4",
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -108,7 +106,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.platforms": {
-      "version": "0.51.0-preview.31",
+      "version": "0.51.1-preview.21",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -176,7 +174,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.1.31",
+      "version": "1.1.33",
       "depth": 0,
       "source": "registry",
       "dependencies": {
