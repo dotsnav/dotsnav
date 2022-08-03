@@ -32,7 +32,7 @@ namespace DotsNav.CollisionDetection
         public static void CastDisc<T>(this Navmesh.Navmesh navmesh, T discCast, Allocator allocator) where T : IDiscCast
         {
             var open = new NativeList<IntPtr>(allocator);
-            var closed = new NativeHashSet<int>(32, allocator);
+            var closed = new NativeParallelHashSet<int>(32, allocator);
             navmesh.CastDisc(discCast, open, closed);
             open.Dispose();
             closed.Dispose();
@@ -44,7 +44,7 @@ namespace DotsNav.CollisionDetection
         /// <param name="discCast">Cast data</param>
         /// <param name="open">NativeQueue for internal use, is cleared before use</param>
         /// <param name="closed">NativeHashSet for internal use, is cleared before use</param>
-        public static void CastDisc<T>(this Navmesh.Navmesh navmesh, T discCast, NativeList<IntPtr> open, NativeHashSet<int> closed) where T : IDiscCast
+        public static void CastDisc<T>(this Navmesh.Navmesh navmesh, T discCast, NativeList<IntPtr> open, NativeParallelHashSet<int> closed) where T : IDiscCast
         {
             var o = discCast.Origin;
             var r = discCast.Radius;

@@ -1,6 +1,5 @@
 ﻿using System;
 using DotsNav.BVH;
-using DotsNav.Collections;
 using DotsNav.Data;
 using Unity.Burst;
 using Unity.Collections;
@@ -8,14 +7,13 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 
 namespace DotsNav.Systems
 {
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     partial class DynamicTreeSystem : SystemBase
     {
-        NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
+        NativeParallelMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
         NativeList<DynamicTree<Entity>> _trees;
         EntityQuery _insertQuery;
         EntityQuery _destroyQuery;
@@ -23,7 +21,7 @@ namespace DotsNav.Systems
 
         protected override void OnCreate()
         {
-            _operations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
+            _operations = new NativeParallelMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
             _trees = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
         }
 
@@ -144,7 +142,7 @@ namespace DotsNav.Systems
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    var set = new NativeHashSet<DynamicTree<Entity>>(32, Allocator.Temp);
+                    var set = new NativeParallelHashSet<DynamicTree<Entity>>(32, Allocator.Temp);
                     var enumerator = operations.GetKeyArray(Allocator.Temp);
                     for (int i = 0; i < enumerator.Length; i++)
                         set.Add(enumerator[i]);
@@ -172,7 +170,7 @@ namespace DotsNav.Systems
             [ReadOnly]
             public NativeArray<DynamicTree<Entity>> Keys;
             [ReadOnly]
-            public NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> Operations;
+            public NativeParallelMultiHashMap<DynamicTree<Entity>, TreeOperation> Operations;
 
             public EntityCommandBuffer.ParallelWriter Ecb;
 

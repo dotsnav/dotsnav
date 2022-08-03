@@ -3,7 +3,6 @@ using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace DotsNav.Navmesh.Hybrid

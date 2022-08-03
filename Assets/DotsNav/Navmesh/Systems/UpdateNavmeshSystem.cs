@@ -1,4 +1,3 @@
-using DotsNav.Collections;
 using DotsNav.Data;
 using DotsNav.Navmesh.Data;
 using DotsNav.Systems;
@@ -19,8 +18,8 @@ namespace DotsNav.Navmesh.Systems
     public unsafe partial class UpdateNavmeshSystem : SystemBase
     {
         NativeList<Entity> _navmeshes;
-        NativeMultiHashMap<Entity, Navmesh.Insertion> _insertions;
-        NativeMultiHashMap<Entity, Entity> _removals;
+        NativeParallelMultiHashMap<Entity, Navmesh.Insertion> _insertions;
+        NativeParallelMultiHashMap<Entity, Entity> _removals;
         EntityQuery _insertQuery0;
         EntityQuery _insertQuery1;
         EntityQuery _insertQuery2;
@@ -34,8 +33,8 @@ namespace DotsNav.Navmesh.Systems
         protected override void OnCreate()
         {
             _navmeshes = new NativeList<Entity>(Allocator.Persistent);
-            _insertions = new NativeMultiHashMap<Entity, Navmesh.Insertion>(64, Allocator.Persistent);
-            _removals = new NativeMultiHashMap<Entity, Entity>(64, Allocator.Persistent);
+            _insertions = new NativeParallelMultiHashMap<Entity, Navmesh.Insertion>(64, Allocator.Persistent);
+            _removals = new NativeParallelMultiHashMap<Entity, Entity>(64, Allocator.Persistent);
         }
 
         protected override void OnDestroy()
@@ -187,7 +186,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithBurst()
                 .WithCode(() =>
                 {
-                    var set = new NativeHashSet<Entity>(32, Allocator.Temp);
+                    var set = new NativeParallelHashSet<Entity>(32, Allocator.Temp);
                     var ops = insertions.GetKeyArray(Allocator.Temp);
                     for (int i = 0; i < ops.Length; i++)
                         set.Add(ops[i]);
@@ -231,13 +230,13 @@ namespace DotsNav.Navmesh.Systems
             [ReadOnly]
             public NativeArray<Entity> Keys;
             [ReadOnly]
-            public NativeMultiHashMap<Entity, Navmesh.Insertion> Operations;
+            public NativeParallelMultiHashMap<Entity, Navmesh.Insertion> Operations;
             [NativeDisableContainerSafetyRestriction]
             public ComponentDataFromEntity<NavmeshComponent> NavmeshLookup;
             [NativeDisableContainerSafetyRestriction]
             public BufferFromEntity<DestroyedTriangleElement> DestroyedLookup;
             [ReadOnly]
-            public NativeMultiHashMap<Entity, Entity> Removals;
+            public NativeParallelMultiHashMap<Entity, Entity> Removals;
             [ReadOnly]
             public ComponentDataFromEntity<LocalToWorld> LocalToWorldLookup;
 
