@@ -63,6 +63,7 @@ namespace DotsNav.Samples.Code
                 var dotsNavAgent = agent.GetComponent<DotsNavAgent>();
                 dotsNavAgent.Radius = r;
                 dotsNavAgent.Plane = Plane;
+                dotsNavAgent.Priority = _r.NextInt(0, 3);
                 agent.transform.localScale = new Vector3(r, r, r) * 2;
 
                 var cycles = 0;

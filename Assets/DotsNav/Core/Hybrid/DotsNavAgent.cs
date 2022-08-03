@@ -12,7 +12,11 @@ namespace DotsNav.Hybrid
                 agent.World = DstEntityManager.World;
                 agent.Entity = entity;
                 Assert.IsTrue(agent.Radius > 0, "Radius must be larger than 0");
-                DstEntityManager.AddComponentData(entity, new RadiusComponent {Value = agent.Radius});
+                DstEntityManager.AddComponentData(entity, new RadiusComponent
+                {
+                    Value = agent.Radius,
+                    Priority = agent.Priority
+                });
             });
         }
     }
@@ -21,5 +25,6 @@ namespace DotsNav.Hybrid
     {
         public DotsNavPlane Plane;
         public float Radius = .5f;
+        public int Priority = 0;
     }
 }

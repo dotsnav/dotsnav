@@ -8,5 +8,6 @@ namespace DotsNav.LocalAvoidance.Data
         public float2 Position;
         public float2 Velocity;
         public float Radius;
+        public int Priority;
     }
 }
