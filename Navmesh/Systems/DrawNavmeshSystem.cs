@@ -18,7 +18,7 @@ namespace DotsNav.Navmesh.Systems
                 .WithBurst()
                 .ForEach((NavmeshComponent navmesh, LocalToWorld ltw, NavmeshDrawComponent data) =>
                 {
-                    if (data.DrawMode == DrawMode.None)
+                    if (data.DrawMode == DrawMode.None || navmesh.Navmesh == null)
                         return;
 
                     var enumerator = navmesh.Navmesh->GetEdgeEnumerator();
