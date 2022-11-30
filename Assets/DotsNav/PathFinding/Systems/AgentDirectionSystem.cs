@@ -17,7 +17,7 @@ namespace DotsNav.PathFinding.Systems
 
             Entities
                 .WithBurst()
-                // .WithReadOnly(ltwLookup) todo ltw
+                .WithReadOnly(ltwLookup)
                 .ForEach((RadiusComponent radius, TransformAspect translation, NavmeshAgentComponent navmesh, DynamicBuffer<PathSegmentElement> path, ref PathQueryComponent agent, ref DirectionComponent data) =>
                 {
                     if (agent.State != PathQueryState.PathFound)
@@ -29,7 +29,7 @@ namespace DotsNav.PathFinding.Systems
                         data.QueryVersion = agent.Version;
                     }
 
-                    var inv = float4x4.identity; // math.inverse(ltwLookup[navmesh.Navmesh].Value); todo ltw
+                    var inv = math.inverse(ltwLookup[navmesh.Navmesh].Value);
                     var p = math.transform(inv, translation.Position).xz;
 
                     var dest = path[^1].To;

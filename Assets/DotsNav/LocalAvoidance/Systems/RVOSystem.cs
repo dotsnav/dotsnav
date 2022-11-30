@@ -21,10 +21,10 @@ namespace DotsNav.LocalAvoidance.Systems
 
             Entities
                 .WithBurst()
-                // .WithReadOnly(localToWorldLookup) todo ltw
+                .WithReadOnly(localToWorldLookup)
                 .ForEach((TransformAspect translation, RadiusComponent radius, VelocityComponent velocity, DynamicTreeElementComponent dynamicTree, ref VelocityObstacleComponent obstacle) =>
                 {
-                    var transform = float4x4.identity; // todo ltw math.inverse(localToWorldLookup[dynamicTree.Tree].Value);
+                    var transform = math.inverse(localToWorldLookup[dynamicTree.Tree].Value);
                     obstacle.Position = math.transform(transform, translation.Position).xz;
                     obstacle.Velocity = velocity.Value;
                     obstacle.Radius = radius;
@@ -38,12 +38,12 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithBurst()
                 .WithReadOnly(velocityObstacleLookup)
                 .WithReadOnly(obstacleTreeLookup)
-                // .WithReadOnly(localToWorldLookup) todo ltw
+                .WithReadOnly(localToWorldLookup)
                 .ForEach((TransformAspect translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, ObstacleTreeAgentComponent obstacleTree,
                           RVOSettingsComponent agent, PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
                     Assert.IsTrue(agentTree.Tree == obstacleTree.Tree);
-                    var ltw = float4x4.identity; // localToWorldLookup[agentTree.Tree].Value; todo ltw
+                    var ltw = localToWorldLookup[agentTree.Tree].Value;
                     var inv = math.inverse(ltw);
                     var pos = math.transform(inv, translation.Position).xz;
                     var neighbours = ComputeNeighbours(agent, agentTree, pos, velocityObstacleLookup);

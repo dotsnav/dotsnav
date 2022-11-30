@@ -78,13 +78,13 @@ namespace DotsNav.Systems
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
-                // .WithReadOnly(localToWorldLookup) todo ltw
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery)
                 .ForEach((Entity entity, TransformAspect tr, RadiusComponent radius, ref DynamicTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].Tree;
                     element.TreeRef = tree;
-                    var transform = float4x4.identity; // todo ltw math.inverse(localToWorldLookup[element.Tree].Value);
+                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                     var pos = math.transform(transform, tr.Position).xz;
                     operationsWriter.Add(tree, new TreeOperation(entity, pos, radius.Value, element.Tree));
                 })
@@ -108,13 +108,13 @@ namespace DotsNav.Systems
                 .WithName("Update")
                 .WithBurst()
                 .WithReadOnly(treeLookup)
-                // .WithReadOnly(localToWorldLookup) todo ltw
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _updateQuery)
                 .ForEach((Entity entity, TransformAspect translation, RadiusComponent radius, ref DynamicTreeElementComponent element, ref ElementSystemStateComponent state) =>
                 {
                     if (element.Tree == state.TreeEntity)
                     {
-                        var transform = float4x4.identity; // math.inverse(localToWorldLookup[state.TreeEntity].Value); todo ltw
+                        var transform = math.inverse(localToWorldLookup[state.TreeEntity].Value);
                         var pos = math.transform(transform, translation.Position).xz;
                         var displacement = pos - state.PreviousPosition;
                         operationsWriter.Add(state.TreeRef, new TreeOperation(state.Id, pos, displacement, radius.Value));
@@ -122,7 +122,7 @@ namespace DotsNav.Systems
                     }
                     else
                     {
-                        var transform = float4x4.identity; // math.inverse(localToWorldLookup[element.Tree].Value); todo ltw
+                        var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                         var pos = math.transform(transform, translation.Position).xz;
                         var oldTree = state.TreeRef;
                         var newTree = treeLookup[element.Tree].Tree;

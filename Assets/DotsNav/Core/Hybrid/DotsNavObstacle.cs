@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace DotsNav.Hybrid
 {
-    public class DotsNavObstacle : MonoBehaviour, IToEntity
+    public class DotsNavObstacle : ToEntity
     {
         public DotsNavPlane Plane;
         public bool Close = true;
@@ -20,7 +20,7 @@ namespace DotsNav.Hybrid
         [Header("Debug")]
         public bool DrawGizmos = true;
 
-        void IToEntity.Convert(EntityManager entityManager, Entity entity)
+        protected override void Convert(EntityManager entityManager, Entity entity)
         {
             var values = entityManager.AddBuffer<VertexElement>(entity);
             for (int i = 0; i < Vertices.Length; i++)

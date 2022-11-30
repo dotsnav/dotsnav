@@ -19,13 +19,13 @@ namespace DotsNav.PathFinding.Systems
 
             Entities
                 .WithBurst()
-                // .WithReadOnly(ltwLookup) todo ltw
+                .WithReadOnly(ltwLookup)
                 .ForEach((PathQueryComponent agent, RadiusComponent radius, AgentDrawComponent debug, DynamicBuffer<PathSegmentElement> path, NavmeshAgentComponent navmesh) =>
                 {
                     if (!debug.Draw || path.Length == 0)
                         return;
 
-                    var ltw = float4x4.identity; // ltwLookup[navmesh.Navmesh].Value; todo ltw
+                    var ltw = ltwLookup[navmesh.Navmesh].Value;
 
                     var lines = new NativeList<Line>(Allocator.Temp);
                     var color = debug.Color;

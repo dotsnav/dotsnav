@@ -251,7 +251,7 @@ namespace DotsNav.Navmesh.Systems
                 var navmesh = NavmeshLookup[entity];
                 var insertions = Operations.GetValuesForKey(entity);
                 var destroyedTriangles = DestroyedLookup[entity];
-                var ltwInv = float4x4.identity; // todo ltw math.inverse(LocalToWorldLookup[entity].Value);
+                var ltwInv = math.inverse(LocalToWorldLookup[entity].Value);
 
                 if (navmesh.Navmesh->IsEmpty)
                 {

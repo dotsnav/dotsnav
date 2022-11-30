@@ -131,7 +131,7 @@ namespace DotsNav.PathFinding.Systems
                 var instance = PathFinder.Instances[instanceIndex];
 
                 var navmeshEntity = NavmeshElements[agent].Navmesh;
-                var ltw = float4x4.identity; // math.inverse(LTWLookup[navmeshEntity].Value); todo ltw
+                var ltw = math.inverse(LTWLookup[navmeshEntity].Value);
                 var pos = TranslationLookup[agent];
                 query.State = instance.FindPath(math.transform(ltw, pos.Value.Position).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, Navmeshes[navmeshEntity].Navmesh, out _);
                 if (query.State == PathQueryState.PathFound)

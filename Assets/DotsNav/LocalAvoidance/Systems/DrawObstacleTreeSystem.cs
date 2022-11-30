@@ -4,6 +4,8 @@ using DotsNav.Systems;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 namespace DotsNav.LocalAvoidance.Systems
 {
@@ -18,18 +20,15 @@ namespace DotsNav.LocalAvoidance.Systems
         {
             Entities
                 .WithBurst()
-                .ForEach((ObstacleTreeComponent tree, DrawComponent color) => // todo ltw , LocalToWorld ltw) =>
+                .ForEach((ObstacleTreeComponent tree, DrawComponent color, LocalToWorld ltw) =>
                 {
                     var lines = new Lines(tree.TreeRef.Count);
                     var e = tree.TreeRef.GetEnumerator(Allocator.Temp);
                     while (e.MoveNext())
                     {
-                        // todo ltw
-                        // var a = math.transform(ltw.Value, e.Current.Point.ToXxY());
-                        // var b = math.transform(ltw.Value, e.Current.Next->Point.ToXxY());
-                        // lines.Draw(a, b, color.Color);
-                        
-                        lines.Draw(e.Current.Point.ToXxY(), e.Current.Next->Point.ToXxY(), color.Color);
+                        var a = math.transform(ltw.Value, e.Current.Point.ToXxY());
+                        var b = math.transform(ltw.Value, e.Current.Next->Point.ToXxY());
+                        lines.Draw(a, b, color.Color);
                     }
                 })
                 .Schedule();

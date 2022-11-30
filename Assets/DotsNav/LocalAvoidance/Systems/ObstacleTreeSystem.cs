@@ -95,12 +95,12 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithNone<ElementSystemStateComponent>()
                 .WithNone<LocalToWorld>()
                 .WithReadOnly(treeLookup)
-                // .WithReadOnly(localToWorldLookup) todo ltw
+                .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    var transform = float4x4.identity; // todo ltw math.inverse(localToWorldLookup[element.Tree].Value);
+                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
                     operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                 })
                 .ScheduleParallel();
