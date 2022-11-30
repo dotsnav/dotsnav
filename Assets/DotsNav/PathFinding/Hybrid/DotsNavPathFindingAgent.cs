@@ -8,34 +8,16 @@ using UnityEngine;
 
 namespace DotsNav.PathFinding.Hybrid
 {
-    [UpdateAfter(typeof(PlaneConversionSystem))]
-    class AgentConversionSystem : GameObjectConversionSystem
-    {
-        protected override void OnUpdate()
-        {
-            Entities.ForEach((DotsNavAgent agent, DotsNavPathFindingAgent pathFindingAgent) =>
-            {
-                var entity = GetPrimaryEntity(pathFindingAgent);
-                DstEntityManager.AddComponentData(entity, new PathQueryComponent {State = PathQueryState.Inactive});
-                DstEntityManager.AddComponentData(entity, new DirectionComponent());
-                DstEntityManager.AddBuffer<PathSegmentElement>(entity);
-                DstEntityManager.AddBuffer<TriangleElement>(entity);
-                DstEntityManager.AddComponentData(entity, new AgentDrawComponent {Draw = true});
-                DstEntityManager.AddComponentData(entity, new NavmeshAgentComponent {Navmesh = agent.Plane.Entity});
-            });
-        }
-    }
-
     /// <summary>
     /// Triggers path queries and provides access to their results
     /// </summary>
     [RequireComponent(typeof(DotsNavAgent))]
-    public class DotsNavPathFindingAgent : MonoBehaviour
+    public class DotsNavPathFindingAgent : MonoBehaviour, IToEntity
     {
         /// <summary>
         /// The path segments making up the current path
         /// </summary>
-        public readonly List<PathSegmentElement> Segments = new List<PathSegmentElement>();
+        public readonly List<PathSegmentElement> Segments = new();
 
         /// <summary>
         /// The direction needed to follow the path
@@ -94,6 +76,18 @@ namespace DotsNav.PathFinding.Hybrid
         /// </summary>
         public void FindPath() => FindPath(Goal);
 
+        public void Convert(EntityManager entityManager, Entity entity)
+        {
+            entityManager.AddComponentData(entity, new PathQueryComponent {State = PathQueryState.Inactive});
+            entityManager.AddComponentData(entity, new DirectionComponent());
+            entityManager.AddBuffer<PathSegmentElement>(entity);
+            entityManager.AddBuffer<TriangleElement>(entity);
+            entityManager.AddComponentData(entity, new AgentDrawComponent {Draw = true});
+            var agent = GetComponent<DotsNavAgent>();
+            entityManager.AddComponentData(entity, new NavmeshAgentComponent {Navmesh = agent.Plane.Entity});
+            entityManager.AddComponentObject(entity, this);
+        }
+        
 #if UNITY_EDITOR
         void OnDrawGizmos()
         {

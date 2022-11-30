@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -8,15 +7,15 @@ namespace DotsNav.Collections
 {
     [DebuggerDisplay("Length = {Length}")]
     [DebuggerTypeProxy(typeof(ListHandleDebugView<>))]
-    unsafe struct List<T> where T : struct
+    unsafe struct List<T> where T : unmanaged
     {
         readonly Allocator _allocator;
         [NativeDisableUnsafePtrRestriction]
-        UnsafeList* _list;
+        UnsafeList<T>* _list;
 
         public List(int initialCapacity, Allocator allocator)
         {
-            _list = UnsafeList.Create(UnsafeUtility.SizeOf<T>(), UnsafeUtility.AlignOf<T>(), initialCapacity, allocator);
+            _list = UnsafeList<T>.Create(initialCapacity, allocator);
             _allocator = allocator;
         }
 
@@ -56,7 +55,7 @@ namespace DotsNav.Collections
 
         public void RemoveAt(int i)
         {
-            _list->RemoveAt<T>(i);
+            _list->RemoveAt(i);
         }
 
         public void Dispose()
@@ -66,19 +65,14 @@ namespace DotsNav.Collections
             _list = null;
         }
 
-        public void Sort<T, U>(U c) where T : unmanaged where U : IComparer<T>
-        {
-            NativeSortExtension.Sort((T*) _list->Ptr, Length, c);
-        }
-
         public void Sort<T>() where T : unmanaged, IComparable<T>
         {
-            _list->Sort<T>();
+            NativeSortExtension.Sort((T*) _list->Ptr, Length, new NativeSortExtension.DefaultComparer<T>());
         }
 
         public void Resize(int newSize, NativeArrayOptions options = NativeArrayOptions.UninitializedMemory)
         {
-            _list->Resize<T>(newSize, options);
+            _list->Resize(newSize, options);
         }
 
         public T TakeLast()
@@ -89,7 +83,7 @@ namespace DotsNav.Collections
 
         public void AddRange(NativeArray<T> r)
         {
-            _list->AddRange<T>(r.GetUnsafeReadOnlyPtr(), r.Length);
+            _list->AddRange(r.GetUnsafeReadOnlyPtr(), r.Length);
         }
 
         public NativeArray<T> AsArray()
@@ -98,10 +92,10 @@ namespace DotsNav.Collections
             return array;
         }
 
-        public void RemoveAtSwapBack(int index) => _list->RemoveAtSwapBack<T>(index);
+        public void RemoveAtSwapBack(int index) => _list->RemoveAtSwapBack(index);
     }
 
-    sealed class ListHandleDebugView<T> where T : struct
+    sealed class ListHandleDebugView<T> where T : unmanaged
     {
         List<T> _list;
 

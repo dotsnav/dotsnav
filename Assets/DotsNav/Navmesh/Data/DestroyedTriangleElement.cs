@@ -16,6 +16,6 @@ namespace DotsNav.Navmesh.Data
         }
 
         public static implicit operator int(DestroyedTriangleElement e) => e.Value;
-        public static implicit operator DestroyedTriangleElement(int v) => new DestroyedTriangleElement(v);
+        public static implicit operator DestroyedTriangleElement(int v) => new(v);
     }
 }

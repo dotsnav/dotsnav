@@ -9,33 +9,27 @@ using UnityEngine;
 
 namespace DotsNav.Hybrid
 {
-    class PlaneConversionSystem : GameObjectConversionSystem
-    {
-        protected override void OnUpdate()
-        {
-            Entities.ForEach((DotsNavPlane localAvoidance) =>
-            {
-                var entity = GetPrimaryEntity(localAvoidance);
-                localAvoidance.Entity = entity;
-                localAvoidance.World = DstEntityManager.World;
-            });
-        }
-    }
-
-    public class DotsNavPlane : EntityLifetimeBehaviour
+    public class DotsNavPlane : ToEntity
     {
         /// <summary>
         /// Size of the navmesh to be created. Changing this value after initialization has no effect
         /// </summary>
-        public Vector2 Size = new Vector2(1000, 1000);
+        public Vector2 Size = new(1000, 1000);
         public Color ConstrainedColor = Color.red;
         public Color UnconstrainedColor = Color.white;
 
         IPlaneComponent[] _components;
-
-        protected override void Awake()
+        World _world;
+        
+        void Awake()
         {
             _components = GetComponents<IPlaneComponent>();
+        }
+        
+        protected sealed override void Convert(EntityManager entityManager, Entity entity)
+        {
+            _world = entityManager.World;
+            entityManager.AddComponentObject(entity, this);
         }
 
         public Vector3 DirectionToWorldSpace(float2 dir)
@@ -48,14 +42,13 @@ namespace DotsNav.Hybrid
         /// </summary>
         public ObstacleReference InsertObstacle(IEnumerable<Vector2> vertices)
         {
-            var em = World.EntityManager;
-            Assert.IsTrue(em.Exists(Entity));
+            var em = _world.EntityManager;
             var obstacle = em.CreateEntity();
             var input = em.AddBuffer<VertexElement>(obstacle);
             foreach (float2 vertex in vertices)
                 input.Add(vertex);
             foreach (var component in _components)
-                component.InsertObstacle(obstacle, em);
+                component.InsertObstacle(em, Entity, obstacle);
             return new ObstacleReference(obstacle);
         }
 
@@ -67,8 +60,7 @@ namespace DotsNav.Hybrid
         /// <param name="adder">A Burst compatible struct implementing IObstacleAdder</param>
         public void InsertObstacleBulk<T>(int amount, T adder) where T : struct, IObstacleAdder
         {
-            var em = World.EntityManager;
-            Assert.IsTrue(em.Exists(Entity));
+            var em = _world.EntityManager;
             var obstacle = em.CreateEntity();
             em.AddBuffer<VertexElement>(obstacle);
             var amounts = em.AddBuffer<VertexAmountElement>(obstacle);
@@ -83,12 +75,12 @@ namespace DotsNav.Hybrid
                 .Run();
 
             foreach (var component in _components)
-                component.InsertObstacle(obstacle, em);
+                component.InsertObstacle(em, Entity, obstacle);
         }
 
         public void RemoveObstacle(ObstacleReference toRemove)
         {
-            World.EntityManager.DestroyEntity(toRemove.Value);
+            _world.EntityManager.DestroyEntity(toRemove.Value);
         }
 
         [BurstCompile]

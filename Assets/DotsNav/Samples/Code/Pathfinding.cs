@@ -6,7 +6,6 @@ using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
-using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -45,9 +44,9 @@ namespace DotsNav.Samples.Code
         public Color HighlightColor;
         Color _restoreColor;
 
-        readonly Dictionary<ObstacleReference, List<Vector2>> _obstacles = new Dictionary<ObstacleReference, List<Vector2>>();
-        readonly List<Vector2> _added = new List<Vector2>();
-        readonly List<DotsNavPathFindingAgent> _found = new List<DotsNavPathFindingAgent>();
+        readonly Dictionary<ObstacleReference, List<Vector2>> _obstacles = new();
+        readonly List<Vector2> _added = new();
+        readonly List<DotsNavPathFindingAgent> _found = new();
         DotsNavPathFindingAgent[] _agents;
         int[] _versions;
         float _lastPlacement;
@@ -87,9 +86,6 @@ namespace DotsNav.Samples.Code
 
         void Start()
         {
-            // Ensure gameobject conversion when loading a scene
-            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
-
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _lineDrawer = GetComponent<LineDrawer>();
             _size = Plane.Size;

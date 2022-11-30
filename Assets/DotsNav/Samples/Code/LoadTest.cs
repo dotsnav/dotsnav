@@ -34,9 +34,6 @@ namespace DotsNav.Samples.Code
 
         void Start()
         {
-            // Ensure gameobject conversion when loading a scene
-            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
-
             Help.gameObject.SetActive(!Application.isEditor);
             FindObjectOfType<CameraController>().Initialize(Size);
             _vertices = new NativeList<float2>(Allocator.Persistent);

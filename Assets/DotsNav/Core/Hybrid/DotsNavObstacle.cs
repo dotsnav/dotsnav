@@ -1,30 +1,13 @@
 using System.Linq;
 using DotsNav.Data;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
 namespace DotsNav.Hybrid
 {
-    class ObstacleConversionSystem : GameObjectConversionSystem
-    {
-        protected override void OnUpdate()
-        {
-            Entities.ForEach((DotsNavObstacle obstacle) =>
-            {
-                var entity = GetPrimaryEntity(obstacle);
-                obstacle.Entity = entity;
-                obstacle.World = DstEntityManager.World;
-
-                var values = DstEntityManager.AddBuffer<VertexElement>(entity);
-
-                for (int i = 0; i < obstacle.Vertices.Length; i++)
-                    values.Add((float2) obstacle.Vertices[i]);
-            });
-        }
-    }
-
-    public class DotsNavObstacle : EntityLifetimeBehaviour
+    public class DotsNavObstacle : MonoBehaviour, IToEntity
     {
         public DotsNavPlane Plane;
         public bool Close = true;
@@ -37,6 +20,14 @@ namespace DotsNav.Hybrid
         [Header("Debug")]
         public bool DrawGizmos = true;
 
+        void IToEntity.Convert(EntityManager entityManager, Entity entity)
+        {
+            var values = entityManager.AddBuffer<VertexElement>(entity);
+            for (int i = 0; i < Vertices.Length; i++)
+                values.Add((float2) Vertices[i]);
+            entityManager.AddComponentObject(entity, this);
+        }
+        
 #if UNITY_EDITOR
         void OnDrawGizmos()
         {
@@ -67,9 +58,9 @@ namespace DotsNav.Hybrid
                 Vertices = new[] {new Vector2(-1, 0), new Vector2(1, 0)};
             else if (Vertices.Length == 1)
                 Vertices = new[] {Vertices[0], new Vector2(1, 0)};
-            else if (Vertices.Length > 2 && Close && math.any((float2)Vertices[0] != (float2)Vertices[Vertices.Length - 1]))
+            else if (Vertices.Length > 2 && Close && math.any((float2)Vertices[0] != (float2)Vertices[^1]))
                 Vertices = Vertices.Append(Vertices[0]).ToArray();
-            else if (Vertices.Length > 3 && !Close && math.all((float2) Vertices[0] == (float2) Vertices[Vertices.Length - 1]))
+            else if (Vertices.Length > 3 && !Close && math.all((float2) Vertices[0] == (float2) Vertices[^1]))
                 Vertices = Vertices.Take(Vertices.Length - 1).ToArray();
         }
 #endif

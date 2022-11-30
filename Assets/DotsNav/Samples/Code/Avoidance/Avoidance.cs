@@ -41,9 +41,6 @@ namespace DotsNav.Samples.Code
 
         void Start()
         {
-            // Ensure gameobject conversion when loading a scene
-            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
-
             _size = Plane.GetComponent<DotsNavPlane>().Size;
             FindObjectOfType<CameraController>().Initialize(_size);
              _r = new Random((uint) DateTime.Now.Ticks);

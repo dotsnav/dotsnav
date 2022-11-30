@@ -16,6 +16,6 @@ namespace DotsNav.PathFinding.Data
         }
 
         public static implicit operator int(TriangleElement e) => e.Value;
-        public static implicit operator TriangleElement(int v) => new TriangleElement(v);
+        public static implicit operator TriangleElement(int v) => new(v);
     }
 }

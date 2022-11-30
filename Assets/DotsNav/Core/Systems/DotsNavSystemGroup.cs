@@ -17,7 +17,7 @@ namespace DotsNav.Systems
         protected override void OnCreate()
         {
             base.OnCreate();
-            EcbSource = World.GetOrCreateSystem<EndFixedStepSimulationEntityCommandBufferSystem>();
+            EcbSource = World.GetOrCreateSystemManaged<EndFixedStepSimulationEntityCommandBufferSystem>();
         }
     }
 }

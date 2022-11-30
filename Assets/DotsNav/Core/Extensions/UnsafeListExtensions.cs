@@ -37,7 +37,7 @@ namespace DotsNav
         /// </summary>
         public static void InsertSorted<T>(this ref UnsafeList<T> list, T item) where T : unmanaged, IComparable<T>
         {
-            if (list.Length == 0 || item.CompareTo(list[list.Length - 1]) > 0)
+            if (list.Length == 0 || item.CompareTo(list[^1]) > 0)
             {
                 list.Add(item);
                 return;
@@ -52,7 +52,7 @@ namespace DotsNav
 
                 if (r < 0)
                 {
-                    list.Add(list[list.Length - 1]);
+                    list.Add(list[^1]);
                     for (int j = list.Length - 2; j > i; j--)
                         list[j] = list[j - 1];
                     list[i] = item;

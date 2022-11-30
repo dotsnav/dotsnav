@@ -16,6 +16,6 @@ namespace DotsNav.Data
         }
 
         public static implicit operator int(VertexAmountElement e) => e.Value;
-        public static implicit operator VertexAmountElement(int v) => new VertexAmountElement(v);
+        public static implicit operator VertexAmountElement(int v) => new(v);
     }
 }

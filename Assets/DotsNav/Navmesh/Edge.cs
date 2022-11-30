@@ -91,7 +91,7 @@ namespace DotsNav.Navmesh
             set => QuadEdge->Mark = value;
         }
 
-        public ReadOnly<Entity> Constraints => new ReadOnly<Entity>(QuadEdge->Crep.Ptr, QuadEdge->Crep.Length);
+        public ReadOnly<Entity> Constraints => new(QuadEdge->Crep.Ptr, QuadEdge->Crep.Length);
         public bool Constrained => QuadEdge->Crep.Length > 0;
         public bool IsConstrainedBy(Entity id) => QuadEdge->Crep.Contains(id);
         public bool ConstraintsEqual(Edge* edge) => QuadEdge->Crep.SequenceEqual(edge->QuadEdge->Crep);

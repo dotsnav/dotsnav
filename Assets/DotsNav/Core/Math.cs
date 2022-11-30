@@ -162,7 +162,7 @@ namespace DotsNav
         }
 
         public static float2 Rotate(float length, float angle) => Rotate(angle) * length;
-        public static float2 Rotate(float angle) => new float2(math.sin(angle), math.cos(angle));
+        public static float2 Rotate(float angle) => new(math.sin(angle), math.cos(angle));
 
         public static float2 Rotate(double2 v, double angleRadians)
         {
@@ -272,8 +272,8 @@ namespace DotsNav
                 => (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
         }
 
-        public static float2 PerpCw(float2 vector2) => new float2(vector2.y, -vector2.x);
-        public static float2 PerpCcw(float2 vector2) => new float2(-vector2.y, vector2.x);
+        public static float2 PerpCw(float2 vector2) => new(vector2.y, -vector2.x);
+        public static float2 PerpCcw(float2 vector2) => new(-vector2.y, vector2.x);
 
         public static void GetOuterTangentRight(float2 c0, float2 c1, float R, out float2 from, out float2 to)
         {

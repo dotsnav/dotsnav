@@ -1,25 +1,21 @@
 ﻿using DotsNav.Data;
+using Unity.Entities;
+using Unity.Transforms;
 
 namespace DotsNav.Hybrid
 {
-    class AgentConversionSystem : GameObjectConversionSystem
-    {
-        protected override void OnUpdate()
-        {
-            Entities.ForEach((DotsNavAgent agent) =>
-            {
-                var entity = GetPrimaryEntity(agent);
-                agent.World = DstEntityManager.World;
-                agent.Entity = entity;
-                Assert.IsTrue(agent.Radius > 0, "Radius must be larger than 0");
-                DstEntityManager.AddComponentData(entity, new RadiusComponent {Value = agent.Radius});
-            });
-        }
-    }
-
-    public class DotsNavAgent : EntityLifetimeBehaviour
+    public class DotsNavAgent : ToEntity
     {
         public DotsNavPlane Plane;
         public float Radius = .5f;
+
+        protected override void Convert(EntityManager entityManager, Entity entity)
+        {
+            Assert.IsTrue(Radius > 0, "Radius must be larger than 0");
+            entityManager.AddComponentData(entity, new RadiusComponent {Value = Radius});
+            entityManager.AddComponentObject(entity, this);
+
+            entityManager.AddComponent<LocalToWorldTransform>(entity);
+        }
     }
 }

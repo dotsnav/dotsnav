@@ -15,7 +15,7 @@ namespace DotsNav.Collections
 
     [DebuggerDisplay("Count = {Length}")]
     [DebuggerTypeProxy(typeof (NativeHashSetDebugView<>))]
-    unsafe struct HashSet<T> where T : struct, IEquatable<T>
+    unsafe struct HashSet<T> where T : unmanaged, IEquatable<T>
     {
         [NativeDisableUnsafePtrRestriction]
         readonly HashSetControl* _control;
@@ -286,7 +286,7 @@ namespace DotsNav.Collections
             UnsafeUtility.Free(_control, _control->Allocator);
         }
 
-        public Enumerator GetEnumerator() => new Enumerator(this);
+        public Enumerator GetEnumerator() => new(this);
 
         public struct Enumerator
         {
@@ -321,7 +321,7 @@ namespace DotsNav.Collections
         }
     }
 
-    class NativeHashSetDebugView<T> where T : struct, IEquatable<T>
+    class NativeHashSetDebugView<T> where T : unmanaged, IEquatable<T>
     {
         HashSet<T> _set;
 

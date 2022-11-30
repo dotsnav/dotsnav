@@ -1,8 +1,10 @@
-﻿using DotsNav.LocalAvoidance.Hybrid;
+﻿using DotsNav.Hybrid;
+using DotsNav.LocalAvoidance.Hybrid;
 using UnityEngine;
 using Unity.Entities;
 
-class DemoAgent : MonoBehaviour, IConvertGameObjectToEntity
+[RequireComponent(typeof(DotsNavLocalAvoidanceAgent))]
+class DemoAgent : MonoBehaviour, IToEntity
 {
     DotsNavLocalAvoidanceAgent _agent;
     public float PreferredSpeed;
@@ -17,10 +19,10 @@ class DemoAgent : MonoBehaviour, IConvertGameObjectToEntity
     {
         transform.position += _agent.Velocity * Time.deltaTime;
     }
-
-    public void Convert(Entity entity, EntityManager dstManager, GameObjectConversionSystem conversionSystem)
+    
+    void IToEntity.Convert(EntityManager entityManager, Entity entity)
     {
-        dstManager.AddComponentData(entity, new SteeringComponent
+        entityManager.AddComponentData(entity, new SteeringComponent
         {
             PreferredSpeed = PreferredSpeed,
             BrakeSpeed = BrakeSpeed

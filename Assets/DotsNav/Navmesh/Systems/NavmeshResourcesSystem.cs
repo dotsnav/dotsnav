@@ -11,7 +11,7 @@ namespace DotsNav.Navmesh.Systems
     {
         protected override void OnUpdate()
         {
-            var ecbSource = World.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource;
+            var ecbSource = World.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource;
             var buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
 
             Entities
@@ -37,7 +37,7 @@ namespace DotsNav.Navmesh.Systems
             ecbSource.AddJobHandleForProducer(Dependency);
         }
 
-        struct SystemStateComponent : ISystemStateComponentData
+        struct SystemStateComponent : ICleanupComponentData
         {
             public Navmesh* Navmesh;
         }

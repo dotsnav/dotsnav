@@ -6,36 +6,8 @@ using UnityEngine;
 
 namespace DotsNav.LocalAvoidance.Hybrid
 {
-    [UpdateAfter(typeof(PlaneConversionSystem))]
-    class LocalAvoidanceAgentConversionSystem : GameObjectConversionSystem
-    {
-        protected override void OnUpdate()
-        {
-            Entities.ForEach((DotsNavAgent agent, DotsNavLocalAvoidanceAgent localAvoidanceAgent) =>
-            {
-                var tree = agent.Plane.Entity;
-                var entity = GetPrimaryEntity(localAvoidanceAgent);
-                DstEntityManager.AddComponentData(entity, new DynamicTreeElementComponent {Tree = tree});
-                DstEntityManager.AddComponentData(entity, new ObstacleTreeAgentComponent {Tree = tree});
-
-                DstEntityManager.AddComponentData(entity, new RVOSettingsComponent
-                {
-                    NeighbourDist = localAvoidanceAgent.NeighbourDist,
-                    TimeHorizon = localAvoidanceAgent.TimeHorizon,
-                    TimeHorizonObst = localAvoidanceAgent.TimeHorizonObst,
-                    MaxNeighbours = localAvoidanceAgent.MaxNeighbours,
-                });
-
-                DstEntityManager.AddComponentData(entity, new MaxSpeedComponent {Value = localAvoidanceAgent.MaxSpeed});
-                DstEntityManager.AddComponent<VelocityObstacleComponent>(entity);
-                DstEntityManager.AddComponent<PreferredVelocityComponent>(entity);
-                DstEntityManager.AddComponent<VelocityComponent>(entity);
-            });
-        }
-    }
-
     [RequireComponent(typeof(DotsNavAgent))]
-    public class DotsNavLocalAvoidanceAgent : MonoBehaviour
+    public class DotsNavLocalAvoidanceAgent : MonoBehaviour, IToEntity
     {
         public float MaxSpeed;
         public int MaxNeighbours;
@@ -43,5 +15,26 @@ namespace DotsNav.LocalAvoidance.Hybrid
         public float TimeHorizon;
         public float TimeHorizonObst;
         public Vector3 Velocity { get; internal set; }
+        
+        public void Convert(EntityManager entityManager, Entity entity)
+        {
+            var tree = GetComponent<DotsNavAgent>().Plane.Entity;
+            entityManager.AddComponentData(entity, new DynamicTreeElementComponent {Tree = tree});
+            entityManager.AddComponentData(entity, new ObstacleTreeAgentComponent {Tree = tree});
+            
+            entityManager.AddComponentData(entity, new RVOSettingsComponent
+            {
+                NeighbourDist = NeighbourDist,
+                TimeHorizon = TimeHorizon,
+                TimeHorizonObst = TimeHorizonObst,
+                MaxNeighbours = MaxNeighbours,
+            });
+            
+            entityManager.AddComponentData(entity, new MaxSpeedComponent {Value = MaxSpeed});
+            entityManager.AddComponent<VelocityObstacleComponent>(entity);
+            entityManager.AddComponent<PreferredVelocityComponent>(entity);
+            entityManager.AddComponent<VelocityComponent>(entity);
+            entityManager.AddComponentObject(entity, this);
+        }
     }
 }

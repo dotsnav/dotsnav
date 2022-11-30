@@ -95,7 +95,7 @@ public readonly unsafe struct Grid<T> where T : unmanaged, Grid<T>.IElement<T>
                         items[i1] = item;
 
                         if (items.Length == maxResults)
-                            rangeSq = items[items.Length - 1].Dist;
+                            rangeSq = items[^1].Dist;
                     }
                 }
         }

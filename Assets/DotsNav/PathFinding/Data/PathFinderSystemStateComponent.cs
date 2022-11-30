@@ -4,7 +4,7 @@ using Unity.Entities;
 
 namespace DotsNav.PathFinding.Data
 {
-    struct PathFinderSystemStateComponent : ISystemStateComponentData
+    struct PathFinderSystemStateComponent : ICleanupComponentData
     {
         public List<PathFinderInstance> Instances;
 

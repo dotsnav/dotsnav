@@ -11,7 +11,7 @@ namespace DotsNav.PathFinding.Systems
 
         protected override void OnUpdate()
         {
-            var ecbSource = World.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource;
+            var ecbSource = World.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource;
             var buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities
                 .WithBurst()

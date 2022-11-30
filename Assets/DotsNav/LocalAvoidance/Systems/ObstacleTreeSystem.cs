@@ -14,7 +14,7 @@ namespace DotsNav.LocalAvoidance.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     public unsafe partial class ObstacleTreeSystem : SystemBase
     {
-        NativeParallelMultiHashMap<ObstacleTree, TreeOperation> _operations;
+        NativeMultiHashMap<ObstacleTree, TreeOperation> _operations;
         NativeList<ObstacleTree> _trees;
         EntityQuery _insertQuery0;
         EntityQuery _insertQuery1;
@@ -28,7 +28,7 @@ namespace DotsNav.LocalAvoidance.Systems
 
         protected override void OnCreate()
         {
-            _operations = new NativeParallelMultiHashMap<ObstacleTree, TreeOperation>(64, Allocator.Persistent);
+            _operations = new NativeMultiHashMap<ObstacleTree, TreeOperation>(64, Allocator.Persistent);
             _trees = new NativeList<ObstacleTree>(Allocator.Persistent);
         }
 
@@ -41,7 +41,7 @@ namespace DotsNav.LocalAvoidance.Systems
 
         protected override void OnUpdate()
         {
-            var ecbSource = World.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource;
+            var ecbSource = World.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource;
 
             var b0 = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities
@@ -70,8 +70,8 @@ namespace DotsNav.LocalAvoidance.Systems
                 })
                 .ScheduleParallel();
 
-            var treeLookup = GetComponentDataFromEntity<ObstacleTreeComponent>(true);
-            var localToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+            var treeLookup = GetComponentLookup<ObstacleTreeComponent>(true);
+            var localToWorldLookup = GetComponentLookup<LocalToWorld>(true);
 
             var operations = _operations;
             var minCapacity = _insertQuery0.CalculateEntityCount() +
@@ -95,12 +95,12 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithNone<ElementSystemStateComponent>()
                 .WithNone<LocalToWorld>()
                 .WithReadOnly(treeLookup)
-                .WithReadOnly(localToWorldLookup)
+                // .WithReadOnly(localToWorldLookup) todo ltw
                 .WithStoreEntityQueryInField(ref _insertQuery0)
                 .ForEach((Entity entity, DynamicBuffer<VertexElement> vertices, ref ObstacleTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].TreeRef;
-                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
+                    var transform = float4x4.identity; // todo ltw math.inverse(localToWorldLookup[element.Tree].Value);
                     operationsWriter.Add(tree, new TreeOperation(entity, transform, (float2*) vertices.GetUnsafeReadOnlyPtr(), vertices.Length));
                 })
                 .ScheduleParallel();
@@ -259,7 +259,7 @@ namespace DotsNav.LocalAvoidance.Systems
             [ReadOnly]
             public NativeArray<ObstacleTree> Keys;
             [ReadOnly]
-            public NativeParallelMultiHashMap<ObstacleTree, TreeOperation> Operations;
+            public NativeMultiHashMap<ObstacleTree, TreeOperation> Operations;
 
             public EntityCommandBuffer.ParallelWriter Ecb;
 
@@ -360,12 +360,12 @@ namespace DotsNav.LocalAvoidance.Systems
             Destroy
         }
 
-        struct TreeSystemStateComponent : ISystemStateComponentData
+        struct TreeSystemStateComponent : ICleanupComponentData
         {
             public ObstacleTree Tree;
         }
 
-        struct ElementSystemStateComponent : ISystemStateComponentData
+        struct ElementSystemStateComponent : ICleanupComponentData
         {
             public ObstacleTree TreeRef;
         }

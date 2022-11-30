@@ -7,7 +7,6 @@ using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
 using DotsNav.PathFinding.Hybrid;
-using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -31,8 +30,8 @@ namespace DotsNav.Samples.Code
         public Color CastHitColor = Color.yellow;
         public Color CastColor = Color.white;
 
-        readonly List<List<Vector2>> _points = new List<List<Vector2>> {new List<Vector2>()};
-        readonly List<ObstacleReference> _obstacles = new List<ObstacleReference>();
+        readonly List<List<Vector2>> _points = new() {new List<Vector2>()};
+        readonly List<ObstacleReference> _obstacles = new();
 
         GameObject _target;
         int _placingPrefab = -1;
@@ -48,9 +47,6 @@ namespace DotsNav.Samples.Code
 
         void Start()
         {
-            // Ensure gameobject conversion when loading a scene
-            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
-
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             _cameraController = FindObjectOfType<CameraController>();
             _cameraController.Initialize(Plane.Size, .5f);
@@ -68,7 +64,7 @@ namespace DotsNav.Samples.Code
             _agent.GetComponent<DotsNavAgent>().Radius = size / 2;
         }
 
-        protected void Update()
+        void Update()
         {
             ProcessInputAndUpdateUi();
 

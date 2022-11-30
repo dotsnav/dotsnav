@@ -13,7 +13,7 @@ namespace DotsNav.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     partial class DynamicTreeSystem : SystemBase
     {
-        NativeParallelMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
+        NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
         NativeList<DynamicTree<Entity>> _trees;
         EntityQuery _insertQuery;
         EntityQuery _destroyQuery;
@@ -21,7 +21,7 @@ namespace DotsNav.Systems
 
         protected override void OnCreate()
         {
-            _operations = new NativeParallelMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
+            _operations = new NativeMultiHashMap<DynamicTree<Entity>, TreeOperation>(64, Allocator.Persistent);
             _trees = new NativeList<DynamicTree<Entity>>(Allocator.Persistent);
         }
 
@@ -34,7 +34,7 @@ namespace DotsNav.Systems
 
         protected override void OnUpdate()
         {
-            var ecbSource = World.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource;
+            var ecbSource = World.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource;
 
             var b0 = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities
@@ -63,7 +63,7 @@ namespace DotsNav.Systems
                 })
                 .ScheduleParallel();
 
-            var treeLookup = GetComponentDataFromEntity<DynamicTreeComponent>(true);
+            var treeLookup = GetComponentLookup<DynamicTreeComponent>(true);
 
             var operations = _operations;
             var minCapacity = _insertQuery.CalculateEntityCount() + _destroyQuery.CalculateEntityCount() + 2 * _updateQuery.CalculateEntityCount();
@@ -71,21 +71,21 @@ namespace DotsNav.Systems
                 operations.Capacity = minCapacity;
             operations.Clear();
             var operationsWriter = operations.AsParallelWriter();
-            var localToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+            var localToWorldLookup = GetComponentLookup<LocalToWorld>(true);
 
             Entities
                 .WithName("Insert")
                 .WithBurst()
                 .WithNone<ElementSystemStateComponent>()
                 .WithReadOnly(treeLookup)
-                .WithReadOnly(localToWorldLookup)
+                // .WithReadOnly(localToWorldLookup) todo ltw
                 .WithStoreEntityQueryInField(ref _insertQuery)
-                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref DynamicTreeElementComponent element) =>
+                .ForEach((Entity entity, TransformAspect tr, RadiusComponent radius, ref DynamicTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].Tree;
                     element.TreeRef = tree;
-                    var transform = math.inverse(localToWorldLookup[element.Tree].Value);
-                    var pos = math.transform(transform, translation.Value).xz;
+                    var transform = float4x4.identity; // todo ltw math.inverse(localToWorldLookup[element.Tree].Value);
+                    var pos = math.transform(transform, tr.Position).xz;
                     operationsWriter.Add(tree, new TreeOperation(entity, pos, radius.Value, element.Tree));
                 })
                 .ScheduleParallel();
@@ -108,22 +108,22 @@ namespace DotsNav.Systems
                 .WithName("Update")
                 .WithBurst()
                 .WithReadOnly(treeLookup)
-                .WithReadOnly(localToWorldLookup)
+                // .WithReadOnly(localToWorldLookup) todo ltw
                 .WithStoreEntityQueryInField(ref _updateQuery)
-                .ForEach((Entity entity, Translation translation, RadiusComponent radius, ref DynamicTreeElementComponent element, ref ElementSystemStateComponent state) =>
+                .ForEach((Entity entity, TransformAspect translation, RadiusComponent radius, ref DynamicTreeElementComponent element, ref ElementSystemStateComponent state) =>
                 {
                     if (element.Tree == state.TreeEntity)
                     {
-                        var transform = math.inverse(localToWorldLookup[state.TreeEntity].Value);
-                        var pos = math.transform(transform, translation.Value).xz;
+                        var transform = float4x4.identity; // math.inverse(localToWorldLookup[state.TreeEntity].Value); todo ltw
+                        var pos = math.transform(transform, translation.Position).xz;
                         var displacement = pos - state.PreviousPosition;
                         operationsWriter.Add(state.TreeRef, new TreeOperation(state.Id, pos, displacement, radius.Value));
                         state.PreviousPosition = pos;
                     }
                     else
                     {
-                        var transform = math.inverse(localToWorldLookup[element.Tree].Value);
-                        var pos = math.transform(transform, translation.Value).xz;
+                        var transform = float4x4.identity; // math.inverse(localToWorldLookup[element.Tree].Value); todo ltw
+                        var pos = math.transform(transform, translation.Position).xz;
                         var oldTree = state.TreeRef;
                         var newTree = treeLookup[element.Tree].Tree;
                         element.TreeRef = newTree;
@@ -170,7 +170,7 @@ namespace DotsNav.Systems
             [ReadOnly]
             public NativeArray<DynamicTree<Entity>> Keys;
             [ReadOnly]
-            public NativeParallelMultiHashMap<DynamicTree<Entity>, TreeOperation> Operations;
+            public NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> Operations;
 
             public EntityCommandBuffer.ParallelWriter Ecb;
 
@@ -276,12 +276,12 @@ namespace DotsNav.Systems
             Destroy
         }
 
-        struct TreeSystemStateComponent : ISystemStateComponentData
+        struct TreeSystemStateComponent : ICleanupComponentData
         {
             public DynamicTree<Entity> Tree;
         }
 
-        struct ElementSystemStateComponent : ISystemStateComponentData
+        struct ElementSystemStateComponent : ICleanupComponentData
         {
             public int Id;
             public float2 PreviousPosition;

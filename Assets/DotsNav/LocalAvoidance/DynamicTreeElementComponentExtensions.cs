@@ -10,7 +10,7 @@ namespace DotsNav.LocalAvoidance
     public static class DynamicTreeElementComponentExtensions
     {
         public static NativeList<Entity> ComputeNeighbours(this DynamicTreeElementComponent treeElement, float neighbourDist,
-            float2 pos, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
+            float2 pos, ComponentLookup<VelocityObstacleComponent> velocityObstacleLookup)
         {
             var neighbours = new NativeList<Entity>(Allocator.Temp);
             var ext = neighbourDist / 2;
@@ -23,11 +23,11 @@ namespace DotsNav.LocalAvoidance
         {
             readonly float2 _position;
             NativeList<Entity> _neighbours;
-            readonly ComponentDataFromEntity<VelocityObstacleComponent> _velocityObstacleLookup;
+            readonly ComponentLookup<VelocityObstacleComponent> _velocityObstacleLookup;
             readonly float _rangeSq;
 
             public DistanceCollector(float2 position, float range, NativeList<Entity> neighbours,
-                ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
+                                     ComponentLookup<VelocityObstacleComponent> velocityObstacleLookup)
             {
                 _position = position;
                 _neighbours = neighbours;

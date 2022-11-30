@@ -12,6 +12,6 @@ namespace DotsNav.Data
         }
 
         public static implicit operator float(RadiusComponent e) => e.Value;
-        public static implicit operator RadiusComponent(float v) => new RadiusComponent(v);
+        public static implicit operator RadiusComponent(float v) => new(v);
     }
 }

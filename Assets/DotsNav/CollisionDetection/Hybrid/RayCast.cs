@@ -13,7 +13,7 @@ namespace DotsNav.CollisionDetection.Hybrid
     public unsafe class RayCastResult : IDisposable
     {
         public bool CollisionDetected => _output.Length > 0;
-        public ReadOnly<RayCastHit> Hits => new ReadOnly<RayCastHit>((RayCastHit*) _output.GetUnsafeReadOnlyPtr(), _output.Length);
+        public ReadOnly<RayCastHit> Hits => new((RayCastHit*) _output.GetUnsafeReadOnlyPtr(), _output.Length);
         readonly NativeList<RayCastHit> _output;
 
         internal RayCastResult(NativeList<RayCastHit> output)

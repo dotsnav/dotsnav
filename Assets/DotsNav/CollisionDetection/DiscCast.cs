@@ -59,7 +59,7 @@ namespace DotsNav.CollisionDetection
 
             while (open.Length > 0)
             {
-                tri = (Edge*) open[open.Length - 1];
+                tri = (Edge*) open[^1];
                 open.Resize(open.Length - 1, NativeArrayOptions.UninitializedMemory);
                 Check(tri->LNext);
                 Check(tri->LPrev);

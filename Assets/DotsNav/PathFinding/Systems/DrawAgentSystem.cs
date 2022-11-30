@@ -15,17 +15,17 @@ namespace DotsNav.PathFinding.Systems
     {
         protected override void OnUpdate()
         {
-            var ltwLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+            var ltwLookup = GetComponentLookup<LocalToWorld>(true);
 
             Entities
                 .WithBurst()
-                .WithReadOnly(ltwLookup)
+                // .WithReadOnly(ltwLookup) todo ltw
                 .ForEach((PathQueryComponent agent, RadiusComponent radius, AgentDrawComponent debug, DynamicBuffer<PathSegmentElement> path, NavmeshAgentComponent navmesh) =>
                 {
                     if (!debug.Draw || path.Length == 0)
                         return;
 
-                    var ltw = ltwLookup[navmesh.Navmesh].Value;
+                    var ltw = float4x4.identity; // ltwLookup[navmesh.Navmesh].Value; todo ltw
 
                     var lines = new NativeList<Line>(Allocator.Temp);
                     var color = debug.Color;
@@ -53,7 +53,7 @@ namespace DotsNav.PathFinding.Systems
 
                     var arm = math.rotate(ltw, new float3(0, 0, radius));
                     Arc.Draw(lines, math.transform(ltw, path[0].From.ToXxY()), up, arm, 2 * math.PI, color, radius, debug.Delimit);
-                    Arc.Draw(lines, math.transform(ltw, path[path.Length - 1].To.ToXxY()), up, arm, 2 * math.PI, color, radius, debug.Delimit);
+                    Arc.Draw(lines, math.transform(ltw, path[^1].To.ToXxY()), up, arm, 2 * math.PI, color, radius, debug.Delimit);
 
                     Line.Draw(lines);
                 })

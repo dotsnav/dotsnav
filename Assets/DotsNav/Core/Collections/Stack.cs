@@ -5,7 +5,7 @@ namespace DotsNav.Collections
 {
     [DebuggerDisplay("Count = {Count}")]
     [DebuggerTypeProxy(typeof(StackDebugView<>))]
-    readonly struct Stack<T> where T : struct
+    readonly struct Stack<T> where T : unmanaged
     {
         readonly List<T> _data;
         public int Count => _data.Length;
@@ -32,7 +32,7 @@ namespace DotsNav.Collections
         public void Dispose() => _data.Dispose();
     }
 
-    sealed class StackDebugView<T> where T : struct
+    sealed class StackDebugView<T> where T : unmanaged
     {
         readonly Stack<T> _data;
 

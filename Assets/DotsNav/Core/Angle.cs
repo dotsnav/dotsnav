@@ -53,12 +53,12 @@ namespace DotsNav
         public float GetContinuousAngle(Angle angle) => _value + (float) (angle - _value);
 
         public static implicit operator float(Angle v) => v._value;
-        public static implicit operator Angle(float v) => new Angle(NormalizeAnyAngle(v));
-        public static Angle operator +(Angle a, Angle b) => new Angle(NormalizeAngle(a._value + b._value));
-        public static Angle operator -(Angle a, Angle b) => new Angle(NormalizeAngle(a._value - b._value));
-        public static Angle operator *(Angle a, float b) => new Angle(NormalizeAnyAngle(a._value * b));
-        public static Angle operator *(float a, Angle b) => new Angle(NormalizeAnyAngle(a * b._value));
-        public static Angle operator /(Angle a, float b) => new Angle(NormalizeAnyAngle(a._value / b));
+        public static implicit operator Angle(float v) => new(NormalizeAnyAngle(v));
+        public static Angle operator +(Angle a, Angle b) => new(NormalizeAngle(a._value + b._value));
+        public static Angle operator -(Angle a, Angle b) => new(NormalizeAngle(a._value - b._value));
+        public static Angle operator *(Angle a, float b) => new(NormalizeAnyAngle(a._value * b));
+        public static Angle operator *(float a, Angle b) => new(NormalizeAnyAngle(a * b._value));
+        public static Angle operator /(Angle a, float b) => new(NormalizeAnyAngle(a._value / b));
 
         public override string ToString() => $"{_value:0.00}";
         public string ToString(string format, IFormatProvider formatProvider) => _value.ToString(format, formatProvider);

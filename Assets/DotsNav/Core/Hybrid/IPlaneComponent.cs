@@ -1,9 +1,10 @@
-﻿using Unity.Entities;
+﻿using DotsNav.Hybrid;
+using Unity.Entities;
 
 namespace DotsNav.Core.Hybrid
 {
-    public interface IPlaneComponent
+    public interface IPlaneComponent : IToEntity
     {
-        void InsertObstacle(Entity obstacle, EntityManager em);
+        void InsertObstacle(EntityManager em, Entity plane, Entity obstacle);
     }
 }

@@ -18,8 +18,8 @@ namespace DotsNav.Navmesh.Systems
     public unsafe partial class UpdateNavmeshSystem : SystemBase
     {
         NativeList<Entity> _navmeshes;
-        NativeParallelMultiHashMap<Entity, Navmesh.Insertion> _insertions;
-        NativeParallelMultiHashMap<Entity, Entity> _removals;
+        NativeMultiHashMap<Entity, Navmesh.Insertion> _insertions;
+        NativeMultiHashMap<Entity, Entity> _removals;
         EntityQuery _insertQuery0;
         EntityQuery _insertQuery1;
         EntityQuery _insertQuery2;
@@ -33,8 +33,8 @@ namespace DotsNav.Navmesh.Systems
         protected override void OnCreate()
         {
             _navmeshes = new NativeList<Entity>(Allocator.Persistent);
-            _insertions = new NativeParallelMultiHashMap<Entity, Navmesh.Insertion>(64, Allocator.Persistent);
-            _removals = new NativeParallelMultiHashMap<Entity, Entity>(64, Allocator.Persistent);
+            _insertions = new NativeMultiHashMap<Entity, Navmesh.Insertion>(64, Allocator.Persistent);
+            _removals = new NativeMultiHashMap<Entity, Entity>(64, Allocator.Persistent);
         }
 
         protected override void OnDestroy()
@@ -46,7 +46,7 @@ namespace DotsNav.Navmesh.Systems
 
         protected override void OnUpdate()
         {
-            var ecbSource = World.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource;
+            var ecbSource = World.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource;
 
             var insertions = _insertions;
             var minCapacity = _insertQuery0.CalculateEntityCount() +
@@ -196,7 +196,7 @@ namespace DotsNav.Navmesh.Systems
                         set.Add(ops[i]);
 
                     navmeshes.Clear();
-                    var keys = set.GetEnumerator();
+                    using var keys = set.GetEnumerator();
                     while (keys.MoveNext())
                         navmeshes.Add(keys.Current);
                 })
@@ -215,9 +215,9 @@ namespace DotsNav.Navmesh.Systems
                     Operations = insertions,
                     Removals = removals,
                     Keys = navmeshes.AsDeferredJobArray(),
-                    NavmeshLookup = GetComponentDataFromEntity<NavmeshComponent>(),
-                    LocalToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true),
-                    DestroyedLookup = GetBufferFromEntity<DestroyedTriangleElement>(true)
+                    NavmeshLookup = GetComponentLookup<NavmeshComponent>(),
+                    LocalToWorldLookup = GetComponentLookup<LocalToWorld>(true),
+                    DestroyedLookup = GetBufferLookup<DestroyedTriangleElement>(true)
                 }
                 .Schedule(navmeshes, 1, Dependency);
 
@@ -230,15 +230,15 @@ namespace DotsNav.Navmesh.Systems
             [ReadOnly]
             public NativeArray<Entity> Keys;
             [ReadOnly]
-            public NativeParallelMultiHashMap<Entity, Navmesh.Insertion> Operations;
+            public NativeMultiHashMap<Entity, Navmesh.Insertion> Operations;
             [NativeDisableContainerSafetyRestriction]
-            public ComponentDataFromEntity<NavmeshComponent> NavmeshLookup;
+            public ComponentLookup<NavmeshComponent> NavmeshLookup;
             [NativeDisableContainerSafetyRestriction]
-            public BufferFromEntity<DestroyedTriangleElement> DestroyedLookup;
+            public BufferLookup<DestroyedTriangleElement> DestroyedLookup;
             [ReadOnly]
-            public NativeParallelMultiHashMap<Entity, Entity> Removals;
+            public NativeMultiHashMap<Entity, Entity> Removals;
             [ReadOnly]
-            public ComponentDataFromEntity<LocalToWorld> LocalToWorldLookup;
+            public ComponentLookup<LocalToWorld> LocalToWorldLookup;
 
             public void Execute(int index)
             {
@@ -251,7 +251,7 @@ namespace DotsNav.Navmesh.Systems
                 var navmesh = NavmeshLookup[entity];
                 var insertions = Operations.GetValuesForKey(entity);
                 var destroyedTriangles = DestroyedLookup[entity];
-                var ltwInv = math.inverse(LocalToWorldLookup[entity].Value);
+                var ltwInv = float4x4.identity; // todo ltw math.inverse(LocalToWorldLookup[entity].Value);
 
                 if (navmesh.Navmesh->IsEmpty)
                 {
@@ -270,7 +270,7 @@ namespace DotsNav.Navmesh.Systems
             }
         }
 
-        struct SystemStateComponent : ISystemStateComponentData
+        struct SystemStateComponent : ICleanupComponentData
         {
             public Entity Navmesh;
         }

@@ -264,7 +264,7 @@ namespace DotsNav.BVH
             return true;
         }
 
-        static float2 Cross(float s, float2 a) => new float2(-s * a.y, s * a.x);
+        static float2 Cross(float s, float2 a) => new(-s * a.y, s * a.x);
 
         // Allocate a node from the pool. Grow the pool if necessary.
         int AllocateNode()

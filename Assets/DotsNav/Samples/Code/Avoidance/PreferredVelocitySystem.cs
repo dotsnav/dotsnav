@@ -17,9 +17,9 @@ partial class PreferredVelocitySystem : SystemBase
     {
         Entities
             .WithBurst()
-            .ForEach((Translation translation, DirectionComponent direction, SteeringComponent steering, PathQueryComponent query, ref PreferredVelocityComponent preferredVelocity) =>
+            .ForEach((TransformAspect translation, DirectionComponent direction, SteeringComponent steering, PathQueryComponent query, ref PreferredVelocityComponent preferredVelocity) =>
             {
-                var dist = math.length(query.To - translation.Value);
+                var dist = math.length(query.To - translation.Position);
                 var speed = math.min(dist * steering.BrakeSpeed, steering.PreferredSpeed);
                 preferredVelocity.Value = direction.Value * speed;
             })

@@ -29,8 +29,8 @@ class SandboxDev : MonoBehaviour
     public Color CastColor = Color.white;
     public bool Reverse;
 
-    readonly List<List<Vector2>> _points = new List<List<Vector2>> {new List<Vector2>()};
-    readonly List<ObstacleReference> _obstacles = new List<ObstacleReference>();
+    readonly List<List<Vector2>> _points = new() {new List<Vector2>()};
+    readonly List<ObstacleReference> _obstacles = new();
 
     int _constraint;
     Vector2 _scrollPos;
@@ -45,7 +45,7 @@ class SandboxDev : MonoBehaviour
     Transform _goal;
     LineDrawer _lineDrawer;
     CameraController _cameraController;
-    readonly List<List<Vector2>> _toDump = new List<List<Vector2>>();
+    readonly List<List<Vector2>> _toDump = new();
 
     void Awake()
     {

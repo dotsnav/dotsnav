@@ -16,36 +16,36 @@ namespace DotsNav.LocalAvoidance.Systems
     {
         protected override void OnUpdate()
         {
-            var invTimeStep = 1 / Time.DeltaTime;
-            var localToWorldLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+            var invTimeStep = 1 / World.Time.DeltaTime;
+            var localToWorldLookup = GetComponentLookup<LocalToWorld>(true);
 
             Entities
                 .WithBurst()
-                .WithReadOnly(localToWorldLookup)
-                .ForEach((Translation translation, RadiusComponent radius, VelocityComponent velocity, DynamicTreeElementComponent dynamicTree, ref VelocityObstacleComponent obstacle) =>
+                // .WithReadOnly(localToWorldLookup) todo ltw
+                .ForEach((TransformAspect translation, RadiusComponent radius, VelocityComponent velocity, DynamicTreeElementComponent dynamicTree, ref VelocityObstacleComponent obstacle) =>
                 {
-                    var transform = math.inverse(localToWorldLookup[dynamicTree.Tree].Value);
-                    obstacle.Position = math.transform(transform, translation.Value).xz;
+                    var transform = float4x4.identity; // todo ltw math.inverse(localToWorldLookup[dynamicTree.Tree].Value);
+                    obstacle.Position = math.transform(transform, translation.Position).xz;
                     obstacle.Velocity = velocity.Value;
                     obstacle.Radius = radius;
                 })
                 .ScheduleParallel();
 
-            var velocityObstacleLookup = GetComponentDataFromEntity<VelocityObstacleComponent>(true);
-            var obstacleTreeLookup = GetComponentDataFromEntity<ObstacleTreeComponent>(true);
+            var velocityObstacleLookup = GetComponentLookup<VelocityObstacleComponent>(true);
+            var obstacleTreeLookup = GetComponentLookup<ObstacleTreeComponent>(true);
 
             Entities
                 .WithBurst()
                 .WithReadOnly(velocityObstacleLookup)
                 .WithReadOnly(obstacleTreeLookup)
-                .WithReadOnly(localToWorldLookup)
-                .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, ObstacleTreeAgentComponent obstacleTree,
+                // .WithReadOnly(localToWorldLookup) todo ltw
+                .ForEach((TransformAspect translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, ObstacleTreeAgentComponent obstacleTree,
                           RVOSettingsComponent agent, PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
                     Assert.IsTrue(agentTree.Tree == obstacleTree.Tree);
-                    var ltw = localToWorldLookup[agentTree.Tree].Value;
+                    var ltw = float4x4.identity; // localToWorldLookup[agentTree.Tree].Value; todo ltw
                     var inv = math.inverse(ltw);
-                    var pos = math.transform(inv, translation.Value).xz;
+                    var pos = math.transform(inv, translation.Position).xz;
                     var neighbours = ComputeNeighbours(agent, agentTree, pos, velocityObstacleLookup);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(16, Allocator.Temp);
                     var obstacleDist = agent.TimeHorizonObst * maxSpeed.Value + radius;
@@ -62,12 +62,12 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithNone<ObstacleTreeAgentComponent>()
                 .WithReadOnly(velocityObstacleLookup)
                 .WithReadOnly(localToWorldLookup)
-                .ForEach((Translation translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, RVOSettingsComponent agent,
+                .ForEach((TransformAspect translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, RVOSettingsComponent agent,
                           PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
                     var ltw = localToWorldLookup[agentTree.Tree].Value;
                     var inv = math.inverse(ltw);
-                    var pos = math.transform(inv, translation.Value).xz;
+                    var pos = math.transform(inv, translation.Position).xz;
                     var neighbours = ComputeNeighbours(agent, agentTree, pos, velocityObstacleLookup);
                     var obstacleNeighbours = new NativeList<ObstacleDistance>(0, Allocator.Temp);
                     RVO.ComputeNewVelocity(agent, pos, radius, neighbours, obstacleNeighbours, invTimeStep, preferredVelocity.Value, velocity.Value, maxSpeed.Value, ref velocity.Value);
@@ -76,7 +76,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .ScheduleParallel();
         }
 
-        static NativeList<VelocityObstacle> ComputeNeighbours(RVOSettingsComponent agent, DynamicTreeElementComponent agentTree, float2 pos, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
+        static NativeList<VelocityObstacle> ComputeNeighbours(RVOSettingsComponent agent, DynamicTreeElementComponent agentTree, float2 pos, ComponentLookup<VelocityObstacleComponent> velocityObstacleLookup)
         {
             var neighbours = new NativeList<VelocityObstacle>(agent.MaxNeighbours, Allocator.Temp);
             var ext = agent.NeighbourDist / 2;
@@ -142,10 +142,10 @@ namespace DotsNav.LocalAvoidance.Systems
             readonly float2 _position;
             readonly int _maxResults;
             NativeList<VelocityObstacle> _neighbours;
-            readonly ComponentDataFromEntity<VelocityObstacleComponent> _velocityObstacleLookup;
+            readonly ComponentLookup<VelocityObstacleComponent> _velocityObstacleLookup;
             float _rangeSq;
 
-            public VelocityObstacleCollector(float2 position, float range, int maxResults, NativeList<VelocityObstacle> neighbours, ComponentDataFromEntity<VelocityObstacleComponent> velocityObstacleLookup)
+            public VelocityObstacleCollector(float2 position, float range, int maxResults, NativeList<VelocityObstacle> neighbours, ComponentLookup<VelocityObstacleComponent> velocityObstacleLookup)
             {
                 _position = position;
                 _maxResults = maxResults;
@@ -176,7 +176,7 @@ namespace DotsNav.LocalAvoidance.Systems
                     _neighbours[i] = neighbour;
 
                     if (_neighbours.Length == _maxResults)
-                        _rangeSq = _neighbours[_neighbours.Length - 1].Dist;
+                        _rangeSq = _neighbours[^1].Dist;
                 }
 
                 return true;

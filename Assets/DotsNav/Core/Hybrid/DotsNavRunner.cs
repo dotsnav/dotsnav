@@ -16,9 +16,9 @@ namespace DotsNav.Hybrid
         protected void Awake()
         {
             var world = World.All[0];
-            _dotsNavSystemGroup = world.GetOrCreateSystem<DotsNavSystemGroup>();
-            world.GetOrCreateSystem<FixedStepSimulationSystemGroup>().RemoveSystemFromUpdateList(_dotsNavSystemGroup);
-            world.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystem<EndDotsNavEntityCommandBufferSystem>();
+            _dotsNavSystemGroup = world.GetOrCreateSystemManaged<DotsNavSystemGroup>();
+            world.GetOrCreateSystemManaged<FixedStepSimulationSystemGroup>().RemoveSystemFromUpdateList(_dotsNavSystemGroup);
+            world.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystemManaged<EndDotsNavEntityCommandBufferSystem>();
         }
 
         /// <summary>
@@ -55,8 +55,8 @@ namespace DotsNav.Hybrid
                 return;
 
             var world = worlds[0];
-            world.GetOrCreateSystem<FixedStepSimulationSystemGroup>().AddSystemToUpdateList(_dotsNavSystemGroup);
-            world.GetOrCreateSystem<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystem<EndFixedStepSimulationEntityCommandBufferSystem>();
+            world.GetOrCreateSystemManaged<FixedStepSimulationSystemGroup>().AddSystemToUpdateList(_dotsNavSystemGroup);
+            world.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystemManaged<EndFixedStepSimulationEntityCommandBufferSystem>();
         }
 
         /// <summary>

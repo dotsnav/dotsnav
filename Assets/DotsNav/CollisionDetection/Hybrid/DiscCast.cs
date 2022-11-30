@@ -12,7 +12,7 @@ namespace DotsNav.CollisionDetection.Hybrid
     public unsafe class DiscCastResult : IDisposable
     {
         public bool CollisionDetected => _output.Length > 0;
-        public ReadOnly<Entity> Obstacles => new ReadOnly<Entity>((Entity*) _output.GetUnsafeReadOnlyPtr(), _output.Length);
+        public ReadOnly<Entity> Obstacles => new((Entity*) _output.GetUnsafeReadOnlyPtr(), _output.Length);
         readonly NativeList<Entity> _output;
 
         internal DiscCastResult(NativeList<Entity> output)

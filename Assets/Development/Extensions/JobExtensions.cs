@@ -6,7 +6,7 @@ using Debug = UnityEngine.Debug;
 
 static class JobExtensions
 {
-    static readonly HashSet<Type> JobsRun = new HashSet<Type>();
+    static readonly HashSet<Type> JobsRun = new();
 
     public static void RunTimed<T>(this T job, string msg = null, bool silent = false) where T : struct, IJob
     {

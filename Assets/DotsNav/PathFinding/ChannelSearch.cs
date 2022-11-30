@@ -94,7 +94,7 @@ namespace DotsNav.PathFinding
 
                         if (path.Length > 0)
                         {
-                            var gate = new Gate {Left = path[path.Length - 1].Left, Right = e.Right};
+                            var gate = new Gate {Left = path[^1].Left, Right = e.Right};
                             path.Add(gate);
                             DebugDraw(gate.Left, gate.Right, Color.magenta);
                         }

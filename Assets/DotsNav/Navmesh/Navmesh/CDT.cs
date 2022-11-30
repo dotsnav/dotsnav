@@ -182,7 +182,7 @@ namespace DotsNav.Navmesh
             Assert.IsTrue(vert->Edge == null);
             _qt.Remove(vert);
             var delPos = vert->SeqPos;
-            ((Vertex*) _verticesSeq[_verticesSeq.Length - 1])->SeqPos = delPos;
+            ((Vertex*) _verticesSeq[^1])->SeqPos = delPos;
             _verticesSeq.RemoveAtSwapBack(delPos);
             _vertices.Recycle(vert);
             return remaining;
@@ -451,7 +451,7 @@ namespace DotsNav.Navmesh
 
             while (a != b)
             {
-                var p0 = _insertedPoints[_insertedPoints.Length - 1];
+                var p0 = _insertedPoints[^1];
                 var p1 = GetNextPoint(a, b, start, end);
 
                 if (!p0.Modified && !p1.Modified)
@@ -528,14 +528,14 @@ namespace DotsNav.Navmesh
                     {
                         if (_insertedPoints.Length > 1)
                         {
-                            var prev = _insertedPoints[_insertedPoints.Length - 1].Vertex;
+                            var prev = _insertedPoints[^1].Vertex;
                             if (prev == v || e->Org == prev || e->Dest == prev)
                                 continue;
                         }
 
                         if (_insertedPoints.Length > 2)
                         {
-                            var prev = _insertedPoints[_insertedPoints.Length - 2].Vertex;
+                            var prev = _insertedPoints[^2].Vertex;
                             if (prev == v || e->Org == prev || e->Dest == prev)
                                 continue;
                         }
@@ -552,7 +552,7 @@ namespace DotsNav.Navmesh
                     {
                         var pRef = CreatePRef(p, e);
 
-                        if (_insertedPoints.Length > 1 && _insertedPoints[_insertedPoints.Length - 1].Vertex == pRef)
+                        if (_insertedPoints.Length > 1 && _insertedPoints[^1].Vertex == pRef)
                             continue;
 
                         var point = new Point

@@ -13,12 +13,12 @@ namespace DotsNav.PathFinding.Systems
     {
         protected override void OnUpdate()
         {
-            var ltwLookup = GetComponentDataFromEntity<LocalToWorld>(true);
+            var ltwLookup = GetComponentLookup<LocalToWorld>(true);
 
             Entities
                 .WithBurst()
-                .WithReadOnly(ltwLookup)
-                .ForEach((RadiusComponent radius, Translation translation, NavmeshAgentComponent navmesh, DynamicBuffer<PathSegmentElement> path, ref PathQueryComponent agent, ref DirectionComponent data) =>
+                // .WithReadOnly(ltwLookup) todo ltw
+                .ForEach((RadiusComponent radius, TransformAspect translation, NavmeshAgentComponent navmesh, DynamicBuffer<PathSegmentElement> path, ref PathQueryComponent agent, ref DirectionComponent data) =>
                 {
                     if (agent.State != PathQueryState.PathFound)
                         return;
@@ -29,10 +29,10 @@ namespace DotsNav.PathFinding.Systems
                         data.QueryVersion = agent.Version;
                     }
 
-                    var inv = math.inverse(ltwLookup[navmesh.Navmesh].Value);
-                    var p = math.transform(inv, translation.Value).xz;
+                    var inv = float4x4.identity; // math.inverse(ltwLookup[navmesh.Navmesh].Value); todo ltw
+                    var p = math.transform(inv, translation.Position).xz;
 
-                    var dest = path[path.Length - 1].To;
+                    var dest = path[^1].To;
                     if (math.all(p == dest))
                     {
                         data.Value = float2.zero;

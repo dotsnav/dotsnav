@@ -5,7 +5,6 @@ using DotsNav.Core.Hybrid;
 using DotsNav.Drawing;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Hybrid;
-using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,16 +26,13 @@ namespace DotsNav.Samples.Code
         public RectTransform Help;
 
         Random _r;
-        readonly List<ObstacleReference> _ids = new List<ObstacleReference>();
+        readonly List<ObstacleReference> _ids = new();
         Mode _mode = Mode.Inserting;
-        readonly List<Vector2> _points = new List<Vector2>();
+        readonly List<Vector2> _points = new();
         float _startTime;
 
         void Awake()
         {
-            // Ensure gameobject conversion when loading a scene
-            World.All[0].GetOrCreateSystem<InitializationSystemGroup>().Update();
-
             _navmesh = Plane.GetComponent<DotsNavNavmesh>();
             FindObjectOfType<CameraController>().Initialize(Plane.Size);
             _startTime = Time.time;
@@ -124,7 +120,6 @@ namespace DotsNav.Samples.Code
         {
             Inserting,
             Removing,
-            Done
         }
     }
 }

@@ -18,6 +18,6 @@ namespace DotsNav.Data
         }
 
         public static implicit operator float2(VertexElement e) => e.Value;
-        public static implicit operator VertexElement(float2 v) => new VertexElement(v);
+        public static implicit operator VertexElement(float2 v) => new(v);
     }
 }

@@ -3,7 +3,6 @@ using System.Linq;
 using DotsNav;
 using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
-using DotsNav.Navmesh.Hybrid;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -25,12 +24,12 @@ unsafe class PolygonTest : MonoBehaviour
     public bool BurstRemove = true;
     public bool BurstSafetyChecks = true;
     public DotsNavRunner Runner;
-    public DotsNavNavmesh Navmesh;
+    public DotsNavPlane Navmesh;
     int _i;
     List<Entity> _ids;
     public bool Track;
     public bool Select;
-    public Vector2 SelectPos = new Vector2(3.985278f, 7.360839f);
+    public Vector2 SelectPos = new(3.985278f, 7.360839f);
     public float SelectRadius = .1f;
 
     public Transform P;

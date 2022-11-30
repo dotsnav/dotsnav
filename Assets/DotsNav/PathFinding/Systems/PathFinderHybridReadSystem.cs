@@ -1,4 +1,3 @@
-using DotsNav.Data;
 using DotsNav.PathFinding.Data;
 using DotsNav.PathFinding.Hybrid;
 using DotsNav.Systems;
@@ -22,13 +21,13 @@ namespace DotsNav.PathFinding.Systems
 
             Entities
                 .WithoutBurst()
-                .ForEach((DotsNavPathFindingAgent hybrid, ref PathQueryComponent agent, ref RadiusComponent radius, ref Translation translation, ref AgentDrawComponent drawData) =>
+                .ForEach((DotsNavPathFindingAgent hybrid, ref PathQueryComponent agent, ref TransformAspect translation, ref AgentDrawComponent drawData) =>
                 {
                     agent.State = hybrid.State;
                     agent.To = hybrid.Goal;
                     var pos = hybrid.transform.position;
                     pos.y = 0;
-                    translation.Value = pos;
+                    translation.Position = pos;
 
                     drawData.Draw = hybrid.DrawPath;
                     drawData.Delimit = hybrid.DrawCorners;

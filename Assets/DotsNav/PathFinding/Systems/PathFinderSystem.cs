@@ -22,8 +22,8 @@ namespace DotsNav.PathFinding.Systems
 
         protected override void OnCreate()
         {
-            RequireSingletonForUpdate<PathFinderComponent>();
-            RequireSingletonForUpdate<PathFinderSystemStateComponent>();
+            RequireForUpdate<PathFinderComponent>();
+            RequireForUpdate<PathFinderSystemStateComponent>();
             _buffer = new NativeList<Entity>(Allocator.Persistent);
             _queue = new NativeQueue<Entity>(Allocator.Persistent);
         }
@@ -38,7 +38,7 @@ namespace DotsNav.PathFinding.Systems
         {
             var data = GetSingleton<PathFinderComponent>();
             var resources = GetSingleton<PathFinderSystemStateComponent>();
-            var destroyed = GetBufferFromEntity<DestroyedTriangleElement>(true);
+            var destroyed = GetBufferLookup<DestroyedTriangleElement>(true);
             var buffer = _buffer;
             var queue = _queue;
             var writer = queue.AsParallelWriter();
@@ -77,14 +77,14 @@ namespace DotsNav.PathFinding.Systems
             Dependency = new FindPathJob
                 {
                     Agents = buffer.AsDeferredJobArray(),
-                    NavmeshElements = GetComponentDataFromEntity<NavmeshAgentComponent>(true),
-                    Navmeshes = GetComponentDataFromEntity<NavmeshComponent>(true),
-                    LTWLookup = GetComponentDataFromEntity<LocalToWorld>(true),
-                    TranslationLookup = GetComponentDataFromEntity<Translation>(true),
-                    Queries = GetComponentDataFromEntity<PathQueryComponent>(),
-                    Radii = GetComponentDataFromEntity<RadiusComponent>(true),
-                    PathSegments = GetBufferFromEntity<PathSegmentElement>(),
-                    TriangleIds = GetBufferFromEntity<TriangleElement>(),
+                    NavmeshElements = GetComponentLookup<NavmeshAgentComponent>(true),
+                    Navmeshes = GetComponentLookup<NavmeshComponent>(true),
+                    LTWLookup = GetComponentLookup<LocalToWorld>(true),
+                    TranslationLookup = GetComponentLookup<LocalToWorldTransform>(true),
+                    Queries = GetComponentLookup<PathQueryComponent>(),
+                    Radii = GetComponentLookup<RadiusComponent>(true),
+                    PathSegments = GetBufferLookup<PathSegmentElement>(),
+                    TriangleIds = GetBufferLookup<TriangleElement>(),
                     PathFinder = resources,
                 }
                 .Schedule(buffer, 1, Dependency);
@@ -97,26 +97,26 @@ namespace DotsNav.PathFinding.Systems
             [ReadOnly]
             public NativeArray<Entity> Agents;
             [NativeDisableContainerSafetyRestriction]
-            public ComponentDataFromEntity<PathQueryComponent> Queries;
+            public ComponentLookup<PathQueryComponent> Queries;
             [NativeDisableContainerSafetyRestriction]
-            public ComponentDataFromEntity<RadiusComponent> Radii;
+            public ComponentLookup<RadiusComponent> Radii;
             [NativeDisableContainerSafetyRestriction]
-            public BufferFromEntity<PathSegmentElement> PathSegments;
+            public BufferLookup<PathSegmentElement> PathSegments;
             [NativeDisableContainerSafetyRestriction]
-            public BufferFromEntity<TriangleElement> TriangleIds;
+            public BufferLookup<TriangleElement> TriangleIds;
             public PathFinderSystemStateComponent PathFinder;
 
             [NativeSetThreadIndex]
             int _threadId;
 
             [ReadOnly]
-            public ComponentDataFromEntity<NavmeshAgentComponent> NavmeshElements;
+            public ComponentLookup<NavmeshAgentComponent> NavmeshElements;
             [ReadOnly]
-            public ComponentDataFromEntity<NavmeshComponent> Navmeshes;
+            public ComponentLookup<NavmeshComponent> Navmeshes;
             [ReadOnly]
-            public ComponentDataFromEntity<LocalToWorld> LTWLookup;
+            public ComponentLookup<LocalToWorld> LTWLookup;
             [ReadOnly]
-            public ComponentDataFromEntity<Translation> TranslationLookup;
+            public ComponentLookup<LocalToWorldTransform> TranslationLookup;
 
             public unsafe void Execute(int index)
             {
@@ -131,9 +131,9 @@ namespace DotsNav.PathFinding.Systems
                 var instance = PathFinder.Instances[instanceIndex];
 
                 var navmeshEntity = NavmeshElements[agent].Navmesh;
-                var ltw = math.inverse(LTWLookup[navmeshEntity].Value);
+                var ltw = float4x4.identity; // math.inverse(LTWLookup[navmeshEntity].Value); todo ltw
                 var pos = TranslationLookup[agent];
-                query.State = instance.FindPath(math.transform(ltw, pos.Value).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, Navmeshes[navmeshEntity].Navmesh, out _);
+                query.State = instance.FindPath(math.transform(ltw, pos.Value.Position).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, Navmeshes[navmeshEntity].Navmesh, out _);
                 if (query.State == PathQueryState.PathFound)
                     ++query.Version;
                 Queries[agent] = query;

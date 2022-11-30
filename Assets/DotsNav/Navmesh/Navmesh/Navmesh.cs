@@ -177,7 +177,7 @@ namespace DotsNav.Navmesh
             GlobalRefine();
         }
 
-        internal void Update<T>(T enumerator, NativeParallelMultiHashMap<Entity, Entity>.Enumerator removals, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
+        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
         {
             DestroyedTriangles.Clear();
 
@@ -227,6 +227,6 @@ namespace DotsNav.Navmesh
         /// Allows enumeration of all edges in the navmesh
         /// </summary>
         /// <param name="sym">Set to true to enumerate symetric edges, i.e. enumerate edge(x,y) and edge(y,x)</param>
-        public EdgeEnumerator GetEdgeEnumerator(bool sym = false) => new EdgeEnumerator(_verticesSeq, Extent, sym);
+        public EdgeEnumerator GetEdgeEnumerator(bool sym = false) => new(_verticesSeq, Extent, sym);
     }
 }

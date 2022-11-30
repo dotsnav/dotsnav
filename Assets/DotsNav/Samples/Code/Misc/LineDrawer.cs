@@ -21,7 +21,7 @@ namespace DotsNav.Samples.Code
         }
 
         Material _lineMat;
-        readonly List<Line> _lines = new List<Line>();
+        readonly List<Line> _lines = new();
 
         void Awake()
         {

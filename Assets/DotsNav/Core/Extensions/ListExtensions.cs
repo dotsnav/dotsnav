@@ -19,7 +19,7 @@ namespace DotsNav
             }
         }
 
-        public static bool Contains<T>(this List<T> list, T value) where T : struct, IEquatable<T>
+        public static bool Contains<T>(this List<T> list, T value) where T : unmanaged, IEquatable<T>
         {
             for (int i = 0; i < list.Length; i++)
                 if (list[i].Equals(value))
@@ -27,7 +27,7 @@ namespace DotsNav
             return false;
         }
 
-        public static T Last<T>(this List<T> l) where T : unmanaged => l[l.Length - 1];
+        public static T Last<T>(this List<T> l) where T : unmanaged => l[^1];
 
         public static void Insert<T>(this List<T> list, int index, T t) where T : unmanaged
         {

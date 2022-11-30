@@ -103,8 +103,7 @@ public class CircleSegmentIntersection : MonoBehaviour
     static bool SectorContains(float start, float end, float a)
         => start < end ? a >= start && a <= end : !(a > end && a < start);
 
-    static float2 Rotate(float length, float angle)
-        => new float2(length * math.sin(angle), length * math.cos(angle));
+    static float2 Rotate(float length, float angle) => new(length * math.sin(angle), length * math.cos(angle));
 
     // https://stackoverflow.com/questions/1073336/circle-line-segment-collision-detection-algorithm/1084899#1084899
     public static int IntersectSegCircle(float2 E, float2 L, float2 C, float r, out float2 r1, out float2 r2)
