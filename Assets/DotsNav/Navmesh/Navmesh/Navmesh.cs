@@ -26,8 +26,8 @@ namespace DotsNav.Navmesh
         BlockPool<QuadEdge> _quadEdges;
         UnsafeList<IntPtr> _verticesSeq;
 
-        HashSet<IntPtr> V;
-        HashSet<IntPtr> C;
+        internal HashSet<IntPtr> V;
+        internal HashSet<IntPtr> C;
 
         QuadTree _qt;
         EdgeSearch _edgeSearch;
@@ -145,83 +145,6 @@ namespace DotsNav.Navmesh
         }
 
         public bool Contains(float2 p) => Math.Contains(p, -Extent, Extent);
-
-        internal void Load<T>(T enumerator, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
-        {
-            DestroyedTriangles.Clear();
-
-            while (enumerator.MoveNext())
-            {
-                var op = enumerator.Current;
-                var ltw = math.mul(ltwInv, op.Ltw);
-
-                switch (op.Type)
-                {
-                    case InsertionType.Insert:
-                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, ltw);
-                        break;
-                    case InsertionType.BulkInsert:
-                        var start = 0;
-                        for (int i = 0; i < op.Amount; i++)
-                        {
-                            var amount = op.Amounts[i];
-                            Insert(op.Vertices, start, amount, Entity.Null, ltw);
-                            start += amount;
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            GlobalRefine();
-        }
-
-        internal void Update<T>(T enumerator, NativeMultiHashMap<Entity, Entity>.Enumerator removals, float4x4 ltwInv) where T : System.Collections.Generic.IEnumerator<Insertion>
-        {
-            DestroyedTriangles.Clear();
-
-            V.Clear();
-
-            var removed = false;
-            while (removals.MoveNext())
-            {
-                RemoveConstraint(removals.Current);
-                removed = true;
-            }
-            if (removed)
-                RemoveRefinements();
-
-            while (enumerator.MoveNext())
-            {
-                var op = enumerator.Current;
-                var ltw = math.mul(ltwInv, op.Ltw);
-
-                switch (op.Type)
-                {
-                    case InsertionType.Insert:
-                        C.Clear();
-                        Insert(op.Vertices, 0, op.Amount, op.Obstacle, ltw);
-                        SearchDisturbances();
-                        break;
-                    case InsertionType.BulkInsert:
-                        var start = 0;
-                        for (int i = 0; i < op.Amount; i++)
-                        {
-                            var amount = op.Amounts[i];
-                            C.Clear();
-                            Insert(op.Vertices, start, amount, Entity.Null, ltw);
-                            start += amount;
-                            SearchDisturbances();
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            LocalRefinement();
-        }
 
         /// <summary>
         /// Allows enumeration of all edges in the navmesh

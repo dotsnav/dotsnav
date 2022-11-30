@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 4553706958819566844}
   - component: {fileID: 5843786958838245045}
   - component: {fileID: 1198927799591733719}
-  - component: {fileID: 6714639268391541046}
   m_Layer: 0
   m_Name: Test Agent
   m_TagString: Untagged
@@ -31,6 +30,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6816559034987221266}
   m_Father: {fileID: 0}
@@ -78,7 +78,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22a8dbb25b1346fdbeffe1c33d7dd07c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSpeed: 1
+  MaxSpeed: 5
   MaxNeighbours: 10
   NeighbourDist: 10
   TimeHorizon: 1
@@ -95,21 +95,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068e3c499ea44e55a06fe36f97352f42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PreferredSpeed: 1
+  PreferredSpeed: 5
   BrakeSpeed: 1
---- !u!114 &6714639268391541046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1478449553652949201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea7d7495833204790ba1d3a8755397f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ConversionMode: 1
 --- !u!1 &6809790579091285638
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,6 +126,7 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1478449553652949204}
   m_RootOrder: 0
@@ -162,6 +150,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1

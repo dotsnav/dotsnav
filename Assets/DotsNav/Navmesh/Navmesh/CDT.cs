@@ -777,7 +777,7 @@ namespace DotsNav.Navmesh
 
         static readonly FixedString128Bytes PointOutsideNavmeshMessage = "Trying to add a point outside the navmesh";
 
-        void Insert(float2* points, int start, int amount, Entity cid, float4x4 ltw)
+        internal void Insert(float2* points, int start, int amount, Entity cid, float4x4 ltw)
         {
             Vertex* lastVert = null;
             var end = start + amount;
@@ -809,7 +809,7 @@ namespace DotsNav.Navmesh
                 ++point->PointConstraints;
         }
 
-        void RemoveConstraint(Entity id)
+        internal void RemoveConstraint(Entity id)
         {
             _vlist.Clear();
             _elist.Clear();

@@ -26,6 +26,7 @@ namespace DotsNav.Hybrid
             for (int i = 0; i < Vertices.Length; i++)
                 values.Add((float2) Vertices[i]);
             entityManager.AddComponentObject(entity, this);
+            entityManager.AddSharedComponent(entity, new PlaneComponent { Entity = Plane.Entity });
         }
         
 #if UNITY_EDITOR

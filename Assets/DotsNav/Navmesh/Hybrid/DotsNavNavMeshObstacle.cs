@@ -13,8 +13,7 @@ namespace DotsNav.Navmesh.Hybrid
     {
         public void Convert(EntityManager entityManager, Entity entity)
         {
-            var obstacle = GetComponent<DotsNavObstacle>();
-            entityManager.AddComponentData(entity, new NavmeshObstacleComponent {Navmesh = obstacle.Plane.Entity});
+            entityManager.AddComponentData(entity, new NavmeshObstacleComponent());
         }
     }
 }

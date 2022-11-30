@@ -302,7 +302,7 @@ namespace DotsNav.Navmesh
             return CheckTriForConstraint(edge->Sym, clearance, corner);
         }
 
-        void SearchDisturbances()
+        internal void SearchDisturbances()
         {
             var e = C.GetEnumerator();
             while (e.MoveNext())
@@ -374,14 +374,14 @@ namespace DotsNav.Navmesh
             Propagate(s, lhs ? exit : exit->Sym);
         }
 
-        void RemoveRefinements()
+        internal void RemoveRefinements()
         {
             var i = V.GetEnumerator();
             while (i.MoveNext())
                 RemoveIfEligible((Vertex*) i.Current);
         }
 
-        void LocalRefinement()
+        internal void LocalRefinement()
         {
             var verts = V.GetEnumerator();
             while (verts.MoveNext())
@@ -533,7 +533,7 @@ namespace DotsNav.Navmesh
             return false;
         }
 
-        void GlobalRefine()
+        internal void GlobalRefine()
         {
             var disturbances = new NativeList<Disturbance>(Allocator.Temp);
             var e = GetEdgeEnumerator(true);

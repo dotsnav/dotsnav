@@ -5,6 +5,7 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace DotsNav.Hybrid
@@ -44,6 +45,8 @@ namespace DotsNav.Hybrid
         {
             var em = _world.EntityManager;
             var obstacle = em.CreateEntity();
+            em.AddComponentData(obstacle, new LocalToWorld { Value = float4x4.identity });
+            em.AddSharedComponent(obstacle, new PlaneComponent { Entity = Entity });
             var input = em.AddBuffer<VertexElement>(obstacle);
             foreach (float2 vertex in vertices)
                 input.Add(vertex);
@@ -53,8 +56,7 @@ namespace DotsNav.Hybrid
         }
 
         /// <summary>
-        /// Queue bulk insertion of permanant obstacles. Once inserted, these obstacles can not be removed.
-        /// Returns the total amount of inserted vertices excluding intersections
+        /// Queue bulk insertion of permanant obstacles in world space. Once inserted, these obstacles can not be removed.
         /// </summary>
         /// <param name="amount">Amount of obstacles to insert</param>
         /// <param name="adder">A Burst compatible struct implementing IObstacleAdder</param>
@@ -62,6 +64,8 @@ namespace DotsNav.Hybrid
         {
             var em = _world.EntityManager;
             var obstacle = em.CreateEntity();
+            em.AddComponentData(obstacle, new LocalToWorld { Value = float4x4.identity });
+            em.AddSharedComponent(obstacle, new PlaneComponent { Entity = Entity });
             em.AddBuffer<VertexElement>(obstacle);
             var amounts = em.AddBuffer<VertexAmountElement>(obstacle);
             var input = em.GetBuffer<VertexElement>(obstacle);
