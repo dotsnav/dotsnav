@@ -37,7 +37,7 @@ namespace DotsNav.Hybrid
 
             OnValidate();
 
-            if (!DrawGizmos || Selection.gameObjects.Length > 1 && Selection.gameObjects.Contains(gameObject))
+            if (!DrawGizmos)
                 return;
 
             var t = Handles.color;
