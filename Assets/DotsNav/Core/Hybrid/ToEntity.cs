@@ -15,7 +15,7 @@ namespace DotsNav.Hybrid
         World _world;
         public Entity Entity { get; private set; }
 
-        void Start()
+        void OnEnable()
         {
             _world = World.All[0];
             var em = _world.EntityManager;
@@ -31,7 +31,7 @@ namespace DotsNav.Hybrid
         {
         }
 
-        void OnDestroy()
+        void OnDisable()
         {
             if (_world.IsCreated)
                 _world.EntityManager.DestroyEntity(Entity);
