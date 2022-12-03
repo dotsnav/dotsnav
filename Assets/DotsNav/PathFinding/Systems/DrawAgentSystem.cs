@@ -59,7 +59,7 @@ namespace DotsNav.PathFinding.Systems
                 })
                 .Schedule();
 
-            DotsNavRenderer.Handle = JobHandle.CombineDependencies(DotsNavRenderer.Handle, Dependency);
+            DotsNavRenderer.Handle.Data = JobHandle.CombineDependencies(DotsNavRenderer.Handle.Data, Dependency);
         }
     }
 }

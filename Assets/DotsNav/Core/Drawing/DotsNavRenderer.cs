@@ -1,4 +1,5 @@
 using System;
+using Unity.Burst;
 using Unity.Jobs;
 using UnityEngine;
 
@@ -12,7 +13,7 @@ namespace DotsNav.Drawing
         [Min(1000)]
         public int MaxLines = 250 * 1000;
         public bool DrawInGameView;
-        public static JobHandle Handle;
+        public static readonly SharedStatic<JobHandle> Handle = SharedStatic<JobHandle>.GetOrCreate<JobHandle>();
 
         void Awake()
         {
@@ -43,7 +44,7 @@ namespace DotsNav.Drawing
 
         static void Render()
         {
-            Handle.Complete();
+            Handle.Data.Complete();
             Managed.Instance.CopyFromCpuToGpu();
             Managed.Instance.Render();
         }
