@@ -13,7 +13,7 @@ class HybridTest : MonoBehaviour
 
     void Update()
     {
-        UpdateMode.ProcessModifications();
+        UpdateMode.Step();
     }
 
     void OnGUI()

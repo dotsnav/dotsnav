@@ -204,7 +204,7 @@ unsafe class PolygonTest : MonoBehaviour
 
     void Update()
     {
-        Runner.ProcessModifications();
+        Runner.Step();
         if (!_runTest)
             RunTest();
 

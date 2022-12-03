@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace DotsNav.Hybrid
 {
+    /// <summary>
+    /// Provides control over when DotsNav updates are performed
+    /// </summary>
     public class DotsNavRunner : MonoBehaviour
     {
-        /// <summary>
-        /// Determines when queued updates should be processed. When using manual also set // todo
-        /// </summary>
         public UpdateMode Mode;
 
         DotsNavSystemGroup _dotsNavSystemGroup;
@@ -23,49 +23,35 @@ namespace DotsNav.Hybrid
             _singleton = world.EntityManager.CreateSingleton<RunnerSingleton>();
         }
 
-        /// <summary>
-        /// Call to trigger the insertion and removal of obstacles and path finder update
-        /// </summary>
-        public void ProcessModifications()
+        public void Step()
         {
             Assert.IsTrue(Mode == UpdateMode.Manual, $"Manually updating DotsNav requires UpdateMode to be Manual");
-            ProcessModificationsInternal();
+            _dotsNavSystemGroup.Update();
         }
 
         void Update()
         {
             if (Mode == UpdateMode.Update)
-                ProcessModificationsInternal();
+                _dotsNavSystemGroup.Update();
         }
 
         void FixedUpdate()
         {
             if (Mode == UpdateMode.FixedUpdate)
-                ProcessModificationsInternal();
-        }
-
-        void ProcessModificationsInternal()
-        {
-            _dotsNavSystemGroup.Update();
+                _dotsNavSystemGroup.Update();
         }
 
         void OnDestroy()
         {
             var worlds = World.All;
-
-            if (worlds.Count == 0) // todo prevent silly exception
+            if (worlds.Count == 0)
                 return;
-
             var world = worlds[0];
-            var group = world.GetOrCreateSystemManaged<FixedStepSimulationSystemGroup>();
-            group.AddSystemToUpdateList(_dotsNavSystemGroup);
+            world.GetOrCreateSystemManaged<FixedStepSimulationSystemGroup>().AddSystemToUpdateList(_dotsNavSystemGroup);
             world.DestroySystemManaged(world.GetExistingSystemManaged<EndDotsNavEntityCommandBufferSystem>());
             world.EntityManager.DestroyEntity(_singleton);
         }
 
-        /// <summary>
-        /// Determines when queued updates should be processed
-        /// </summary>
         public enum UpdateMode
         {
             Update,

@@ -74,7 +74,7 @@ namespace DotsNav.Samples.Code
             _agent.FindPath(_goal.position);
 
             // Manually trigger navmesh and pathfinder update to ensure the visuals line up
-            Runner.ProcessModifications();
+            Runner.Step();
 
             // A ray cast, make sure to dispose of the RayCastResult returned from
             // Navmesh.CastSegment or Navmesh.CastRay
