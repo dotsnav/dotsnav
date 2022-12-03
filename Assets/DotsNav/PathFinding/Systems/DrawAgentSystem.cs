@@ -2,64 +2,80 @@ using DotsNav.Data;
 using DotsNav.Drawing;
 using DotsNav.PathFinding.Data;
 using DotsNav.Systems;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using static Unity.Mathematics.math;
+using static DotsNav.Math;
 
 namespace DotsNav.PathFinding.Systems
 {
+    [BurstCompile]
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup))]
-    partial class DrawAgentSystem : SystemBase
+    partial struct DrawAgentSystem : ISystem
     {
-        protected override void OnUpdate()
+        [BurstCompile]
+        public void OnCreate(ref SystemState state)
         {
-            var ltwLookup = GetComponentLookup<LocalToWorld>(true);
+        }
 
-            Entities
-                .WithBurst()
-                .WithReadOnly(ltwLookup)
-                .ForEach((PathQueryComponent agent, RadiusComponent radius, AgentDrawComponent debug, DynamicBuffer<PathSegmentElement> path, NavmeshAgentComponent navmesh) =>
+        [BurstCompile]
+        public void OnDestroy(ref SystemState state)
+        {
+        }
+
+        [BurstCompile]
+        public void OnUpdate(ref SystemState state)
+        {
+            new DrawAgentJob { LtwLookup = state.GetComponentLookup<LocalToWorld>(true) }.Schedule();
+            DotsNavRenderer.Handle.Data = JobHandle.CombineDependencies(DotsNavRenderer.Handle.Data, state.Dependency);
+        }
+
+        [BurstCompile]
+        partial struct DrawAgentJob : IJobEntity
+        {
+            [ReadOnly] public ComponentLookup<LocalToWorld> LtwLookup;
+            
+            void Execute(RadiusComponent radius, AgentDrawComponent settings, DynamicBuffer<PathSegmentElement> path, NavmeshAgentComponent navmesh)
+            {
+                if (!settings.Draw || path.Length == 0)
+                    return;
+
+                var ltw = LtwLookup[navmesh.Navmesh].Value;
+
+                var lines = new NativeList<Line>(Allocator.Temp);
+                var color = settings.Color;
+                if (color.a < 10)
+                    color.a += 10;
+
+                for (int j = 0; j < path.Length; j++)
                 {
-                    if (!debug.Draw || path.Length == 0)
-                        return;
+                    var segment = path[j];
+                    var perp = normalize(PerpCcw(segment.To - segment.From)) * radius;
+                    lines.Add(new Line(transform(ltw, (segment.From + perp).ToXxY()), transform(ltw, (segment.To + perp).ToXxY()), color));
+                    lines.Add(new Line(transform(ltw, (segment.From - perp).ToXxY()), transform(ltw, (segment.To - perp).ToXxY()), color));
+                }
 
-                    var ltw = ltwLookup[navmesh.Navmesh].Value;
+                var up = rotate(ltw, new float3(0, 1, 0));
 
-                    var lines = new NativeList<Line>(Allocator.Temp);
-                    var color = debug.Color;
-                    if (color.a < 10)
-                        color.a += 10;
+                for (int j = 1; j < path.Length; j++)
+                {
+                    var f = path[j - 1].To;
+                    var c = path[j].Corner;
+                    var t = path[j].From;
+                    var a = (Angle) Angle(t - c) - Angle(f - c);
+                    Arc.Draw(lines, transform(ltw, c.ToXxY()), up, rotate(ltw, 2 * (f - c).ToXxY()), a, color, radius, settings.Delimit);
+                }
 
-                    for (int j = 0; j < path.Length; j++)
-                    {
-                        var segment = path[j];
-                        var perp = math.normalize(Math.PerpCcw(segment.To - segment.From)) * radius;
-                        lines.Add(new Line(math.transform(ltw, (segment.From + perp).ToXxY()), math.transform(ltw, (segment.To + perp).ToXxY()), color));
-                        lines.Add(new Line(math.transform(ltw, (segment.From - perp).ToXxY()), math.transform(ltw, (segment.To - perp).ToXxY()), color));
-                    }
+                var arm = rotate(ltw, new float3(0, 0, radius));
+                Arc.Draw(lines, transform(ltw, path[0].From.ToXxY()), up, arm, 2 * PI, color, radius, settings.Delimit);
+                Arc.Draw(lines, transform(ltw, path[^1].To.ToXxY()), up, arm, 2 * PI, color, radius, settings.Delimit);
 
-                    var up = math.rotate(ltw, new float3(0, 1, 0));
-
-                    for (int j = 1; j < path.Length; j++)
-                    {
-                        var from = path[j - 1].To;
-                        var c = path[j].Corner;
-                        var to = path[j].From;
-                        var angle = (Angle) Math.Angle(to - c) - Math.Angle(from - c);
-                        Arc.Draw(lines, math.transform(ltw, c.ToXxY()), up, math.rotate(ltw, 2 * (from - c).ToXxY()), angle, color, radius, debug.Delimit);
-                    }
-
-                    var arm = math.rotate(ltw, new float3(0, 0, radius));
-                    Arc.Draw(lines, math.transform(ltw, path[0].From.ToXxY()), up, arm, 2 * math.PI, color, radius, debug.Delimit);
-                    Arc.Draw(lines, math.transform(ltw, path[^1].To.ToXxY()), up, arm, 2 * math.PI, color, radius, debug.Delimit);
-
-                    Line.Draw(lines);
-                })
-                .Schedule();
-
-            DotsNavRenderer.Handle.Data = JobHandle.CombineDependencies(DotsNavRenderer.Handle.Data, Dependency);
+                Line.Draw(lines);
+            }
         }
     }
 }
