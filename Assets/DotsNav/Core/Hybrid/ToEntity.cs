@@ -13,9 +13,23 @@ namespace DotsNav.Hybrid
     public class ToEntity : MonoBehaviour
     {
         World _world;
+        bool _started;
+        
         public Entity Entity { get; private set; }
 
+        void Start()
+        {
+            Convert();
+            _started = true;
+        }
+
         void OnEnable()
+        {
+            if (_started)
+                Convert();
+        }
+
+        void Convert()
         {
             _world = World.All[0];
             var em = _world.EntityManager;
@@ -23,7 +37,7 @@ namespace DotsNav.Hybrid
             var tr = transform;
             em.AddComponentData(Entity, new LocalToWorld { Value = float4x4.TRS(tr.position, tr.rotation, tr.lossyScale) });
             Convert(em, Entity);
-            foreach (var c in GetComponentsInChildren<IToEntity>()) 
+            foreach (var c in GetComponentsInChildren<IToEntity>())
                 c.Convert(em, Entity);
         }
 
