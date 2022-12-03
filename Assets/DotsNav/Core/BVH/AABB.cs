@@ -44,12 +44,10 @@ namespace DotsNav.BVH
         // Does this aabb contain the provided AABB.
         internal bool Contains(AABB aabb)
         {
-            var result = true;
-            result = result && LowerBound.x <= aabb.LowerBound.x;
-            result = result && LowerBound.y <= aabb.LowerBound.y;
-            result = result && aabb.UpperBound.x <= UpperBound.x;
-            result = result && aabb.UpperBound.y <= UpperBound.y;
-            return result;
+            return LowerBound.x <= aabb.LowerBound.x &&
+                   LowerBound.y <= aabb.LowerBound.y &&
+                   aabb.UpperBound.x <= UpperBound.x &&
+                   aabb.UpperBound.y <= UpperBound.y;
         }
 
         public float2 LowerBound;

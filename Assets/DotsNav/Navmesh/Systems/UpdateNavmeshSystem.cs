@@ -26,7 +26,7 @@ namespace DotsNav.Navmesh.Systems
         public void OnCreate(ref SystemState state)
         {
             _insertQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<VertexElement>()
                     .WithAll<NavmeshObstacleComponent>()
@@ -36,7 +36,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
 
             _insertBulkQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<VertexElement>()
                     .WithAll<VertexAmountElement>()
@@ -46,7 +46,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
             
             _blobQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<VertexBlobComponent>()
                     .WithAll<NavmeshObstacleComponent>()
@@ -55,7 +55,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
             
             _blobBulkQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<ObstacleBlobComponent>()
                     .WithAll<NavmeshObstacleComponent>()
@@ -64,7 +64,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
             
             _destroyQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<CleanUpComponent>()
                     .WithNone<NavmeshObstacleComponent>()
                     .Build(ref state);
@@ -393,7 +393,7 @@ namespace DotsNav.Navmesh.Systems
         public void OnCreate(ref SystemState state)
         {
             _insertQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<VertexElement>()
                     .WithAll<NavmeshObstacleComponent>()
@@ -402,7 +402,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
 
             _insertBulkQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<VertexElement>()
                     .WithAll<VertexAmountElement>()
@@ -411,7 +411,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
             
             _blobQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<VertexBlobComponent>()
                     .WithAll<NavmeshObstacleComponent>()
@@ -419,7 +419,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
             
             _blobBulkQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
                     .WithAll<ObstacleBlobComponent>()
                     .WithAll<NavmeshObstacleComponent>()
@@ -427,7 +427,7 @@ namespace DotsNav.Navmesh.Systems
                     .Build(ref state);
             
             _destroyQuery =
-                new EntityQueryBuilder(Allocator.Persistent)
+                new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<CleanUpComponent>()
                     .WithNone<NavmeshObstacleComponent>()
                     .Build(ref state);
