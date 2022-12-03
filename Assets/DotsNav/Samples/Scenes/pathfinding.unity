@@ -632,8 +632,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Demo, Demo
+      - m_Target: {fileID: 1871500334}
+        m_TargetAssemblyTypeName: DotsNav.Samples.Code.Pathfinding, DotsNav.Samples
         m_MethodName: PausedButton
         m_Mode: 1
         m_Arguments:
@@ -977,8 +977,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Demo, Demo
+      - m_Target: {fileID: 1871500334}
+        m_TargetAssemblyTypeName: DotsNav.Samples.Code.Pathfinding, DotsNav.Samples
         m_MethodName: StepButton
         m_Mode: 1
         m_Arguments:
