@@ -7,11 +7,10 @@ namespace DotsNav.PathFinding.Systems
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
     partial class PathFinderResourceSystem : SystemBase
     {
-        EntityCommandBufferSystem _ecbSource;
-
         protected override void OnUpdate()
         {
-            var ecbSource = World.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource;
+            var ecbSource = EcbUtility.Get(World);
+            
             var buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities
                 .WithBurst()
@@ -24,14 +23,14 @@ namespace DotsNav.PathFinding.Systems
                 })
                 .ScheduleParallel();
 
-            buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
+            var buffer1 = ecbSource.CreateCommandBuffer().AsParallelWriter();
             Entities
                 .WithBurst()
                 .WithNone<PathFinderComponent>()
                 .ForEach((Entity entity, int entityInQueryIndex, PathFinderSystemStateComponent resources) =>
                 {
                     resources.Dispose();
-                    buffer.RemoveComponent<PathFinderSystemStateComponent>(entityInQueryIndex, entity);
+                    buffer1.RemoveComponent<PathFinderSystemStateComponent>(entityInQueryIndex, entity);
                 })
                 .ScheduleParallel();
             ecbSource.AddJobHandleForProducer(Dependency);

@@ -11,7 +11,7 @@ namespace DotsNav.Navmesh.Systems
     {
         protected override void OnUpdate()
         {
-            var ecbSource = World.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource;
+            var ecbSource = EcbUtility.Get(World);
             var buffer = ecbSource.CreateCommandBuffer().AsParallelWriter();
 
             Entities

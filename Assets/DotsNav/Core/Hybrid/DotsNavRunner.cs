@@ -12,13 +12,15 @@ namespace DotsNav.Hybrid
         public UpdateMode Mode;
 
         DotsNavSystemGroup _dotsNavSystemGroup;
+        Entity _singleton;
 
         protected void Awake()
         {
             var world = World.All[0];
             _dotsNavSystemGroup = world.GetOrCreateSystemManaged<DotsNavSystemGroup>();
             world.GetOrCreateSystemManaged<FixedStepSimulationSystemGroup>().RemoveSystemFromUpdateList(_dotsNavSystemGroup);
-            world.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystemManaged<EndDotsNavEntityCommandBufferSystem>();
+            _dotsNavSystemGroup.AddSystemToUpdateList(world.GetOrCreateSystemManaged<EndDotsNavEntityCommandBufferSystem>());
+            _singleton = world.EntityManager.CreateSingleton<RunnerSingleton>();
         }
 
         /// <summary>
@@ -55,13 +57,22 @@ namespace DotsNav.Hybrid
                 return;
 
             var world = worlds[0];
-            world.GetOrCreateSystemManaged<FixedStepSimulationSystemGroup>().AddSystemToUpdateList(_dotsNavSystemGroup);
-            world.GetOrCreateSystemManaged<DotsNavSystemGroup>().EcbSource = world.GetOrCreateSystemManaged<EndFixedStepSimulationEntityCommandBufferSystem>();
+            var group = world.GetOrCreateSystemManaged<FixedStepSimulationSystemGroup>();
+            group.AddSystemToUpdateList(_dotsNavSystemGroup);
+            world.DestroySystemManaged(world.GetExistingSystemManaged<EndDotsNavEntityCommandBufferSystem>());
+            world.EntityManager.DestroyEntity(_singleton);
         }
 
         /// <summary>
         /// Determines when queued updates should be processed
         /// </summary>
-        public enum UpdateMode { Update, FixedUpdate, Manual }
+        public enum UpdateMode
+        {
+            Update,
+            FixedUpdate,
+            Manual
+        }
     }
+    
+    public struct RunnerSingleton : IComponentData { }
 }

@@ -1,4 +1,5 @@
 using DotsNav.Data;
+using DotsNav.Hybrid;
 using DotsNav.Navmesh.Data;
 using DotsNav.Systems;
 using Unity.Burst;
@@ -115,13 +116,14 @@ namespace DotsNav.Navmesh.Systems
                 {
                     Plane = plane.Entity,
                     Data = data,
-                    NavmeshLookup = GetComponentLookup<NavmeshComponent>(true),
-                    LocalToWorldLookup = GetComponentLookup<LocalToWorld>(true)
+                    NavmeshLookup = state.GetComponentLookup<NavmeshComponent>(true),
+                    LocalToWorldLookup = state.GetComponentLookup<LocalToWorld>(true)
                 }.Schedule(state.Dependency);
 
-                // todo get from provider
-                var ecb = GetSingletonRW<EndSimulationEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged);
-
+                var ecb = HasSingleton<RunnerSingleton>() 
+                    ? GetSingletonRW<EndDotsNavEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged) 
+                    : GetSingletonRW<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged);
+                
                 if (!destroyIsEmpty)
                 {
                     dependency = new DestroyJob
@@ -160,7 +162,7 @@ namespace DotsNav.Navmesh.Systems
                 dependency = new PostJob
                 {
                     Data = data,
-                    DestroyedTriangleBufferLookup = GetBufferLookup<DestroyedTriangleElement>(),
+                    DestroyedTriangleBufferLookup = state.GetBufferLookup<DestroyedTriangleElement>(),
                 }.Schedule(dependency);
                 
                 dependencies.Add(dependency);
@@ -488,13 +490,17 @@ namespace DotsNav.Navmesh.Systems
                     destroy.Length == 0)
                     continue;
 
+                var ecb = HasSingleton<RunnerSingleton>() 
+                    ? GetSingletonRW<EndDotsNavEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged) 
+                    : GetSingletonRW<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged);
+
                 dependencies.Add(new UpdateNavmeshJob
                 {
                     Plane = plane.Entity,
                     Insert = insert, InsertBulk = insertBulk,
                     Blob = blob, BlobBulk = blobBulk,
                     Destroy = destroy,
-                    Buffer = GetSingletonRW<EndSimulationEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged),
+                    Buffer = ecb,
                     DestroyedTriangleBufferLookup = state.GetBufferLookup<DestroyedTriangleElement>(),
                     NavmeshLookup = state.GetComponentLookup<NavmeshComponent>(true),
                     LocalToWorldLookup = state.GetComponentLookup<LocalToWorld>(true),
