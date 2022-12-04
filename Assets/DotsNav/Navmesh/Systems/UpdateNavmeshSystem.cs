@@ -17,15 +17,21 @@ namespace DotsNav.Navmesh.Systems
     [RequireMatchingQueriesForUpdate] // todo doesnt work?
     public unsafe partial struct UpdateNavmeshSystem : ISystem
     {
+        EntityQuery _destroyQuery;
         EntityQuery _insertQuery;
         EntityQuery _insertBulkQuery;
-        EntityQuery _destroyQuery;
         EntityQuery _blobQuery;
         EntityQuery _blobBulkQuery;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            _destroyQuery =
+                new EntityQueryBuilder(Allocator.Temp)
+                    .WithAll<CleanUpComponent>()
+                    .WithNone<NavmeshObstacleComponent>()
+                    .Build(ref state);
+
             _insertQuery =
                 new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
@@ -45,7 +51,7 @@ namespace DotsNav.Navmesh.Systems
                     .WithAll<LocalToWorld>()
                     .WithNone<CleanUpComponent>()
                     .Build(ref state);
-            
+
             _blobQuery =
                 new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
@@ -54,7 +60,7 @@ namespace DotsNav.Navmesh.Systems
                     .WithAll<LocalToWorld>()
                     .WithNone<CleanUpComponent>()
                     .Build(ref state);
-            
+
             _blobBulkQuery =
                 new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<PlaneComponent>()
@@ -62,12 +68,6 @@ namespace DotsNav.Navmesh.Systems
                     .WithAll<NavmeshObstacleComponent>()
                     .WithAll<LocalToWorld>()
                     .WithNone<CleanUpComponent>()
-                    .Build(ref state);
-            
-            _destroyQuery =
-                new EntityQueryBuilder(Allocator.Temp)
-                    .WithAll<CleanUpComponent>()
-                    .WithNone<NavmeshObstacleComponent>()
                     .Build(ref state);
         }
 
