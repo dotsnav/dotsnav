@@ -34,6 +34,7 @@ namespace DotsNav.Hybrid
             _world = World.All[0];
             var em = _world.EntityManager;
             Entity = em.CreateEntity();
+            em.SetName(Entity, GetType().Name);
             var tr = transform;
             em.AddComponentData(Entity, new LocalToWorld { Value = float4x4.TRS(tr.position, tr.rotation, tr.lossyScale) });
             Convert(em, Entity);
@@ -48,7 +49,10 @@ namespace DotsNav.Hybrid
         void OnDisable()
         {
             if (_world.IsCreated)
+            {
+                Debug.Log($"destroying {Entity}");
                 _world.EntityManager.DestroyEntity(Entity);
+            }
         }
     }
 }

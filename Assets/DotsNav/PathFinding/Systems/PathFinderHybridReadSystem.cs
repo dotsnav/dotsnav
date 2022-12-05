@@ -27,7 +27,7 @@ namespace DotsNav.PathFinding.Systems
                     agent.To = hybrid.Goal;
                     var pos = hybrid.transform.position;
                     pos.y = 0;
-                    translation.Position = pos;
+                    translation.LocalPosition = pos;
 
                     drawData.Draw = hybrid.DrawPath;
                     drawData.Delimit = hybrid.DrawCorners;

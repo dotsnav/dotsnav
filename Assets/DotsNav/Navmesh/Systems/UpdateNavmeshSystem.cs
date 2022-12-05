@@ -9,6 +9,7 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 using static Unity.Entities.SystemAPI;
 
 namespace DotsNav.Navmesh.Systems
@@ -17,6 +18,7 @@ namespace DotsNav.Navmesh.Systems
     [RequireMatchingQueriesForUpdate] // todo doesnt work?
     public unsafe partial struct UpdateNavmeshSystem : ISystem
     {
+        EntityQuery _navmeshQuery;
         EntityQuery _destroyQuery;
         EntityQuery _insertQuery;
         EntityQuery _insertBulkQuery;
@@ -26,6 +28,11 @@ namespace DotsNav.Navmesh.Systems
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            _navmeshQuery = 
+                new EntityQueryBuilder(Allocator.Temp)
+                    .WithAll<NavmeshComponent>()
+                    .Build(ref state);
+
             _destroyQuery =
                 new EntityQueryBuilder(Allocator.Temp)
                     .WithAll<CleanUpComponent>()
@@ -82,31 +89,63 @@ namespace DotsNav.Navmesh.Systems
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<PlaneComponent> planes, Allocator.TempJob);
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<CleanUpComponent> removals, Allocator.TempJob);
             var dependencies = new NativeList<JobHandle>(Allocator.Temp);
+            // Debug.Log($"update {planes.Length}");
 
-            foreach (var plane in planes)
+            var planeEntities = _navmeshQuery.ToEntityArray(Allocator.Temp);
+            
+            foreach (var planeEntity in planeEntities)
             {
-                if (plane.Entity == Entity.Null)
-                    continue;
+                // if (plane.Entity == Entity.Null)
+                //     continue;
 
+                // var destroyIsEmpty = true;
                 var destroyIsEmpty = true;
+                var exists = false;
                 foreach (var removal in removals)
                 {
-                    if (removal.Plane == plane.Entity)
+                    if (removal.Plane == planeEntity)
                     {
-                        _destroyQuery.SetSharedComponentFilter(removal);
-                        destroyIsEmpty = _destroyQuery.IsEmpty;
+                        exists = true;
                         break;
                     }
                 }
+
+                if (exists)
+                {
+                    _destroyQuery.SetSharedComponentFilter(new CleanUpComponent { Plane = planeEntity });
+                    destroyIsEmpty = _destroyQuery.IsEmpty;
+                }
                 
-                _insertQuery.SetSharedComponentFilter(plane);
-                var insertIsEmpty = _insertQuery.IsEmpty;
-                _insertBulkQuery.SetSharedComponentFilter(plane);
-                var insertBulkIsEmpty = _insertBulkQuery.IsEmpty;
-                _blobQuery.SetSharedComponentFilter(plane);
-                var blobIsEmpty = _blobQuery.IsEmpty;
-                _blobBulkQuery.SetSharedComponentFilter(plane);
-                var blobBulkIsEmpty = _blobBulkQuery.IsEmpty;
+                
+                //         Debug.Log($"found plane {plane.Entity}");
+
+                var insertIsEmpty  = true;
+                var insertBulkIsEmpty  = true;
+                var blobIsEmpty  = true;
+                var blobBulkIsEmpty  = true;
+                
+                exists = false;
+                foreach (var plane1 in planes)
+                {
+                    if (plane1.Entity == planeEntity)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (exists)
+                {
+                    var plane = new PlaneComponent { Entity = planeEntity };
+                    _insertQuery.SetSharedComponentFilter(plane);
+                    insertIsEmpty = _insertQuery.IsEmpty;
+                    _insertBulkQuery.SetSharedComponentFilter(plane);
+                    insertBulkIsEmpty = _insertBulkQuery.IsEmpty;
+                    _blobQuery.SetSharedComponentFilter(plane);
+                    blobIsEmpty = _blobQuery.IsEmpty;
+                    _blobBulkQuery.SetSharedComponentFilter(plane);
+                    blobBulkIsEmpty = _blobBulkQuery.IsEmpty;
+                }
 
                 if (destroyIsEmpty && insertIsEmpty && insertBulkIsEmpty && blobIsEmpty && blobBulkIsEmpty)
                     continue;
@@ -114,7 +153,7 @@ namespace DotsNav.Navmesh.Systems
                 var data = new NativeReference<JobData>(Allocator.TempJob);
                 var dependency = new PreJob
                 {
-                    Plane = plane.Entity,
+                    Plane = planeEntity,
                     Data = data,
                     NavmeshLookup = state.GetComponentLookup<NavmeshComponent>(true),
                     LocalToWorldLookup = state.GetComponentLookup<LocalToWorld>(true)
@@ -204,6 +243,7 @@ namespace DotsNav.Navmesh.Systems
             
             void Execute(Entity entity)
             {
+                Debug.Log($"running destroy job {Data.Value.Plane}");
                 Data.Value.Navmesh->RemoveConstraint(entity);
                 Buffer.RemoveComponent<CleanUpComponent>(entity);
             }

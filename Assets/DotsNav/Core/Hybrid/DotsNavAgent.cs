@@ -15,7 +15,7 @@ namespace DotsNav.Hybrid
             entityManager.AddComponentData(entity, new RadiusComponent {Value = Radius});
             entityManager.AddComponentObject(entity, this);
 
-            entityManager.AddComponent<LocalToWorldTransform>(entity);
+            entityManager.AddComponent<LocalTransform>(entity);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace DotsNav.LocalAvoidance.Hybrid
             entityManager.AddComponentData(entity, new ObstacleTreeComponent());
             
             var boxEntity = entityManager.CreateEntity();
+            entityManager.SetName(boxEntity, "Obstacle Tree Bounds");
             entityManager.AddComponentData(boxEntity, new ObstacleTreeElementComponent{Tree = entity});
             var box = entityManager.AddBuffer<VertexElement>(boxEntity);
             var plane = GetComponent<DotsNavPlane>();

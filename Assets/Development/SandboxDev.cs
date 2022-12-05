@@ -138,18 +138,18 @@ class SandboxDev : MonoBehaviour
 #if UNITY_EDITOR
     void OnGUI()
     {
-        if (GUILayout.Button("Dump"))
-        {
-            var w = UnityEditor.EditorWindow.GetWindow<DumpObstaclesWindow>();
-            w.ToDump = _toDump;
-
-            var agent = FindObjectOfType<DotsNavPathFindingAgent>().transform;
-            var s = agent.Find("Start").transform;
-            w.Start = s.position.xz();
-            w.Goal = agent.Find("Goal").transform.position.xz();
-            w.Scale = s.localScale.x;
-            UnityEditor.EditorApplication.isPlaying = false;
-        }
+        // if (GUILayout.Button("Dump"))
+        // {
+        //     var w = UnityEditor.EditorWindow.GetWindow<DumpObstaclesWindow>();
+        //     w.ToDump = _toDump;
+        //
+        //     var agent = FindObjectOfType<DotsNavPathFindingAgent>().transform;
+        //     var s = agent.Find("Start").transform;
+        //     w.Start = s.position.xz();
+        //     w.Goal = agent.Find("Goal").transform.position.xz();
+        //     w.Scale = s.localScale.x;
+        //     UnityEditor.EditorApplication.isPlaying = false;
+        // }
     }
 #endif
 

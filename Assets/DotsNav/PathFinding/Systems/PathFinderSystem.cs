@@ -80,7 +80,7 @@ namespace DotsNav.PathFinding.Systems
                     NavmeshElements = GetComponentLookup<NavmeshAgentComponent>(true),
                     Navmeshes = GetComponentLookup<NavmeshComponent>(true),
                     LTWLookup = GetComponentLookup<LocalToWorld>(true),
-                    TranslationLookup = GetComponentLookup<LocalToWorldTransform>(true),
+                    TranslationLookup = GetComponentLookup<LocalTransform>(true),
                     Queries = GetComponentLookup<PathQueryComponent>(),
                     Radii = GetComponentLookup<RadiusComponent>(true),
                     PathSegments = GetBufferLookup<PathSegmentElement>(),
@@ -116,7 +116,7 @@ namespace DotsNav.PathFinding.Systems
             [ReadOnly]
             public ComponentLookup<LocalToWorld> LTWLookup;
             [ReadOnly]
-            public ComponentLookup<LocalToWorldTransform> TranslationLookup;
+            public ComponentLookup<LocalTransform> TranslationLookup;
 
             public unsafe void Execute(int index)
             {
@@ -133,7 +133,7 @@ namespace DotsNav.PathFinding.Systems
                 var navmeshEntity = NavmeshElements[agent].Navmesh;
                 var ltw = math.inverse(LTWLookup[navmeshEntity].Value);
                 var pos = TranslationLookup[agent];
-                query.State = instance.FindPath(math.transform(ltw, pos.Value.Position).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, Navmeshes[navmeshEntity].Navmesh, out _);
+                query.State = instance.FindPath(math.transform(ltw, pos.Position).xz, math.transform(ltw, query.To).xz, Radii[agent], segments, ids, Navmeshes[navmeshEntity].Navmesh, out _);
                 if (query.State == PathQueryState.PathFound)
                     ++query.Version;
                 Queries[agent] = query;

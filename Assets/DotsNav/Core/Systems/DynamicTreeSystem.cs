@@ -12,101 +12,101 @@ using static Unity.Entities.SystemAPI;
 
 namespace DotsNav.Systems
 {
-    [BurstCompile]
-    [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(DotsNavSystemGroup)), DisableAutoCreation]
-    partial struct DynamicTreeSystem : ISystem
-    {
-        EntityQuery _insertQuery;
-        EntityQuery _destroyQuery;
-        EntityQuery _updateQuery;
-        
-        [BurstCompile]
-        public void OnCreate(ref SystemState state)
-        {
-            _insertQuery =
-                new SystemAPIQueryBuilder()
-                    .WithAll<LocalToWorldTransform>()
-                    .WithAll<RadiusComponent>()
-                    .WithAll<DynamicTreeElementComponent>()
-                    .WithNone<CleanupComponent>()
-                    .Build();
-        }
-
-        [BurstCompile]
-        public void OnDestroy(ref SystemState state)
-        {
-        }
-
-        [BurstCompile]
-        public void OnUpdate(ref SystemState state)
-        {
-            state.EntityManager.GetAllUniqueSharedComponents(out NativeList<PlaneComponent> planes, Allocator.Temp);
-            var dependencies = new NativeList<JobHandle>(Allocator.Temp);
-
-            foreach (var plane in planes)
-            {
-                if (plane.Entity == Entity.Null)
-                    continue;
-                
-                _insertQuery.SetSharedComponentFilter(plane);
-                var insertIsEmpty = _insertQuery.IsEmpty;
-                
-                if (insertIsEmpty)
-                    continue;
-                
-                var ecb = HasSingleton<RunnerSingleton>() 
-                    ? GetSingletonRW<EndDotsNavEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged) 
-                    : GetSingletonRW<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged);
-
-                var dependency = state.Dependency;
-                
-                if (!insertIsEmpty)
-                {
-                    dependency = new InsertJob
-                    {
-                        Plane = plane.Entity,
-                        Buffer = ecb,
-                        LocalToWorldLookup = state.GetComponentLookup<LocalToWorld>(),
-                        DynamicTreeLookup = state.GetComponentLookup<DynamicTreeComponent>()
-                    }.Schedule(_insertQuery, dependency);
-                }
-                
-                dependencies.Add(dependency);
-            }
-            
-            state.Dependency = JobHandle.CombineDependencies(dependencies);
-        }
-
-        partial struct InsertJob : IJobEntity
-        {
-            public Entity Plane;
-            public EntityCommandBuffer Buffer;
-            [ReadOnly] public ComponentLookup<LocalToWorld> LocalToWorldLookup;
-            [ReadOnly] public ComponentLookup<DynamicTreeComponent> DynamicTreeLookup;
-
-            void Execute(Entity entity, TransformAspect tr, RadiusComponent radius)
-            {
-                var tree = DynamicTreeLookup[Plane].Tree;
-                var transform = math.inverse(LocalToWorldLookup[Plane].Value);
-                var pos = math.transform(transform, tr.Position).xz;
-                var id = tree.CreateProxy(AABB.FromRadius(pos, radius), entity);
-                var state = new CleanupComponent { Id = id, PreviousPosition = pos, TreeEntity = Plane, TreeRef = tree };
-                Buffer.AddComponent(entity, state);
-            }
-        }
-
-        struct CleanupComponent : ICleanupComponentData
-        {
-            public int Id;
-            public float2 PreviousPosition;
-            public DynamicTree<Entity> TreeRef;
-            public Entity TreeEntity;
-        }
-    }
+    // [BurstCompile]
+    // [RequireMatchingQueriesForUpdate]
+    // [UpdateInGroup(typeof(DotsNavSystemGroup)), DisableAutoCreation]
+    // partial struct DynamicTreeSystem : ISystem
+    // {
+    //     EntityQuery _insertQuery;
+    //     EntityQuery _destroyQuery;
+    //     EntityQuery _updateQuery;
+    //     
+    //     [BurstCompile]
+    //     public void OnCreate(ref SystemState state)
+    //     {
+    //         _insertQuery =
+    //             new SystemAPIQueryBuilder()
+    //                 .WithAll<LocalToWorldTransform>()
+    //                 .WithAll<RadiusComponent>()
+    //                 .WithAll<DynamicTreeElementComponent>()
+    //                 .WithNone<CleanupComponent>()
+    //                 .Build();
+    //     }
+    //
+    //     [BurstCompile]
+    //     public void OnDestroy(ref SystemState state)
+    //     {
+    //     }
+    //
+    //     [BurstCompile]
+    //     public void OnUpdate(ref SystemState state)
+    //     {
+    //         state.EntityManager.GetAllUniqueSharedComponents(out NativeList<PlaneComponent> planes, Allocator.Temp);
+    //         var dependencies = new NativeList<JobHandle>(Allocator.Temp);
+    //
+    //         foreach (var plane in planes)
+    //         {
+    //             if (plane.Entity == Entity.Null)
+    //                 continue;
+    //             
+    //             _insertQuery.SetSharedComponentFilter(plane);
+    //             var insertIsEmpty = _insertQuery.IsEmpty;
+    //             
+    //             if (insertIsEmpty)
+    //                 continue;
+    //             
+    //             var ecb = HasSingleton<RunnerSingleton>() 
+    //                 ? GetSingletonRW<EndDotsNavEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged) 
+    //                 : GetSingletonRW<EndFixedStepSimulationEntityCommandBufferSystem.Singleton>().ValueRW.CreateCommandBuffer(state.WorldUnmanaged);
+    //
+    //             var dependency = state.Dependency;
+    //             
+    //             if (!insertIsEmpty)
+    //             {
+    //                 dependency = new InsertJob
+    //                 {
+    //                     Plane = plane.Entity,
+    //                     Buffer = ecb,
+    //                     LocalToWorldLookup = state.GetComponentLookup<LocalToWorld>(),
+    //                     DynamicTreeLookup = state.GetComponentLookup<DynamicTreeComponent>()
+    //                 }.Schedule(_insertQuery, dependency);
+    //             }
+    //             
+    //             dependencies.Add(dependency);
+    //         }
+    //         
+    //         state.Dependency = JobHandle.CombineDependencies(dependencies);
+    //     }
+    //
+    //     partial struct InsertJob : IJobEntity
+    //     {
+    //         public Entity Plane;
+    //         public EntityCommandBuffer Buffer;
+    //         [ReadOnly] public ComponentLookup<LocalToWorld> LocalToWorldLookup;
+    //         [ReadOnly] public ComponentLookup<DynamicTreeComponent> DynamicTreeLookup;
+    //
+    //         void Execute(Entity entity, TransformAspect tr, RadiusComponent radius)
+    //         {
+    //             var tree = DynamicTreeLookup[Plane].Tree;
+    //             var transform = math.inverse(LocalToWorldLookup[Plane].Value);
+    //             var pos = math.transform(transform, tr.Position).xz;
+    //             var id = tree.CreateProxy(AABB.FromRadius(pos, radius), entity);
+    //             var state = new CleanupComponent { Id = id, PreviousPosition = pos, TreeEntity = Plane, TreeRef = tree };
+    //             Buffer.AddComponent(entity, state);
+    //         }
+    //     }
+    //
+    //     struct CleanupComponent : ICleanupComponentData
+    //     {
+    //         public int Id;
+    //         public float2 PreviousPosition;
+    //         public DynamicTree<Entity> TreeRef;
+    //         public Entity TreeEntity;
+    //     }
+    // }
     
     [UpdateInGroup(typeof(DotsNavSystemGroup))]
-    partial class DynamicTreeSystem1 : SystemBase
+    partial class DynamicTreeSystem : SystemBase
     {
         NativeMultiHashMap<DynamicTree<Entity>, TreeOperation> _operations;
         NativeList<DynamicTree<Entity>> _trees;
