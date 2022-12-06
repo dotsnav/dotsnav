@@ -17,9 +17,12 @@ namespace DotsNav.PathFinding.Systems
     [UpdateInGroup(typeof(DotsNavDrawingSystemGroup))]
     partial struct DrawAgentSystem : ISystem
     {
+        ComponentLookup<LocalToWorld> _localToWorldLookup;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
+            _localToWorldLookup = state.GetComponentLookup<LocalToWorld>(true);
         }
 
         [BurstCompile]
@@ -30,7 +33,8 @@ namespace DotsNav.PathFinding.Systems
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            new DrawAgentJob { LtwLookup = state.GetComponentLookup<LocalToWorld>(true) }.Schedule();
+            _localToWorldLookup.Update(ref state);
+            new DrawAgentJob { LtwLookup = _localToWorldLookup }.Schedule();
             DotsNavRenderer.Handle.Data = JobHandle.CombineDependencies(DotsNavRenderer.Handle.Data, state.Dependency);
         }
 

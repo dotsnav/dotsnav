@@ -9,7 +9,6 @@ using Unity.Entities;
 using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
 using static Unity.Entities.SystemAPI;
 
 namespace DotsNav.Navmesh.Systems
@@ -24,6 +23,9 @@ namespace DotsNav.Navmesh.Systems
         EntityQuery _insertBulkQuery;
         EntityQuery _blobQuery;
         EntityQuery _blobBulkQuery;
+        ComponentLookup<NavmeshComponent> _navmeshLookup;
+        ComponentLookup<LocalToWorld> _localToWorldLookup;
+        BufferLookup<DestroyedTriangleElement> _destroyedTriangleBufferLookup;
 
         [BurstCompile]
         public void OnCreate(ref SystemState state)
@@ -76,6 +78,10 @@ namespace DotsNav.Navmesh.Systems
                     .WithAll<LocalToWorld>()
                     .WithNone<CleanUpComponent>()
                     .Build(ref state);
+            
+            _navmeshLookup = state.GetComponentLookup<NavmeshComponent>(true);
+            _localToWorldLookup = state.GetComponentLookup<LocalToWorld>(true);
+            _destroyedTriangleBufferLookup = state.GetBufferLookup<DestroyedTriangleElement>();
         }
 
         [BurstCompile]
@@ -90,6 +96,9 @@ namespace DotsNav.Navmesh.Systems
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<CleanUpComponent> removals, Allocator.TempJob);
             var dependencies = new NativeList<JobHandle>(Allocator.Temp);
             var planeEntities = _navmeshQuery.ToEntityArray(Allocator.Temp);
+            _navmeshLookup.Update(ref state);
+            _localToWorldLookup.Update(ref state);
+            _destroyedTriangleBufferLookup.Update(ref state);
             
             foreach (var planeEntity in planeEntities)
             {
@@ -146,8 +155,8 @@ namespace DotsNav.Navmesh.Systems
                 {
                     Plane = planeEntity,
                     Data = data,
-                    NavmeshLookup = state.GetComponentLookup<NavmeshComponent>(true),
-                    LocalToWorldLookup = state.GetComponentLookup<LocalToWorld>(true)
+                    NavmeshLookup = _navmeshLookup,
+                    LocalToWorldLookup = _localToWorldLookup
                 }.Schedule(state.Dependency);
 
                 var ecb = HasSingleton<RunnerSingleton>() 
@@ -187,12 +196,12 @@ namespace DotsNav.Navmesh.Systems
                 }
                 
                 if (!blobBulkIsEmpty) 
-                    dependency = new BlobBulkJob() { Data = data }.Schedule(_blobBulkQuery, dependency);
-                
+                    dependency = new BlobBulkJob { Data = data }.Schedule(_blobBulkQuery, dependency);
+
                 dependency = new PostJob
                 {
                     Data = data,
-                    DestroyedTriangleBufferLookup = state.GetBufferLookup<DestroyedTriangleElement>(),
+                    DestroyedTriangleBufferLookup = _destroyedTriangleBufferLookup,
                 }.Schedule(dependency);
                 
                 dependencies.Add(dependency);
