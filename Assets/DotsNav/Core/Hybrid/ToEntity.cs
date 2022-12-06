@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -48,7 +49,7 @@ namespace DotsNav.Hybrid
 
         void OnDisable()
         {
-            if (_world.IsCreated) 
+            if (_world is { IsCreated: true })
                 _world.EntityManager.DestroyEntity(Entity);
         }
     }
