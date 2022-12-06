@@ -34,7 +34,7 @@ namespace DotsNav.Hybrid
             _world = World.All[0];
             var em = _world.EntityManager;
             Entity = em.CreateEntity();
-            em.SetName(Entity, GetType().Name);
+            em.SetName(Entity, $"{GetType().Name}: {gameObject.name}");
             var tr = transform;
             em.AddComponentData(Entity, new LocalToWorld { Value = float4x4.TRS(tr.position, tr.rotation, tr.lossyScale) });
             Convert(em, Entity);
