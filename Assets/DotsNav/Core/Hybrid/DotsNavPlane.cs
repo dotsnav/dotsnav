@@ -118,16 +118,17 @@ namespace DotsNav.Hybrid
 
         void OnDrawGizmos()
         {
-            if (Application.isPlaying)
+            if (Application.isPlaying || !gameObject.activeInHierarchy)
                 return;
 
+            var tr = transform.localToWorldMatrix;
             float2 hs = Size / 2;
             var color = ConstrainedColor;
             DrawLine(-hs, hs * new float2(1, -1));
             DrawLine(hs * new float2(1, -1), hs);
             DrawLine(hs, hs * new float2(-1, 1));
             DrawLine(hs * new float2(-1, 1), -hs);
-            void DrawLine(float2 a, float2 b) => Debug.DrawLine(a.ToXxY(), b.ToXxY(), color);
+            void DrawLine(float2 a, float2 b) => Debug.DrawLine(tr.MultiplyPoint(a.ToXxY()), tr.MultiplyPoint(b.ToXxY()), color);
         }
     }
 }
