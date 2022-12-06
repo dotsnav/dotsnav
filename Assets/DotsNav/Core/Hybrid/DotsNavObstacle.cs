@@ -31,7 +31,7 @@ namespace DotsNav.Hybrid
 #if UNITY_EDITOR
         void OnDrawGizmos()
         {
-            if (Application.isPlaying)
+            if (Application.isPlaying || !gameObject.activeInHierarchy)
                 return;
 
             OnValidate();
@@ -41,14 +41,9 @@ namespace DotsNav.Hybrid
 
             var t = Handles.color;
             Handles.color = DotsNavPrefs.GizmoColor;
-
-            for (int i = 0; i < Vertices.Length - 1; i++)
-            {
-                var a = math.transform(transform.localToWorldMatrix, Vertices[i].ToXxY());
-                var b = math.transform(transform.localToWorldMatrix, Vertices[i + 1].ToXxY());
-                Handles.DrawLine(a, b);
-            }
-
+            var tr = transform.localToWorldMatrix;
+            for (int i = 0; i < Vertices.Length - 1; i++) 
+                Handles.DrawLine(math.transform(tr, Vertices[i].ToXxY()), math.transform(tr, Vertices[i + 1].ToXxY()));
             Handles.color = t;
         }
 
