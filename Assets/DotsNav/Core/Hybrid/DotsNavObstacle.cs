@@ -25,7 +25,6 @@ namespace DotsNav.Hybrid
             var values = entityManager.AddBuffer<VertexElement>(entity);
             for (int i = 0; i < Vertices.Length; i++)
                 values.Add((float2) Vertices[i]);
-            entityManager.AddComponentObject(entity, this);
             entityManager.AddSharedComponent(entity, new PlaneComponent { Entity = Plane.Entity });
         }
         
