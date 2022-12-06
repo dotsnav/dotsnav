@@ -149,7 +149,7 @@ namespace DotsNav
 
                 if (GUILayout.Button("+ ↑", GUILayout.Width(Width))) CreateUp();
                 if (GUILayout.Button("+ ↓", GUILayout.Width(Width))) CreateDown();
-                if (GUILayout.Button(" X", GUILayout.Width(Width)) && obstacle.Vertices.Length > 2) Destroy();
+                if (GUILayout.Button(" X", GUILayout.Width(Width)) && obstacle.Vertices.Length > 2) Remove();
                 Handles.EndGUI();
 
                 EditorGUI.BeginChangeCheck();
@@ -158,7 +158,8 @@ namespace DotsNav
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(obstacle, "Edit obstacle");
-                    Vector2 delta = math.mul(math.inverse(obstacle.transform.rotation), newPos - pos).xz;
+                    var rawDelta = math.mul(math.inverse(obstacle.transform.rotation), newPos - pos);
+                    Vector2 delta = (rawDelta / obstacle.transform.lossyScale).xz;
 
                     var l = obstacle.Vertices.Length - 1;
                     if (obstacle.Close && (_vertexIndex == 0 || _vertexIndex == l))
@@ -214,7 +215,7 @@ namespace DotsNav
                 obstacle.Vertices = l.ToArray();
             }
 
-            void Destroy()
+            void Remove()
             {
                 if (obstacle.Vertices.Length > 0)
                 {
