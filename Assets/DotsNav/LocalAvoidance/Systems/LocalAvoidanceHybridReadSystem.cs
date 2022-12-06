@@ -14,8 +14,7 @@ namespace DotsNav.LocalAvoidance.Systems
         {
             Entities
                 .WithoutBurst()
-                .ForEach((DotsNavLocalAvoidanceAgent monoAgent, ref TransformAspect translation, ref RVOSettingsComponent agentComponent,
-                          ref RadiusComponent radius, ref MaxSpeedComponent maxSpeed) =>
+                .ForEach((DotsNavLocalAvoidanceAgent monoAgent, ref LocalTransform translation, ref RVOSettingsComponent agentComponent, ref MaxSpeedComponent maxSpeed) =>
                 {
                     translation.Position = monoAgent.transform.position;
                     maxSpeed.Value = monoAgent.MaxSpeed;

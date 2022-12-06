@@ -85,7 +85,7 @@ namespace DotsNav.Systems
     //         [ReadOnly] public ComponentLookup<LocalToWorld> LocalToWorldLookup;
     //         [ReadOnly] public ComponentLookup<DynamicTreeComponent> DynamicTreeLookup;
     //
-    //         void Execute(Entity entity, TransformAspect tr, RadiusComponent radius)
+    //         void Execute(Entity entity, LocalTransform tr, RadiusComponent radius)
     //         {
     //             var tree = DynamicTreeLookup[Plane].Tree;
     //             var transform = math.inverse(LocalToWorldLookup[Plane].Value);
@@ -175,7 +175,7 @@ namespace DotsNav.Systems
                 .WithReadOnly(treeLookup)
                 .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _insertQuery)
-                .ForEach((Entity entity, TransformAspect tr, RadiusComponent radius, ref DynamicTreeElementComponent element) =>
+                .ForEach((Entity entity, LocalTransform tr, RadiusComponent radius, ref DynamicTreeElementComponent element) =>
                 {
                     var tree = treeLookup[element.Tree].Tree;
                     element.TreeRef = tree;
@@ -205,7 +205,7 @@ namespace DotsNav.Systems
                 .WithReadOnly(treeLookup)
                 .WithReadOnly(localToWorldLookup)
                 .WithStoreEntityQueryInField(ref _updateQuery)
-                .ForEach((Entity entity, TransformAspect translation, RadiusComponent radius, ref DynamicTreeElementComponent element, ref ElementSystemStateComponent state) =>
+                .ForEach((Entity entity, LocalTransform translation, RadiusComponent radius, ref DynamicTreeElementComponent element, ref ElementSystemStateComponent state) =>
                 {
                     if (element.Tree == state.TreeEntity)
                     {

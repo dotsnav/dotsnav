@@ -48,11 +48,8 @@ namespace DotsNav.Hybrid
 
         void OnDisable()
         {
-            if (_world.IsCreated)
-            {
-                Debug.Log($"destroying {Entity}");
+            if (_world.IsCreated) 
                 _world.EntityManager.DestroyEntity(Entity);
-            }
         }
     }
 }

@@ -89,16 +89,10 @@ namespace DotsNav.Navmesh.Systems
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<PlaneComponent> planes, Allocator.TempJob);
             state.EntityManager.GetAllUniqueSharedComponents(out NativeList<CleanUpComponent> removals, Allocator.TempJob);
             var dependencies = new NativeList<JobHandle>(Allocator.Temp);
-            // Debug.Log($"update {planes.Length}");
-
             var planeEntities = _navmeshQuery.ToEntityArray(Allocator.Temp);
             
             foreach (var planeEntity in planeEntities)
             {
-                // if (plane.Entity == Entity.Null)
-                //     continue;
-
-                // var destroyIsEmpty = true;
                 var destroyIsEmpty = true;
                 var exists = false;
                 foreach (var removal in removals)
@@ -115,9 +109,6 @@ namespace DotsNav.Navmesh.Systems
                     _destroyQuery.SetSharedComponentFilter(new CleanUpComponent { Plane = planeEntity });
                     destroyIsEmpty = _destroyQuery.IsEmpty;
                 }
-                
-                
-                //         Debug.Log($"found plane {plane.Entity}");
 
                 var insertIsEmpty  = true;
                 var insertBulkIsEmpty  = true;
@@ -243,7 +234,6 @@ namespace DotsNav.Navmesh.Systems
             
             void Execute(Entity entity)
             {
-                Debug.Log($"running destroy job {Data.Value.Plane}");
                 Data.Value.Navmesh->RemoveConstraint(entity);
                 Buffer.RemoveComponent<CleanUpComponent>(entity);
             }

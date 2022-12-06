@@ -22,7 +22,7 @@ namespace DotsNav.LocalAvoidance.Systems
             Entities
                 .WithBurst()
                 .WithReadOnly(localToWorldLookup)
-                .ForEach((TransformAspect translation, RadiusComponent radius, VelocityComponent velocity, DynamicTreeElementComponent dynamicTree, ref VelocityObstacleComponent obstacle) =>
+                .ForEach((LocalTransform translation, RadiusComponent radius, VelocityComponent velocity, DynamicTreeElementComponent dynamicTree, ref VelocityObstacleComponent obstacle) =>
                 {
                     var transform = math.inverse(localToWorldLookup[dynamicTree.Tree].Value);
                     obstacle.Position = math.transform(transform, translation.Position).xz;
@@ -39,7 +39,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithReadOnly(velocityObstacleLookup)
                 .WithReadOnly(obstacleTreeLookup)
                 .WithReadOnly(localToWorldLookup)
-                .ForEach((TransformAspect translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, ObstacleTreeAgentComponent obstacleTree,
+                .ForEach((LocalTransform translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, ObstacleTreeAgentComponent obstacleTree,
                           RVOSettingsComponent agent, PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
                     Assert.IsTrue(agentTree.Tree == obstacleTree.Tree);
@@ -62,7 +62,7 @@ namespace DotsNav.LocalAvoidance.Systems
                 .WithNone<ObstacleTreeAgentComponent>()
                 .WithReadOnly(velocityObstacleLookup)
                 .WithReadOnly(localToWorldLookup)
-                .ForEach((TransformAspect translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, RVOSettingsComponent agent,
+                .ForEach((LocalTransform translation, RadiusComponent radius, DynamicTreeElementComponent agentTree, RVOSettingsComponent agent,
                           PreferredVelocityComponent preferredVelocity, MaxSpeedComponent maxSpeed, ref VelocityComponent velocity) =>
                 {
                     var ltw = localToWorldLookup[agentTree.Tree].Value;
